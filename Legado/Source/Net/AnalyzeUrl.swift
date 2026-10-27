@@ -32,7 +32,7 @@ final class AnalyzeUrl {
 
     private var body: String?
     private var encodedForm: String?
-    private var encodedQuery: String?
+    private(set) var encodedQuery: String?
     private(set) var charset: String?
     private(set) var retry = 0
     private var useWebView = false
@@ -379,15 +379,23 @@ final class AnalyzeUrl {
 
     // MARK: - 请求
 
-    func strResponse(useWebView: Bool = true, sourceRegex: String? = nil, isTest: Bool = false) async throws -> StrResponse {
+    func strResponse(useWebView: Bool = true, sourceRegex: String? = nil,
+                     isTest: Bool = false, skipRateLimit: Bool = false) async throws -> StrResponse {
         if type != nil {
             let data = try await byteArray()
             return StrResponse(url: url, body: data.map { String(format: "%02x", $0) }.joined())
         }
-        return try await execute(useWebView: useWebView, sourceRegex: sourceRegex, isTest: isTest)
+        return try await execute(useWebView: useWebView, sourceRegex: sourceRegex,
+                                 isTest: isTest, skipRateLimit: skipRateLimit)
     }
 
-    private func execute(useWebView: Bool, sourceRegex: String?, isTest: Bool) async throws -> StrResponse {
+    private func execute(useWebView: Bool, sourceRegex: String?, isTest: Bool,
+                         skipRateLimit: Bool = false) async throws -> StrResponse {
+        // 书源并发率：同一书源的所有请求共享计数
+        if !skipRateLimit {
+            await ConcurrentRateLimiter.shared.acquire(key: source?.bookSourceUrl,
+                                                       concurrentRate: source?.concurrentRate)
+        }
         setCookie()
         let start = Date()
 
@@ -426,10 +434,24 @@ final class AnalyzeUrl {
             response.putCallTime(Int(Date().timeIntervalSince(start) * 1000))
             return response
         } catch {
-            if isTest {
-                return StrResponse(url: url, error: error.localizedDescription)
+            guard isTest else { throw error }
+            // 对齐上游：用负数 callTime 表示错误类别，调试页据此显示
+            let code: Int
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .timedOut:           code = -2   // 超时
+                case .cannotFindHost:     code = -3   // 域名解析失败
+                case .cannotConnectToHost: code = -4  // 连接被拒绝
+                case .networkConnectionLost: code = -5 // 连接中断
+                case .secureConnectionFailed, .serverCertificateUntrusted: code = -6
+                default:                  code = -7
+                }
+            } else {
+                code = -7
             }
-            throw error
+            var response = StrResponse(url: url, error: error.localizedDescription)
+            response.putCallTime(code)
+            return response
         }
     }
 

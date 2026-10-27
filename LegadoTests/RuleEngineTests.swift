@@ -237,4 +237,53 @@ final class RuleEngineTests: XCTestCase {
         XCTAssertEqual(analyzeUrl.retry, 2)
         XCTAssertEqual(analyzeUrl.charset, "GBK")
     }
+
+    // MARK: - 变量回填与组合符
+
+    func testDollarIndexBackfill() {
+        // `$n` 从当前结果列表里取第 n 项（getElement 的正则分组就靠它）
+        let rule = AnalyzeRule(source: nil)
+        let value = rule.getString("$1", mContent: ["完整匹配", "分组一", "分组二"])
+        XCTAssertEqual(value, "分组一")
+
+        let second = rule.getString("$2", mContent: ["完整匹配", "分组一", "分组二"])
+        XCTAssertEqual(second, "分组二")
+    }
+
+    func testCrossMergeOperator() {
+        // %% 交叉合并：按索引交替取各分支结果
+        let html = """
+        <div id="a"><p>甲1</p><p>甲2</p></div>
+        <div id="b"><p>乙1</p><p>乙2</p></div>
+        """
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent(html)
+        XCTAssertEqual(rule.getStringList("#a@p@text%%#b@p@text"),
+                       ["甲1", "乙1", "甲2", "乙2"])
+    }
+
+    func testPutWithStandardJSON() {
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent("<div class=\"n\">书名</div>")
+        let value = rule.getString(#"@put:{"k":".n@text"}@get:{k}"#)
+        XCTAssertEqual(value, "书名")
+    }
+
+    func testWebJsRuleRoutesThroughHandler() {
+        // @webjs 需要 WebView；这里注入假的 handler 验证规则被正确分流
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent("<div>原始内容</div>")
+        rule.webJsHandler = { js, _ in
+            XCTAssertEqual(js, "document.title")
+            return "来自WebView"
+        }
+        XCTAssertEqual(rule.getString("@webjs:document.title"), "来自WebView")
+    }
+
+    func testPutAndGetVariableStore() {
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent("<i>值</i>")
+        _ = rule.put("k", "v1")
+        XCTAssertEqual(rule.get("k"), "v1")
+    }
 }

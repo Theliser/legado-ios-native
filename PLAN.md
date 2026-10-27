@@ -114,19 +114,28 @@ legado/
   JSONPath 通配与过滤、XPath、`##` 替换、`@put/@get`、URL 分页与 `url,{json}` 选项、
   目录去重排序、正文替换与全角缩进、空内容抛错。
 - 已修缺陷：`##` 替换被截断、`<js>` 捕获组越界崩溃、括号索引错位、JSONPath 多结果未合并。
-- 待补：`%%` 交叉合并的用例、`@webjs`、`$1..$99` 回填、`@put` 非规范 JSON 兜底、
-  `relatedBooks`、`imageStyle`/`imageDecode`/`callBackJs`。
+- 待补：`relatedBooks`、`imageStyle`/`imageDecode`/`callBackJs`、`@put` 非规范 JSON 兜底。
 
-### P3 网络与 Cookie
-- `AnalyzeUrl` 全量（编码、分页、option、`bodyJs`、重试）。
-- `HTTPClient`（URLSession，压缩、字符集探测、超时、代理字段忽略策略）。
-- `CookieStore/CookieManager` 两级持久化；`WebViewFetcher`（WKWebView 隐藏实例、JS 求值、`sourceRegex` 嗅探、cookie 双向同步、UA 对齐、Cloudflare 通过后 `cf_clearance` 落库复用）。
-- 验收：过 CF 的站点首次用 WebView，二次纯 HTTP 直接 200；杀掉 App 冷启动仍 200。
+### P3 网络与 Cookie ✅（代码与单测完成，待真实站点验证）
+- `AnalyzeUrl` 全量：编码、`<1,2,3>` 分页、option（method/headers/body/type/charset/retry/
+  webView/webJs/bodyJs/dnsIp/js/webViewDelayTime）、`url,{json}` 容错。
+- `HTTPClient`：字符集探测（响应头 → 页面 meta → UTF-8）、XML 补声明、`Set-Cookie`
+  合并串拆分（保住 `Expires` 里的逗号）、重定向标记、重试、自签证书放行。
+- `CookieStore`：二级域名 key、持久 + 会话两级、合并语义、超 4096 随机裁剪、
+  WebView cookie 全量落库（`cf_clearance` 即在其中）。
+- `WebViewFetcher`：隐藏 WKWebView、UA 与请求一致（否则 `cf_clearance` 失效）、
+  载入前注入已存 cookie、加载后落库、`sourceRegex` 嗅探、delay、重定向标记。
+- 已修缺陷：URL 整串 `addingPercentEncoding` 会把已编码的 `%E5` 变成 `%25E5`（书源带中文参数的地址必然 404）。
+- 待做：代理、`dnsIp` 强制解析、真实 CF 站点端到端验证。
 
-### P4 业务链路
-- `WebBook` + `BookList/BookInfo/BookChapterList/BookContent`；JS 桥（`java.ajax`、`java.base64*`、`cookie.getCookie`、`cache`、`source.*`、`book.*`）。
-- 并发限速（`concurrentRate`）、重试、错误分类（超时/空目录/空正文）。
-- 验收：对 3~5 个真实书源跑通「搜索→详情→目录→正文」。
+### P4 业务链路 🚧 主链路可用
+- `WebBook` + `BookList/BookInfo/BookChapterList/BookContent`，含规则回退、
+  文件型书源走下载、目录去重排序、正文分页（单页串行 / 多页并发 4 路）。
+- `ConcurrentRateLimiter`：`n/ms` 与单数字两种写法，按书源 key 全局共享计数，
+  超限等待而不是直接失败；参数更新保留已有计数。
+- 错误分类：超时 / 域名 / 连接 / SSL / 其它，用负数 callTime 编码供调试页展示。
+- `mainJs` 字段（官方新增的纯 JS 单文件书源）已入库，执行链路待做。
+- 待做：JS 桥补全（对照 `java.*` 全量）、章节缓存、下载、真实书源巡检。
 
 ### P5 UI（液态玻璃 + MVI）
 - 书架（封面网格、分组）、搜索（多源并发聚合）、书源管理（导入/分组/启用/校验）、阅读器（分页/滚动、字号字体、进度）、书源调试（规则逐项回显 + 原文/解析对比）。

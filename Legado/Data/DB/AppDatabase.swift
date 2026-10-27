@@ -57,6 +57,16 @@ final class AppDatabase {
             try db.execute(sql: "CREATE UNIQUE INDEX IF NOT EXISTS index_cookies_url ON cookies(url)")
             try db.execute(sql: "CREATE UNIQUE INDEX IF NOT EXISTS index_searchBooks_bookUrl ON searchBooks(bookUrl)")
         }
+        // v1 之后新增的列。用「列不存在才 add」的写法，
+        // 这样全新安装（v1 里已含该列）与旧库升级都能走通。
+        migrator.registerMigration("v2") { db in
+            let columns = try db.columns(in: "book_sources").map(\.name)
+            if !columns.contains("mainJs") {
+                try db.alter(table: "book_sources") { table in
+                    table.add(column: "mainJs", .text)
+                }
+            }
+        }
         return migrator
     }
 
@@ -94,6 +104,7 @@ final class AppDatabase {
         ruleToc TEXT,
         ruleContent TEXT,
         ruleReview TEXT,
+        mainJs TEXT,
         eventListener INTEGER NOT NULL DEFAULT 0,
         customButton INTEGER NOT NULL DEFAULT 0,
         homepageModules TEXT

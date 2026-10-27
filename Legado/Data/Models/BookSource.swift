@@ -316,6 +316,8 @@ struct BookSource: Codable, Identifiable, Hashable {
     var ruleToc: TocRule?
     var ruleContent: ContentRule?
     var ruleReview: ReviewRule?
+    /// 纯 JavaScript 单文件书源的主脚本，非空时优先走脚本抓取流程
+    var mainJs: String?
     var eventListener: Bool = false
     var customButton: Bool = false
     var homepageModules: String?
@@ -372,6 +374,7 @@ struct BookSource: Codable, Identifiable, Hashable {
             ruleReview = container.value
         }
 
+        mainJs = try c.decodeIfPresent(String.self, forKey: .mainJs)
         searchUrl = try c.decodeIfPresent(String.self, forKey: .searchUrl)
         eventListener = try c.decodeIfPresent(Bool.self, forKey: .eventListener) ?? false
         customButton = try c.decodeIfPresent(Bool.self, forKey: .customButton) ?? false
@@ -386,6 +389,9 @@ struct BookSource: Codable, Identifiable, Hashable {
 
     /// 书源类型 → 书籍类型位掩码。对齐上游 `BookSource.getBookType()`：
     /// 文件型书源同时带 text 与 webFile 位，这样它既能进文本书架也能走下载流程。
+    /// 是否 JS 源（官方 `isJsSource()`）
+    var isJsSource: Bool { !(mainJs ?? "").isBlank }
+
     var bookType: Int {
         switch sourceType {
         case .file: return BookType.text | BookType.webFile

@@ -62,15 +62,7 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
     }
 
     private func perform(_ spec: HTTPRequestSpec) async throws -> StrResponse {
-        guard var components = URLComponents(string: spec.url.replacingOccurrences(of: " ", with: "%20")),
-              components.scheme != nil else {
-            throw URLError(.badURL)
-        }
-        // 中文/空格路径与查询统一转义，但保留已有 %XX
-        if let encoded = components.string?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            components = URLComponents(string: encoded) ?? components
-        }
-        guard let url = components.url else { throw URLError(.badURL) }
+        guard let url = Self.makeURL(spec.url) else { throw URLError(.badURL) }
 
         var request = URLRequest(url: url)
         request.httpMethod = spec.method
@@ -168,6 +160,29 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
         }
         semaphore.wait()
         return result ?? StrResponse(url: spec.url, error: "请求失败")
+    }
+
+    // MARK: - URL 规整
+
+    /// 把规则产出的原始地址转成 URL。
+    ///
+    /// 关键点：**不能整串跑 addingPercentEncoding**，否则已有的 `%XX` 会被再编码成
+    /// `%25XX`（书源里带中文参数的地址基本都是已编码的，这样必然 404）。
+    /// 这里先把 `%` 挡住再转义，最后还原。
+    static func makeURL(_ raw: String) -> URL? {
+        if let direct = URL(string: raw), direct.scheme != nil,
+           direct.absoluteString.rangeOfCharacter(from: .whitespacesAndNewlines) == nil {
+            return direct
+        }
+        let shielded = raw.replacingOccurrences(of: "%", with: "\u{1}")
+        guard let encoded = shielded.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else {
+            return nil
+        }
+        let restored = encoded.replacingOccurrences(of: "\u{1}", with: "%")
+        guard let url = URL(string: restored),
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https" else { return nil }
+        return url
     }
 
     // MARK: - Set-Cookie

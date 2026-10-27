@@ -12,6 +12,8 @@
 		05F820BE28CB8B946760D28C /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0900B8AD69A55B4E2384843B /* JSRuntime.swift */; };
 		0641D042681BD695E0BE9D87 /* RuleAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B7C4A69AF65C338F83421F /* RuleAnalyzer.swift */; };
 		0D5BDA811716FBF2CCCD1FFD /* AnalyzeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD9B142A9D15C53028A2B13 /* AnalyzeRule.swift */; };
+		1ACA1DB2AB61FE856DC03781 /* ConcurrentRateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */; };
+		2700ADD1D19D04EB20B8B61B /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C7E12CB1493C6196A377AF /* NetworkTests.swift */; };
 		326F052119847C56714EFD09 /* JSONPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E57DBCDEB5ADE270094C4C /* JSONPath.swift */; };
 		32D77DF812403C1A8CD4ACDD /* JSONTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0069DB6F5112322FFF8F0E3 /* JSONTool.swift */; };
 		32E34EE28CBFA29F4261E4DE /* CryptoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A309D6A81D8440A0EA82C01 /* CryptoUtils.swift */; };
@@ -77,6 +79,7 @@
 		18750F83E8B8039D446FB7F8 /* XPathDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPathDocument.swift; sourceTree = "<group>"; };
 		1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GRDB.xcframework; path = Vendor/Frameworks/GRDB.xcframework; sourceTree = "<group>"; };
 		202BC435B7BE476D41DEA0D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentRateLimiter.swift; sourceTree = "<group>"; };
 		299BA44DD84CD1E55D075573 /* AnalyzeUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeUrl.swift; sourceTree = "<group>"; };
 		2E7B9016A52F6641883FDFA0 /* WebViewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewFetcher.swift; sourceTree = "<group>"; };
 		30BFD519B81F69EFDEBAF611 /* LegadoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegadoApp.swift; sourceTree = "<group>"; };
@@ -100,6 +103,7 @@
 		A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleEngineTests.swift; sourceTree = "<group>"; };
 		A10FC5FED3AE740B0F5B4215 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A3AED4FAD6EC2AAA5EF70BCD /* HtmlFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HtmlFormatter.swift; sourceTree = "<group>"; };
+		A8C7E12CB1493C6196A377AF /* NetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
 		AFD9B142A9D15C53028A2B13 /* AnalyzeRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeRule.swift; sourceTree = "<group>"; };
 		B721D7926B9C2FF13457BB81 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		BD410E3C451244EA92BEE5A0 /* MVI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVI.swift; sourceTree = "<group>"; };
@@ -137,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				299BA44DD84CD1E55D075573 /* AnalyzeUrl.swift */,
+				264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */,
 				3A9692FAAF766128DEB5FD79 /* CookieStore.swift */,
 				019A372A432DC5E8F645879C /* HTTPClient.swift */,
 				5ED9E9179867A8378C873444 /* StrResponse.swift */,
@@ -291,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */,
+				A8C7E12CB1493C6196A377AF /* NetworkTests.swift */,
 				A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */,
 				88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */,
 			);
@@ -494,6 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */,
+				2700ADD1D19D04EB20B8B61B /* NetworkTests.swift in Sources */,
 				34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */,
 				723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */,
 			);
@@ -517,6 +524,7 @@
 				910B9A3889D47CAA1F02BE9B /* BookSource.swift in Sources */,
 				CA67CC1B7E1D80F8CFC8E264 /* BookSourceListView.swift in Sources */,
 				B4CA376600C5559C469EF653 /* BookshelfView.swift in Sources */,
+				1ACA1DB2AB61FE856DC03781 /* ConcurrentRateLimiter.swift in Sources */,
 				54D1F44CF7D9380CFE840A70 /* CookieStore.swift in Sources */,
 				32E34EE28CBFA29F4261E4DE /* CryptoUtils.swift in Sources */,
 				58CE4D414DFDCCD914161656 /* Daos.swift in Sources */,
