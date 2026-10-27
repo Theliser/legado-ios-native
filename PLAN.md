@@ -96,22 +96,26 @@ legado/
 - 依赖改为「镜像下源码 → 本地编译 → XCFramework → 主工程静态链接」，构建不再依赖网络，也不走 SPM 依赖解析。细节见 README。
 - 验收：`xcodebuild ... -sdk iphonesimulator build` 通过，模拟器可启动并渲染书架页。
 
-### P1 数据层 ✅（字段级已对齐，导入链路待做）
+### P1 数据层 ✅
 - 实体：`BookSource` + 六个规则结构体，与上游 Kotlin `data class` **逐字段**比对通过（脚本化 diff，含顺序）。
   `Book`/`BookChapter`/`SearchBook` 的 35/18/18 列与上游 Room 实体全等。
-- 修正过的偏差：`ReviewRule` 曾整组字段名自造；`BookGroup` 缺 `cover/bookSort/isPrivate`；
-  `ReadRecord` 表名与主键错误（`readRecords` → `readRecord`，主键改 `(deviceId, bookName, bookAuthor)`）。
-- 仍待做：书源 JSON 导入（单条/数组/冲突覆盖）、分组维护的 UI 链路。
-- 验收状态：`book_sources` 等 8 张表在模拟器上建表成功，`.schema` 与 DDL 一致。
+- DAO 覆盖：书源（搜索/分组整词/无分组/启停/排序）、书籍（notShelf 位/分组/类型位/私密）、
+  章节（按 index 批量、整表替换）、搜索结果（换源候选/过期清理）、阅读记录（复合主键/时长累加）、分组（删除清位）。
+- `Book.type` 已按上游还原为**位掩码**（text=8、audio=32、image=64、webFile=128、local=256…）。
+- 导入导出：单条 / 数组 / 字符串化规则 / 冲突更新 / 非法载荷。
+- 验收：55 个测试全绿，覆盖 DAO 行为与导入导出往返。
 
 ### P2 规则引擎（核心）🚧 主链路通，边界待补
 - 已实现：`RuleAnalyzer`（平衡组 `splitRule` / `innerRule`）、`AnalyzeRule` + `SourceRule`
   （模式分发、`@put/@get/{{}}/##`、变量表）、`AnalyzeByJSoup`（含索引语法）、`AnalyzeByXPath`
   （libxml2）、`AnalyzeByJSONPath`、`AnalyzeByRegex`。
-- 单测 18 个全绿，覆盖：模式前缀识别、`<js>` 块、CSS 索引 `[1:2]/.-1/!0`、`&&`/`||`、
-  JSONPath 通配与过滤、XPath、`##` 替换、`@put/@get`、URL 分页与 `url,{json}` 选项。
+- 书源解析链路：搜索/发现 → 详情 → 目录 → 正文，全部可用固定 HTML 脱网跑通（端到端用例）。
+- 单测覆盖：模式前缀识别、`<js>` 块、CSS 索引 `[1:2]/.-1/!0`、`&&`/`||`、
+  JSONPath 通配与过滤、XPath、`##` 替换、`@put/@get`、URL 分页与 `url,{json}` 选项、
+  目录去重排序、正文替换与全角缩进、空内容抛错。
 - 已修缺陷：`##` 替换被截断、`<js>` 捕获组越界崩溃、括号索引错位、JSONPath 多结果未合并。
-- 待补：`%%` 交叉合并的用例、`@webjs`、`$1..$99` 回填、`@put` 非规范 JSON 兜底。
+- 待补：`%%` 交叉合并的用例、`@webjs`、`$1..$99` 回填、`@put` 非规范 JSON 兜底、
+  `relatedBooks`、`imageStyle`/`imageDecode`/`callBackJs`。
 
 ### P3 网络与 Cookie
 - `AnalyzeUrl` 全量（编码、分页、option、`bodyJs`、重试）。
