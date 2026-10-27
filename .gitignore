@@ -1,0 +1,19 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+.swiftpm/
+Package.resolved
+
+# 上游只作对照参考，不纳入版本库
+upstream/
+
+# macOS
+.DS_Store
+
+# 本地配置
+*.local.xcconfig
+Secrets.plist
