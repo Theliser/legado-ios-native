@@ -91,9 +91,10 @@ legado/
 
 ## 3. 阶段计划
 
-### P0 工程地基（本次）
-- `git init`，XcodeGen 工程，SPM：SwiftSoup、GRDB；libxml2 桥接；iOS 26 + 液态玻璃可运行空壳。
-- 验收：`xcodebuild ... -sdk iphonesimulator build` 通过。
+### P0 工程地基 ✅
+- `git init`，XcodeGen 工程，SwiftSoup / GRDB，libxml2 桥接；iOS 26 + 液态玻璃可运行空壳。
+- 依赖改为「镜像下源码 → 本地编译 → XCFramework → 主工程静态链接」，构建不再依赖网络，也不走 SPM 依赖解析。细节见 README。
+- 验收：`xcodebuild ... -sdk iphonesimulator build` 通过，模拟器可启动并渲染书架页。
 
 ### P1 数据层
 - 实体：`BookSource` + `SearchRule/ExploreRule/BookInfoRule/TocRule/ContentRule`，字段与 JSON key 全量对齐（含 `enabledCookieJar`、`homepageModules`、`ruleReview` 占位）。
@@ -127,7 +128,22 @@ legado/
 
 ---
 
-## 4. 风险与对策
+## 4. 构建与依赖
+
+依赖不走 SwiftPM 远程解析，改为本地预编译：
+
+```bash
+./scripts/fetch-vendor.sh              # 镜像拉源码到 Vendor/
+./scripts/build-vendor-frameworks.sh   # 交叉编译成 XCFramework
+xcodegen generate && xcodebuild ...    # 构建
+```
+
+原因与镜像列表见 [README.md](README.md)。两条硬约束要记住：
+
+- 镜像地址在 `fetch-vendor.sh` 的 `MIRRORS` 数组里改；
+- 工程全局带 `-Xfrontend -disable-sandbox`，否则宏插件（`@Observable` / `@State`）无法展开。
+
+## 5. 风险与对策
 
 | 风险 | 对策 |
 | --- | --- |
