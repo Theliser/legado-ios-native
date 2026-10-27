@@ -330,16 +330,16 @@ struct BookSource: Codable, Identifiable, Hashable {
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        bookSourceUrl = try c.decodeIfPresent(String.self, forKey: .bookSourceUrl) ?? ""
-        bookSourceName = try c.decodeIfPresent(String.self, forKey: .bookSourceName) ?? ""
-        bookSourceGroup = try c.decodeIfPresent(String.self, forKey: .bookSourceGroup)
-        bookSourceType = try c.decodeIfPresent(Int.self, forKey: .bookSourceType) ?? 0
+        bookSourceUrl = c.lenientString(forKey: .bookSourceUrl) ?? ""
+        bookSourceName = c.lenientString(forKey: .bookSourceName) ?? ""
+        bookSourceGroup = c.lenientString(forKey: .bookSourceGroup)
+        bookSourceType = c.lenientInt(forKey: .bookSourceType) ?? 0
         bookUrlPattern = try c.decodeIfPresent(String.self, forKey: .bookUrlPattern)
-        customOrder = try c.decodeIfPresent(Int.self, forKey: .customOrder) ?? 0
-        enabled = try c.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
-        enabledExplore = try c.decodeIfPresent(Bool.self, forKey: .enabledExplore) ?? true
+        customOrder = c.lenientInt(forKey: .customOrder) ?? 0
+        enabled = c.lenientBool(forKey: .enabled) ?? true
+        enabledExplore = c.lenientBool(forKey: .enabledExplore) ?? true
         jsLib = try c.decodeIfPresent(String.self, forKey: .jsLib)
-        enabledCookieJar = try c.decodeIfPresent(Bool.self, forKey: .enabledCookieJar) ?? true
+        enabledCookieJar = c.lenientBool(forKey: .enabledCookieJar) ?? true
         concurrentRate = try c.decodeIfPresent(String.self, forKey: .concurrentRate)
         header = try c.decodeIfPresent(String.self, forKey: .header)
         loginUrl = try c.decodeIfPresent(String.self, forKey: .loginUrl)
@@ -348,9 +348,9 @@ struct BookSource: Codable, Identifiable, Hashable {
         coverDecodeJs = try c.decodeIfPresent(String.self, forKey: .coverDecodeJs)
         bookSourceComment = try c.decodeIfPresent(String.self, forKey: .bookSourceComment)
         variableComment = try c.decodeIfPresent(String.self, forKey: .variableComment)
-        lastUpdateTime = try c.decodeIfPresent(Int64.self, forKey: .lastUpdateTime) ?? 0
-        respondTime = try c.decodeIfPresent(Int64.self, forKey: .respondTime) ?? 180000
-        weight = try c.decodeIfPresent(Int.self, forKey: .weight) ?? 0
+        lastUpdateTime = c.lenientInt64(forKey: .lastUpdateTime) ?? 0
+        respondTime = c.lenientInt64(forKey: .respondTime) ?? 180000
+        weight = c.lenientInt(forKey: .weight) ?? 0
         exploreUrl = try c.decodeIfPresent(String.self, forKey: .exploreUrl)
         exploreScreen = try c.decodeIfPresent(String.self, forKey: .exploreScreen)
 

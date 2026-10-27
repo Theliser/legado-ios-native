@@ -286,4 +286,31 @@ final class RuleEngineTests: XCTestCase {
         _ = rule.put("k", "v1")
         XCTAssertEqual(rule.get("k"), "v1")
     }
+
+    // MARK: - 选择器前缀
+
+    func testClassPrefixWithMultipleClasses() {
+        // `class.dir clear` 是 Jsoup 的多类名写法（空格分隔取交集），
+        // SwiftSoup 的 getElementsByClass 不拆空格，必须由引擎补上
+        let html = """
+        <div class="dir clear"><ul><li><a>第1章</a></li><li><a>第2章</a></li></ul></div>
+        <div class="dir"><ul><li><a>干扰项</a></li></ul></div>
+        <div class="clear"><ul><li><a>干扰项2</a></li></ul></div>
+        """
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent(html)
+        XCTAssertEqual(rule.getStringList("class.dir clear@li@a@text"), ["第1章", "第2章"])
+        // 单个类名照常：dir 命中 2 个 div（含「dir clear」），共 3 个 li
+        XCTAssertEqual(rule.getStringList("class.dir@li@a@text")?.count, 3)
+        XCTAssertEqual(rule.getStringList("class.clear@li@a@text")?.count, 3)
+    }
+
+    func testTagIdTextPrefixes() {
+        let html = #"<div id="box"><span class="n">书名</span><a href="/next">下一页</a></div>"#
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent(html)
+        XCTAssertEqual(rule.getString("tag.span@text"), "书名")
+        XCTAssertEqual(rule.getString("id.box@tag.span@text"), "书名")
+        XCTAssertEqual(rule.getString("text.下一页@href"), "/next")
+    }
 }

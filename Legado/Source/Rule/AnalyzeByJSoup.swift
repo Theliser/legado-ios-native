@@ -263,7 +263,26 @@ final class AnalyzeByJSoup {
                 case "children":
                     elements = temp.children().array()
                 case "class":
-                    elements = parts.count > 1 ? ((try? temp.getElementsByClass(parts[1]))?.array() ?? []) : []
+                    // Jsoup 的 getElementsByClass 接受空格分隔的多个类名（取交集），
+                    // 书源里 `class.dir clear` 这种写法很常见；SwiftSoup 只按整串当类名索引，
+                    // 不拆开就永远匹配不到。
+                    let names = (parts.count > 1 ? parts[1] : "")
+                        .split(separator: " ")
+                        .map(String.init)
+                        .filter { !$0.isEmpty }
+                    if names.isEmpty {
+                        elements = []
+                    } else if names.count == 1 {
+                        elements = (try? temp.getElementsByClass(names[0]))?.array() ?? []
+                    } else {
+                        var matched = (try? temp.getElementsByClass(names[0]))?.array() ?? []
+                        for name in names.dropFirst() {
+                            let allowed = Set(((try? temp.getElementsByClass(name))?.array() ?? [])
+                                .map { ObjectIdentifier($0) })
+                            matched = matched.filter { allowed.contains(ObjectIdentifier($0)) }
+                        }
+                        elements = matched
+                    }
                 case "tag":
                     elements = parts.count > 1 ? ((try? temp.getElementsByTag(parts[1]))?.array() ?? []) : []
                 case "id":

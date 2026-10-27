@@ -14,8 +14,45 @@ enum WebBookError: LocalizedError {
     }
 }
 
+/// 解析阶段。rawValue 与上游 `Debug` 的 state 编码一致（10/20/30/40）。
+enum SourceStage: Int, CaseIterable, Identifiable {
+    case search = 10
+    case info = 20
+    case toc = 30
+    case content = 40
+
+    var id: Int { rawValue }
+
+    var label: String {
+        switch self {
+        case .search: return "搜索"
+        case .info: return "详情"
+        case .toc: return "目录"
+        case .content: return "正文"
+        }
+    }
+}
+
+/// 一次阶段执行的回显，供调试页 / 巡检使用。
+struct SourceTrace: Equatable {
+    var stage: SourceStage
+    var url: String
+    var code: Int = 0
+    /// 原始响应（正文可能很大，调用方自行截断展示）
+    var body: String?
+    var elapsedMs: Int = 0
+    var error: String?
+    /// 给调试页看的一句话结论
+    var summary: String = ""
+
+    var isSuccess: Bool { error == nil }
+}
+
 /// 书源业务编排，对齐上游 `WebBook`。
 final class WebBook {
+
+    /// 阶段追踪。设置后在每个阶段完成时回调（调试页与巡检共用）。
+    var trace: ((SourceTrace) -> Void)?
 
     let settings: AppSettings
     let httpClient: HTTPClient
@@ -29,6 +66,34 @@ final class WebBook {
         self.httpClient = httpClient
         self.cookieStore = cookieStore
         self.bookRepository = bookRepository
+    }
+
+    private func emit(_ event: SourceTrace) {
+        trace?(event)
+    }
+
+    private func elapsedMs(since date: Date) -> Int {
+        Int(Date().timeIntervalSince(date) * 1000)
+    }
+
+    /// 统一包装阶段执行：成功与失败都发一条 trace。
+    /// 失败时也带上响应体 —— 调试「解析抛错」必须先能看见原始页面，
+    /// 否则只能靠猜是站点改版还是规则写错。
+    private func traced<T>(_ stage: SourceStage, url: String, code: Int, body: String?,
+                           started: Date, describe: (T) -> String,
+                           _ work: () async throws -> T) async throws -> T {
+        do {
+            let value = try await work()
+            emit(SourceTrace(stage: stage, url: url, code: code, body: body,
+                             elapsedMs: elapsedMs(since: started), summary: describe(value)))
+            return value
+        } catch {
+            let text = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            emit(SourceTrace(stage: stage, url: url, code: code, body: body,
+                             elapsedMs: elapsedMs(since: started), error: text,
+                             summary: "失败"))
+            throw error
+        }
     }
 
     // MARK: - 规则工厂
@@ -88,15 +153,21 @@ final class WebBook {
         let ruleData = RuleData()
         let analyzeUrl = analyzeUrl(searchUrl, source: source, ruleData: ruleData,
                                     page: page, key: key)
+        let started = Date()
         var response = try await analyzeUrl.strResponse()
         response = applyLoginCheck(source, analyzeUrl, response)
         logRedirect(source, response)
 
-        return try await BookList.analyzeBookList(
-            webBook: self, source: source, ruleData: ruleData, analyzeUrl: analyzeUrl,
-            baseUrl: response.url, body: response.body, isSearch: true,
-            isRedirect: response.isRedirect, filter: filter, shouldBreak: shouldBreak
-        )
+        let books = try await traced(.search, url: response.url, code: response.code,
+                                     body: response.body, started: started,
+                                     describe: { $0.isEmpty ? "无结果" : "命中 \($0.count) 本" }) {
+            try await BookList.analyzeBookList(
+                webBook: self, source: source, ruleData: ruleData, analyzeUrl: analyzeUrl,
+                baseUrl: response.url, body: response.body, isSearch: true,
+                isRedirect: response.isRedirect, filter: filter, shouldBreak: shouldBreak
+            )
+        }
+        return books
     }
 
     /// 精准搜索（换源 / 重新获取书籍信息）
@@ -129,21 +200,38 @@ final class WebBook {
     // MARK: - 详情
 
     func getBookInfo(_ source: BookSource, book: Book, canReName: Bool = true) async throws -> Book {
-        var book = book
         if let html = book.infoHtml, !html.isEmpty {
-            BookInfo.analyze(webBook: self, source: source, book: &book,
-                             baseUrl: book.bookUrl, redirectUrl: book.bookUrl,
-                             body: html, canReName: canReName)
-            return book
+            // 搜索阶段已经拿到详情页 HTML，直接复用（上游 @Ignore 字段的用途）
+            let started = Date()
+            let base = book
+            return try await traced(.info, url: base.bookUrl, code: 0, body: html, started: started,
+                                    describe: { (parsed: Book) in
+                                        parsed.name.isEmpty ? "书名为空（复用响应）" : "《\(parsed.name)》（复用响应）"
+                                    }) {
+                var target = base
+                BookInfo.analyze(webBook: self, source: source, book: &target,
+                                 baseUrl: base.bookUrl, redirectUrl: base.bookUrl,
+                                 body: html, canReName: canReName)
+                return target
+            }
         }
         let analyzeUrl = analyzeUrl(book.bookUrl, source: source, book: book)
         var response = try await analyzeUrl.strResponse()
         response = applyLoginCheck(source, analyzeUrl, response)
         logRedirect(source, response)
-        BookInfo.analyze(webBook: self, source: source, book: &book,
-                         baseUrl: book.bookUrl, redirectUrl: response.url,
-                         body: response.body, canReName: canReName)
-        return book
+        let started = Date()
+        let result = try await traced(.info, url: response.url, code: response.code,
+                                      body: response.body, started: started,
+                                      describe: { (target: Book) in
+                                          target.name.isEmpty ? "书名为空" : "《\(target.name)》"
+                                      }) {
+            var target = book
+            BookInfo.analyze(webBook: self, source: source, book: &target,
+                             baseUrl: book.bookUrl, redirectUrl: response.url,
+                             body: response.body, canReName: canReName)
+            return target
+        }
+        return result
     }
 
     // MARK: - 目录
@@ -152,18 +240,31 @@ final class WebBook {
         if shouldRunPreUpdateJs {
             try await runPreUpdateJs(source: source, book: book)
         }
+        // 详情页就是目录页时，上游会复用刚才那份响应，不再发请求
         if book.bookUrl == book.tocUrl, let html = book.tocHtml, !html.isEmpty {
-            return try await BookChapterList.analyze(webBook: self, source: source, book: book,
-                                                     baseUrl: book.tocUrl, redirectUrl: book.tocUrl,
-                                                     body: html)
+            let started = Date()
+            let chapters = try await traced(.toc, url: book.tocUrl, code: 0,
+                                            body: html, started: started,
+                                            describe: { "\($0.count) 章（复用详情页响应）" }) {
+                try await BookChapterList.analyze(webBook: self, source: source, book: book,
+                                                  baseUrl: book.tocUrl, redirectUrl: book.tocUrl,
+                                                  body: html)
+            }
+            return chapters
         }
         let analyzeUrl = analyzeUrl(book.tocUrl, source: source, book: book)
+        let started = Date()
         var response = try await analyzeUrl.strResponse()
         response = applyLoginCheck(source, analyzeUrl, response)
         logRedirect(source, response)
-        return try await BookChapterList.analyze(webBook: self, source: source, book: book,
-                                                 baseUrl: book.tocUrl, redirectUrl: response.url,
-                                                 body: response.body)
+        let chapters = try await traced(.toc, url: response.url, code: response.code,
+                                        body: response.body, started: started,
+                                        describe: { "\($0.count) 章" }) {
+            try await BookChapterList.analyze(webBook: self, source: source, book: book,
+                                              baseUrl: book.tocUrl, redirectUrl: response.url,
+                                              body: response.body)
+        }
+        return chapters
     }
 
     private func runPreUpdateJs(source: BookSource, book: Book) async throws {
@@ -194,12 +295,17 @@ final class WebBook {
         }
 
         if chapter.url == book.bookUrl, let html = book.tocHtml, !html.isEmpty {
-            return try await BookContent.analyze(webBook: self, source: source, book: book,
-                                                 chapter: chapter,
-                                                 baseUrl: chapter.getAbsoluteURL(),
-                                                 redirectUrl: chapter.getAbsoluteURL(),
-                                                 body: html, nextChapterUrl: nextChapterUrl,
-                                                 needSave: needSave)
+            let started = Date()
+            return try await traced(.content, url: chapter.getAbsoluteURL(), code: 0,
+                                    body: html, started: started,
+                                    describe: { "《\(chapter.title)》 \($0.count) 字（复用详情页响应）" }) {
+                try await BookContent.analyze(webBook: self, source: source, book: book,
+                                              chapter: chapter,
+                                              baseUrl: chapter.getAbsoluteURL(),
+                                              redirectUrl: chapter.getAbsoluteURL(),
+                                              body: html, nextChapterUrl: nextChapterUrl,
+                                              needSave: needSave)
+            }
         }
 
         let analyzeUrl = analyzeUrl(chapter.getAbsoluteURL(), source: source, book: book,
@@ -211,13 +317,19 @@ final class WebBook {
         response = applyLoginCheck(source, analyzeUrl, response)
         logRedirect(source, response)
 
-        return try await BookContent.analyze(webBook: self, source: source, book: book,
-                                             chapter: chapter,
-                                             baseUrl: chapter.getAbsoluteURL(),
-                                             redirectUrl: response.url,
-                                             body: response.body,
-                                             nextChapterUrl: nextChapterUrl,
-                                             needSave: needSave)
+        let started = Date()
+        let content = try await traced(.content, url: response.url, code: response.code,
+                                       body: response.body, started: started,
+                                       describe: { "《\(chapter.title)》 \($0.count) 字" }) {
+            try await BookContent.analyze(webBook: self, source: source, book: book,
+                                          chapter: chapter,
+                                          baseUrl: chapter.getAbsoluteURL(),
+                                          redirectUrl: response.url,
+                                          body: response.body,
+                                          nextChapterUrl: nextChapterUrl,
+                                          needSave: needSave)
+        }
+        return content
     }
 
     // MARK: - 工具

@@ -431,4 +431,40 @@ final class DataLayerTests: XCTestCase {
         XCTAssertEqual(repo.book("u")?.durChapterTitle, "第4章")
         XCTAssertEqual(repo.readTime(of: book), 90, "同一本书的时长要累加")
     }
+
+    // MARK: - 宽松解码
+
+    func testBookSourceAcceptsStringNumbers() throws {
+        // 真实书源里 `lastUpdateTime` 常常是字符串，严格解码会让整份书源导入失败
+        let json = """
+        {
+          "bookSourceName": "字符串数字源",
+          "bookSourceUrl": "https://a.com",
+          "bookSourceType": "0",
+          "lastUpdateTime": "1730000000000",
+          "respondTime": "1500",
+          "weight": "7",
+          "enabled": 1,
+          "enabledExplore": "false",
+          "customOrder": true
+        }
+        """
+        let source = try JSONDecoder().decode(BookSource.self, from: Data(json.utf8))
+        XCTAssertEqual(source.bookSourceName, "字符串数字源")
+        XCTAssertEqual(source.bookSourceType, 0)
+        XCTAssertEqual(source.lastUpdateTime, 1_730_000_000_000)
+        XCTAssertEqual(source.respondTime, 1500)
+        XCTAssertEqual(source.weight, 7)
+        XCTAssertTrue(source.enabled)
+        XCTAssertFalse(source.enabledExplore)
+        XCTAssertEqual(source.customOrder, 1)
+    }
+
+    func testBookSourceDefaultWhenNumberMissing() throws {
+        let json = #"{"bookSourceName":"缺字段","bookSourceUrl":"https://b.com"}"#
+        let source = try JSONDecoder().decode(BookSource.self, from: Data(json.utf8))
+        XCTAssertEqual(source.lastUpdateTime, 0)
+        XCTAssertEqual(source.respondTime, 180000)
+        XCTAssertTrue(source.enabled)
+    }
 }

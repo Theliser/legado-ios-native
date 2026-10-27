@@ -63,6 +63,7 @@ struct BookSourceListView: View {
     @Environment(AppContainer.self) private var container
     @State private var model: SourceListViewModel?
     @State private var detail: BookSource?
+    @State private var showCheck = false
 
     var body: some View {
         NavigationStack {
@@ -76,16 +77,28 @@ struct BookSourceListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        showCheck = true
+                    } label: {
+                        Image(systemName: "stethoscope")
+                    }
+                    .accessibilityLabel("书源巡检")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         model?.send(.showImport(true))
                     } label: {
                         Image(systemName: "square.and.arrow.down")
                     }
+                    .accessibilityLabel("导入书源")
                 }
             }
             .navigationDestination(item: $detail) { source in
                 SourceDetailView(source: source) {
                     model?.send(.reload)
                 }
+            }
+            .navigationDestination(isPresented: $showCheck) {
+                SourceCheckView(sources: model?.state.sources ?? [])
             }
             .sheet(isPresented: Binding(get: { model?.state.showImport ?? false },
                                         set: { model?.send(.showImport($0)) })) {
@@ -309,303 +322,3 @@ struct SourceImportView: View {
 }
 
 // MARK: - 详情 / 调试
-
-struct SourceDebugState {
-    var section = 0
-    var keyword = "诡秘之主"
-    var bookUrl = ""
-    var chapterUrl = ""
-    var running = false
-    var output = ""
-    var books: [SearchBook] = []
-    var chapters: [BookChapter] = []
-    var content = ""
-}
-
-@MainActor
-@Observable
-final class SourceDebugViewModel {
-    private(set) var state = SourceDebugState()
-    private(set) var source: BookSource
-    private let container: AppContainer
-
-    init(source: BookSource, container: AppContainer) {
-        self.source = source
-        self.container = container
-        self.state.bookUrl = source.bookSourceUrl
-        self.state.keyword = source.getCheckKeyWord(default: "诡秘之主")
-    }
-
-    func update(_ mutate: (inout SourceDebugState) -> Void) {
-        mutate(&state)
-    }
-
-    func runSearch() {
-        guard !state.running else { return }
-        state.running = true
-        state.output = ""
-        Task {
-            do {
-                let books = try await container.webBook.searchBook(source, key: state.keyword)
-                state.books = books
-                state.output = books.isEmpty
-                    ? "搜索无结果（可能是关键字校验、需要登录或被 CF 拦截，请看日志）"
-                    : "搜索到 \(books.count) 本"
-                if let first = books.first { state.bookUrl = first.bookUrl }
-            } catch {
-                state.output = "失败：\(error.localizedDescription)"
-            }
-            state.running = false
-        }
-    }
-
-    func runInfo() {
-        guard !state.running else { return }
-        state.running = true
-        state.output = ""
-        Task {
-            do {
-                var book = Book()
-                book.bookUrl = state.bookUrl
-                book.origin = source.bookSourceUrl
-                book = try await container.webBook.getBookInfo(source, book: book)
-                state.output = """
-                书名：\(book.name)
-                作者：\(book.author)
-                分类：\(book.kind ?? "")
-                字数：\(book.wordCount ?? "")
-                最新章节：\(book.latestChapterTitle ?? "")
-                目录：\(book.tocUrl)
-                """
-                state.chapterUrl = book.bookUrl
-            } catch {
-                state.output = "失败：\(error.localizedDescription)"
-            }
-            state.running = false
-        }
-    }
-
-    func runToc() {
-        guard !state.running else { return }
-        state.running = true
-        state.output = ""
-        Task {
-            do {
-                var book = Book()
-                book.bookUrl = state.bookUrl
-                book.tocUrl = state.bookUrl
-                book.origin = source.bookSourceUrl
-                book = try await container.webBook.getBookInfo(source, book: book)
-                let chapters = try await container.webBook.getChapterList(source, book: book)
-                state.chapters = chapters
-                state.output = "目录 \(chapters.count) 章，首章：\(chapters.first?.title ?? "")"
-                if let chapter = chapters.first, state.chapterUrl.isEmpty {
-                    state.chapterUrl = chapter.url
-                }
-            } catch {
-                state.output = "失败：\(error.localizedDescription)"
-            }
-            state.running = false
-        }
-    }
-
-    func runContent() {
-        guard !state.running else { return }
-        state.running = true
-        state.output = ""
-        Task {
-            do {
-                var book = Book()
-                book.bookUrl = state.bookUrl
-                book.origin = source.bookSourceUrl
-                book.tocUrl = state.bookUrl
-                var chapter = BookChapter(bookUrl: state.bookUrl, baseUrl: state.bookUrl)
-                chapter.url = state.chapterUrl.isEmpty ? state.bookUrl : state.chapterUrl
-                chapter.title = "调试章节"
-                chapter.index = 0
-                let content = try await container.webBook.getContent(source, book: book,
-                                                                     chapter: chapter, needSave: false)
-                state.content = content
-                state.output = "正文 \(content.count) 字"
-            } catch {
-                state.output = "失败：\(error.localizedDescription)"
-            }
-            state.running = false
-        }
-    }
-
-    func updateSource(_ mutate: (inout BookSource) -> Void) {
-        mutate(&source)
-    }
-
-    func save() {
-        container.bookSourceRepository.save(source)
-    }
-}
-
-struct SourceDetailView: View {
-    let source: BookSource
-    var onChanged: () -> Void
-
-    @Environment(AppContainer.self) private var container
-    @State private var model: SourceDebugViewModel?
-    @State private var refreshTick = 0
-
-    var body: some View {
-        ZStack {
-            AppBackground()
-            if let model {
-                ScrollView {
-                    VStack(spacing: 14) {
-                        infoCard(model)
-                        debugCard(model)
-                        logCard(model)
-                    }
-                    .padding(16)
-                    .padding(.bottom, 30)
-                }
-                .scrollIndicators(.hidden)
-            }
-        }
-        .navigationTitle(source.bookSourceName)
-        .navigationBarTitleDisplayMode(.inline)
-        .task {
-            if model == nil {
-                model = SourceDebugViewModel(source: source, container: container)
-            }
-            refreshTick += 1
-        }
-    }
-
-    private func infoCard(_ model: SourceDebugViewModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(model.source.bookSourceUrl)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .textSelection(.enabled)
-            HStack(spacing: 8) {
-                badge(model.source.sourceType.label)
-                badge("CookieJar: \(model.source.enabledCookieJar == true ? "开" : "关")")
-                badge(model.source.enabled ? "已启用" : "已停用")
-            }
-            if let group = model.source.bookSourceGroup, !group.isEmpty {
-                Text("分组：\(group)").font(.caption2).foregroundStyle(.secondary)
-            }
-            if let comment = model.source.bookSourceComment, !comment.isEmpty {
-                Text(comment.prefix(200)).font(.caption2).foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .glassCard()
-    }
-
-    private func badge(_ text: String) -> some View {
-        Text(text)
-            .font(.caption2)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .glassEffect(.regular, in: .capsule)
-    }
-
-    private func debugCard(_ model: SourceDebugViewModel) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Picker("", selection: Binding(get: { model.state.section },
-                                          set: { value in model.update { s in s.section = value } })) {
-                Text("搜索").tag(0)
-                Text("详情").tag(1)
-                Text("目录").tag(2)
-                Text("正文").tag(3)
-            }
-            .pickerStyle(.segmented)
-
-            switch model.state.section {
-            case 0:
-                field("关键字", text: Binding(get: { model.state.keyword },
-                                            set: { value in model.update { s in s.keyword = value } }))
-                runButton("搜索", running: model.state.running) { model.runSearch() }
-            case 1, 2:
-                field("书籍 / 目录页地址", text: Binding(get: { model.state.bookUrl },
-                                                   set: { value in model.update { s in s.bookUrl = value } }))
-                runButton(model.state.section == 1 ? "解析详情" : "解析目录",
-                          running: model.state.running) {
-                    model.state.section == 1 ? model.runInfo() : model.runToc()
-                }
-            default:
-                field("章节地址", text: Binding(get: { model.state.chapterUrl },
-                                             set: { value in model.update { s in s.chapterUrl = value } }))
-                runButton("解析正文", running: model.state.running) { model.runContent() }
-            }
-
-            if !model.state.output.isEmpty {
-                Text(model.state.output)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            if !model.state.content.isEmpty {
-                Text(model.state.content.prefix(800))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .padding(10)
-                    .glassCard(cornerRadius: 12)
-            }
-        }
-        .padding(14)
-        .glassCard()
-    }
-
-    private func field(_ placeholder: String, text: Binding<String>) -> some View {
-        TextField(placeholder, text: text)
-            .font(.subheadline)
-            .padding(10)
-            .glassEffect(.regular, in: .rect(cornerRadius: 12))
-    }
-
-    private func runButton(_ title: String, running: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                if running { ProgressView().controlSize(.small) }
-                Text(title)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-        }
-        .buttonStyle(.glassProminent)
-        .disabled(running)
-    }
-
-    private func logCard(_ model: SourceDebugViewModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("解析日志").font(.subheadline.weight(.semibold))
-                Spacer()
-                Button("刷新") { refreshTick += 1 }.font(.caption)
-            }
-            let logs = DebugLog.shared.snapshot()
-                .filter { $0.tag == model.source.bookSourceUrl || $0.tag == model.source.bookSourceName }
-                .suffix(80)
-            if logs.isEmpty {
-                Text("暂无日志").font(.caption).foregroundStyle(.tertiary)
-            } else {
-                ForEach(Array(logs)) { entry in
-                    HStack(alignment: .top, spacing: 6) {
-                        Text(entry.timeText)
-                            .font(.system(size: 10, design: .monospaced))
-                            .foregroundStyle(.tertiary)
-                        Text(entry.message)
-                            .font(.system(size: 10, design: .monospaced))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(4)
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .glassCard()
-        .id(refreshTick)
-    }
-}
