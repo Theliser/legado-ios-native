@@ -160,7 +160,7 @@ enum BookList {
         analyzeRule.setContent(item)
 
         let name = BookFormatter.formatName(analyzeRule.getString(rule.name))
-        DebugLog.shared.log(source.bookSourceUrl, "┌获取书名\n└\(name)", log ? 0 : -1)
+        DebugLog.shared.log(source.bookSourceUrl, "┌获取书名\n└\(name)", state: log ? 0 : -1)
         guard !name.isEmpty else { return nil }
         searchBook.name = name
         searchBook.author = BookFormatter.formatAuthor(analyzeRule.getString(rule.author))
@@ -204,7 +204,7 @@ enum BookInfo {
         analyzeRule.setRedirectUrl(redirectUrl)
 
         let infoRule = source.bookInfoRule
-        if let initRule = infoRule.init, !initRule.isBlank {
+        if let initRule = infoRule.initRule, !initRule.isBlank {
             analyzeRule.setContent(analyzeRule.getElement(initRule))
         }
         let canReNameReal = canReName && !(infoRule.canReName ?? "").isBlank
@@ -388,7 +388,7 @@ enum BookChapterList {
         analyzeRule.setRedirectUrl(redirectUrl)
 
         let elements = analyzeRule.getElements(listRule)
-        DebugLog.shared.log(source.bookSourceUrl, "└列表大小:\(elements.count)", log ? 0 : -1)
+        DebugLog.shared.log(source.bookSourceUrl, "└列表大小:\(elements.count)", state: log ? 0 : -1)
 
         var nextUrls: [String] = []
         if getNextUrl, let nextRule = tocRule.nextTocUrl, !nextRule.isEmpty {
@@ -564,6 +564,7 @@ enum BookContent {
             analyzeRule.setChapter(chapter)
             analyzeRule.setContent(body)
             analyzeRule.setBaseUrl(baseUrl)
+            var chapter = chapter
             if var title = try? analyzeRule.getString(titleRule), !title.isBlank {
                 if let groups = title.firstMatchGroups("(.*)((?:data|https?):[\\s\\S]+)$"), groups.count > 2 {
                     let g1 = groups[1]

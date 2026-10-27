@@ -142,7 +142,7 @@ final class AnalyzeByJSoup {
                         current = next
                     }
                 } else {
-                    current = ElementsSingle().getElementsSingle(temp, part).array()
+                    current = ElementsSingle().getElementsSingle(temp, part)
                 }
                 lists.append(current)
                 if !current.isEmpty && analyzer.elementsType == "||" { break }
@@ -178,7 +178,7 @@ final class AnalyzeByJSoup {
             for i in 0..<last {
                 var next: [Element] = []
                 for el in elements {
-                    next.append(contentsOf: ElementsSingle().getElementsSingle(el, rules[i]).array())
+                    next.append(contentsOf: ElementsSingle().getElementsSingle(el, rules[i]))
                 }
                 elements = next
             }
@@ -500,7 +500,7 @@ extension Elements {
         var result: [Element] = []
         result.reserveCapacity(size())
         for i in 0..<size() {
-            if let element = get(i) { result.append(element) }
+            result.append(get(i))
         }
         return result
     }

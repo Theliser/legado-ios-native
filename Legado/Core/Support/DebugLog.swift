@@ -40,7 +40,8 @@ final class DebugLog: @unchecked Sendable {
     private init() {}
 
     func log(_ tag: String?, _ message: String, state: Int = 0) {
-        guard enabled else { return }
+        // state < 0 表示本次调用不需要记录（对齐上游 Debug.log 的语义）
+        guard enabled, state >= 0 else { return }
         let entry = DebugLogEntry(
             date: Date(),
             tag: tag ?? "",

@@ -72,7 +72,7 @@ final class WebBook {
         guard let value = analyzeUrl.evalJS(checkJs, result: response) else { return response }
         if let str = value as? StrResponse { return str }
         if let jsr = value as? JSResponse {
-            return StrResponse(url: jsr.url, body: jsr.responseBody)
+            return StrResponse(url: jsr.responseURL, body: jsr.responseBody)
         }
         return response
     }
@@ -148,8 +148,8 @@ final class WebBook {
 
     // MARK: - 目录
 
-    func getChapterList(_ source: BookSource, book: Book, runPreUpdateJs: Bool = false) async throws -> [BookChapter] {
-        if runPreUpdateJs {
+    func getChapterList(_ source: BookSource, book: Book, runPreUpdateJs shouldRunPreUpdateJs: Bool = false) async throws -> [BookChapter] {
+        if shouldRunPreUpdateJs {
             try await runPreUpdateJs(source: source, book: book)
         }
         if book.bookUrl == book.tocUrl, let html = book.tocHtml, !html.isEmpty {

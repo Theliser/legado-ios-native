@@ -95,7 +95,7 @@ final class CookieStore: @unchecked Sendable {
         } else {
             var map = Self.cookieToMap(old)
             for (k, v) in Self.cookieToMap(cookie) { map[k] = v }
-            setCookie(domain: domain, cookie: Self.mapToCookie(map) ?? cookie)
+            setCookie(domain: domain, Self.mapToCookie(map) ?? cookie)
         }
     }
 

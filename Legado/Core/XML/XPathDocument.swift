@@ -20,23 +20,24 @@ final class XPathDocument {
         if text.hasSuffix("</tr>") || text.hasSuffix("</tbody>") {
             text = "<table>\(text)</table>"
         }
-        self.sourceHTML = text
-        self.isXML = trimmed.lowercased().hasPrefix("<?xml")
+        // 先落成局部变量：闭包里不能读 self（此时成员尚未全部初始化）
+        let xmlInput = trimmed.lowercased().hasPrefix("<?xml")
 
         var bytes = Array(text.utf8)
         let docPtr: xmlDocPtr? = bytes.withUnsafeBufferPointer { buf -> xmlDocPtr? in
             guard let base = buf.baseAddress else { return nil }
-            let ptr = base.withMemoryRebound(to: CChar.self, capacity: buf.count) { cptr in
-                if isXML {
+            return base.withMemoryRebound(to: CChar.self, capacity: buf.count) { cptr in
+                if xmlInput {
                     return xmlReadMemory(cptr, Int32(buf.count), nil, nil,
                                          Int32(XML_PARSE_RECOVER.rawValue | XML_PARSE_NOERROR.rawValue | XML_PARSE_NOWARNING.rawValue))
                 }
                 return htmlReadMemory(cptr, Int32(buf.count), nil, nil,
                                       Int32(HTML_PARSE_RECOVER.rawValue | HTML_PARSE_NOERROR.rawValue | HTML_PARSE_NOWARNING.rawValue))
             }
-            return ptr
         }
         guard let docPtr else { return nil }
+        self.sourceHTML = text
+        self.isXML = xmlInput
         self.doc = docPtr
     }
 
@@ -50,8 +51,8 @@ final class XPathDocument {
         guard let expr = xmlXPathEvalExpression(xpath, ctx) else { return [] }
         defer { xmlXPathFreeObject(expr) }
 
-        guard let obj = expr.pointee, obj.pointee.type == XPATH_NODESET,
-              let nodeSet = obj.pointee.nodesetval else {
+        guard expr.pointee.type == XPATH_NODESET,
+              let nodeSet = expr.pointee.nodesetval else {
             return []
         }
         let count = Int(nodeSet.pointee.nodeNr)
@@ -72,8 +73,7 @@ final class XPathDocument {
         defer { xmlXPathFreeContext(ctx) }
         guard let expr = xmlXPathEvalExpression(xpath, ctx) else { return nil }
         defer { xmlXPathFreeObject(expr) }
-        guard let obj = expr.pointee else { return nil }
-        if let cstr = xmlXPathCastToString(obj) {
+        if let cstr = xmlXPathCastToString(expr) {
             let s = String(cString: cstr)
             xmlFree(cstr)
             return s
@@ -161,7 +161,8 @@ struct XPathNode: Hashable {
         var result: [String: String] = [:]
         var attrPtr = node.pointee.properties
         while let a = attrPtr {
-            if let n = a.pointee.name, let value = xmlNodeGetContent(UnsafeMutablePointer(a)) {
+            if let n = a.pointee.name,
+               let value = xmlNodeListGetString(a.pointee.doc, a.pointee.children, 1) {
                 result[String(cString: n)] = String(cString: value)
                 xmlFree(value)
             }

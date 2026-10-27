@@ -511,7 +511,7 @@ struct SourceDetailView: View {
     private func debugCard(_ model: SourceDebugViewModel) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Picker("", selection: Binding(get: { model.state.section },
-                                          set: { model.update { s in s.section = $0 } })) {
+                                          set: { value in model.update { s in s.section = value } })) {
                 Text("搜索").tag(0)
                 Text("详情").tag(1)
                 Text("目录").tag(2)
@@ -522,18 +522,18 @@ struct SourceDetailView: View {
             switch model.state.section {
             case 0:
                 field("关键字", text: Binding(get: { model.state.keyword },
-                                            set: { model.update { s in s.keyword = $0 } }))
+                                            set: { value in model.update { s in s.keyword = value } }))
                 runButton("搜索", running: model.state.running) { model.runSearch() }
             case 1, 2:
                 field("书籍 / 目录页地址", text: Binding(get: { model.state.bookUrl },
-                                                   set: { model.update { s in s.bookUrl = $0 } }))
+                                                   set: { value in model.update { s in s.bookUrl = value } }))
                 runButton(model.state.section == 1 ? "解析详情" : "解析目录",
                           running: model.state.running) {
                     model.state.section == 1 ? model.runInfo() : model.runToc()
                 }
             default:
                 field("章节地址", text: Binding(get: { model.state.chapterUrl },
-                                             set: { model.update { s in s.chapterUrl = $0 } }))
+                                             set: { value in model.update { s in s.chapterUrl = value } }))
                 runButton("解析正文", running: model.state.running) { model.runContent() }
             }
 

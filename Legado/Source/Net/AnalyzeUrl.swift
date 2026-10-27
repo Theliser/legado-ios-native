@@ -41,8 +41,8 @@ final class AnalyzeUrl {
     private var dnsIp: String?
     private var webViewDelayTime = 0
     private var baseUrl: String
-    private var enabledCookieJar: Bool
-    private var domain: String
+    private var enabledCookieJar: Bool = false
+    private var domain: String = ""
     private var readTimeout: TimeInterval = 60
 
     private static let paramPattern = "\\s*,\\s*(?=\\{)"
@@ -86,7 +86,6 @@ final class AnalyzeUrl {
         }
         initUrl()
         self.domain = NetworkUtils.getSubDomain(source?.bookSourceUrl ?? url)
-        self.baseUrl = self.baseUrl.isEmpty ? baseUrl : self.baseUrl
     }
 
     // MARK: - URL 构造
@@ -146,10 +145,10 @@ final class AnalyzeUrl {
             if !replaced.isEmpty { ruleUrl = replaced }
         }
 
-        if let page {
+        if let page, let regex = RegexCache.shared.regex(Self.pagePattern) {
             let ns = ruleUrl as NSString
-            let matches = ns.matches(pattern: Self.pagePattern)
-            for match in matches {
+            let fullRange = NSRange(location: 0, length: ns.length)
+            for match in regex.matches(in: ruleUrl, options: [], range: fullRange) {
                 let pages = ns.substring(with: match.range(at: 1)).components(separatedBy: ",")
                 let replacement: String
                 if page < pages.count {

@@ -16,14 +16,14 @@
 		32D77DF812403C1A8CD4ACDD /* JSONTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0069DB6F5112322FFF8F0E3 /* JSONTool.swift */; };
 		32E34EE28CBFA29F4261E4DE /* CryptoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A309D6A81D8440A0EA82C01 /* CryptoUtils.swift */; };
 		34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */; };
-		4842CACE34A69C810C820C33 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */; };
+		3CC4050B4253721686EFC637 /* SwiftSoup.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */; };
+		5097275888E7E8BFCEBF51F8 /* GRDB.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */; };
 		510C9629024963C4FD3FA75A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A92FCFE1463042905E6A2C /* Book.swift */; };
 		54D1F44CF7D9380CFE840A70 /* CookieStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9692FAAF766128DEB5FD79 /* CookieStore.swift */; };
 		5614687A60994CD0F90553FA /* WebBookParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03EE496E20D6C0DE7751926 /* WebBookParse.swift */; };
 		58CE4D414DFDCCD914161656 /* Daos.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD9587871054AA8637E1CE6 /* Daos.swift */; };
 		603C47C534204E9A4CCB97C0 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60BF4235C279E2F75471461 /* ReaderView.swift */; };
 		711220D588F8B25F9FE86B39 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2281C785EBAEDB5D8928A /* DebugLog.swift */; };
-		712B3AE4134A4EB1A7476526 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 1A057E76B5AEF421EC25EAF6 /* GRDB */; };
 		71630290EFC2BA8EB517240A /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019A372A432DC5E8F645879C /* HTTPClient.swift */; };
 		81B384DC809D5D225D7A63CC /* BookDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F2F10E36ADBB000CEA156E /* BookDetailView.swift */; };
 		851E9741CB10A7D3A85BA0D4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B721D7926B9C2FF13457BB81 /* RootView.swift */; };
@@ -73,6 +73,7 @@
 		0A309D6A81D8440A0EA82C01 /* CryptoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtils.swift; sourceTree = "<group>"; };
 		10B53A9B960544E1D19D0C7E /* AnalyzeByXPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByXPath.swift; sourceTree = "<group>"; };
 		18750F83E8B8039D446FB7F8 /* XPathDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPathDocument.swift; sourceTree = "<group>"; };
+		1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GRDB.xcframework; path = Vendor/Frameworks/GRDB.xcframework; sourceTree = "<group>"; };
 		202BC435B7BE476D41DEA0D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		299BA44DD84CD1E55D075573 /* AnalyzeUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeUrl.swift; sourceTree = "<group>"; };
 		2E7B9016A52F6641883FDFA0 /* WebViewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewFetcher.swift; sourceTree = "<group>"; };
@@ -109,6 +110,7 @@
 		D853779E6E24A9371E19C507 /* AnalyzeByJSONPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByJSONPath.swift; sourceTree = "<group>"; };
 		DB4549E165410304FE0F3A3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC052062F1108B6339F70946 /* Legado-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Legado-Bridging-Header.h"; sourceTree = "<group>"; };
+		E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSoup.xcframework; path = Vendor/Frameworks/SwiftSoup.xcframework; sourceTree = "<group>"; };
 		E91BA30F04715149DE6EAD9C /* BookSourceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSourceListView.swift; sourceTree = "<group>"; };
 		ECD9587871054AA8637E1CE6 /* Daos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Daos.swift; sourceTree = "<group>"; };
 		FE0C1C8D2F318FBFA601C6B7 /* LegadoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LegadoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,8 +121,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4842CACE34A69C810C820C33 /* SwiftSoup in Frameworks */,
-				712B3AE4134A4EB1A7476526 /* GRDB in Frameworks */,
+				3CC4050B4253721686EFC637 /* SwiftSoup.xcframework in Frameworks */,
+				5097275888E7E8BFCEBF51F8 /* GRDB.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +193,7 @@
 			children = (
 				5D63B928D47EE3FF922ED119 /* Legado */,
 				8A026352A08576F4BA363FAC /* LegadoTests */,
+				FF8B27087988C439259A3538 /* Frameworks */,
 				7A9998A08F31415169D8903D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -388,6 +391,15 @@
 			path = Bookshelf;
 			sourceTree = "<group>";
 		};
+		FF8B27087988C439259A3538 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */,
+				E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -405,8 +417,6 @@
 			);
 			name = Legado;
 			packageProductDependencies = (
-				F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */,
-				1A057E76B5AEF421EC25EAF6 /* GRDB */,
 			);
 			productName = Legado;
 			productReference = 5E494EB6E5276C0FA16C637F /* Legado.app */;
@@ -450,10 +460,6 @@
 			);
 			mainGroup = 2EFA8535A04955DF845418B2;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				E5B8CC1A62B30B8B84436C8A /* XCRemoteSwiftPackageReference "GRDB.swift" */,
-				049BDD160DE370781DE7C2B6 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7A9998A08F31415169D8903D /* Products */;
 			projectDirPath = "";
@@ -596,6 +602,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -698,6 +705,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -714,6 +722,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/Frameworks\"",
+				);
 				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = Legado/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -721,6 +733,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-lxml2";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite";
 				PRODUCT_BUNDLE_IDENTIFIER = io.legado.ios;
 				PRODUCT_NAME = Legado;
 				SDKROOT = iphoneos;
@@ -736,6 +749,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"Vendor/Frameworks\"",
+				);
 				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = Legado/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -743,6 +760,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-lxml2";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite";
 				PRODUCT_BUNDLE_IDENTIFIER = io.legado.ios;
 				PRODUCT_NAME = Legado;
 				SDKROOT = iphoneos;
@@ -782,38 +800,6 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		049BDD160DE370781DE7C2B6 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/scinfu/SwiftSoup";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.7.0;
-			};
-		};
-		E5B8CC1A62B30B8B84436C8A /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1A057E76B5AEF421EC25EAF6 /* GRDB */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E5B8CC1A62B30B8B84436C8A /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = GRDB;
-		};
-		F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 049BDD160DE370781DE7C2B6 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
-			productName = SwiftSoup;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C88D041936DFBF20C4AA23 /* Project object */;
 }

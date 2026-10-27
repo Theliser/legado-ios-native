@@ -182,6 +182,10 @@ struct SearchBook: Codable, Identifiable, Hashable {
     var chapterWordCount: Int = -1
     var respondTime: Int = -1
 
+    // 运行期字段（不入库，对齐上游 @Ignore）
+    var infoHtml: String?
+    var tocHtml: String?
+
     var id: String { bookUrl }
     static let databaseTableName = "searchBooks"
 
@@ -209,6 +213,8 @@ struct SearchBook: Codable, Identifiable, Hashable {
         book.originOrder = originOrder
         book.type = type
         book.listIntro = intro
+        book.infoHtml = infoHtml
+        book.tocHtml = tocHtml
         return book
     }
 

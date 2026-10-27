@@ -419,7 +419,7 @@ final class AnalyzeRule {
 
     @discardableResult
     func put(_ key: String, _ value: String) -> String {
-        if let chapter {
+        if var chapter {
             var map = chapter.variableMap
             map[key] = value
             chapter.variableMap = map

@@ -11,6 +11,9 @@ Package.resolved
 # 上游只作对照参考，不纳入版本库
 upstream/
 
+# 第三方依赖源码，用 scripts/fetch-vendor.sh 拉取
+Vendor/
+
 # macOS
 .DS_Store
 

@@ -5,7 +5,7 @@ import Foundation
 /// 并集 `[0,2]` / `['a','b']`、过滤 `[?(@.x == 'y' && @.n > 3)]`、`length()` 等函数。
 enum JSONPath {
 
-    enum Step {
+    indirect enum Step {
         case child(String)
         case recursiveChild(String)
         case wildcard
@@ -19,7 +19,7 @@ enum JSONPath {
         case recursiveFilter(Filter)
     }
 
-    enum Filter {
+    indirect enum Filter {
         case exists(String)
         case notExists(String)
         case comparison(String, String, Literal)

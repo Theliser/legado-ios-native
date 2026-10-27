@@ -26,14 +26,18 @@ enum BookSourceType: Int, Codable, CaseIterable, Sendable {
 /// 规则在数据库里以 JSON 字符串存储（对齐 Room 的 TypeConverter）
 protocol RuleJSONColumn: Codable {}
 
-extension RuleJSONColumn {
-    var databaseValue: DatabaseValue {
-        DatabaseValue(value: JSONTool.stringify(self) ?? "null")
+/// 规则结构体与数据库 JSON 文本之间的编解码。
+/// 注意：不能放在 `RuleJSONColumn` 的协议扩展里当作 `DatabaseValueConvertible`
+/// 的实现——协议扩展的成员不能作为另一个协议的 witness，编译器会报
+/// "multiple matching properties"。所以每个类型都在下方单独写扩展。
+enum RuleJSONCoding {
+    static func encode<T: Encodable>(_ value: T) -> DatabaseValue {
+        (JSONTool.stringify(value) ?? "null").databaseValue
     }
 
-    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Self? {
+    static func decode<T: Decodable>(_ dbValue: DatabaseValue, as type: T.Type) -> T? {
         guard let text = String.fromDatabaseValue(dbValue), text != "null" else { return nil }
-        return try? JSONDecoder().decode(Self.self, from: Data(text.utf8))
+        return try? JSONDecoder().decode(T.self, from: Data(text.utf8))
     }
 }
 
@@ -51,7 +55,7 @@ private func decodeRuleObject<T: Decodable>(_ type: T.Type, from decoder: Decode
 
 // MARK: - 搜索规则
 
-struct SearchRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
+struct SearchRule: Codable, Equatable, RuleJSONColumn {
     var checkKeyWord: String?
     var bookList: String?
     var name: String?
@@ -103,7 +107,7 @@ struct SearchRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible 
 
 // MARK: - 发现规则
 
-struct ExploreRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
+struct ExploreRule: Codable, Equatable, RuleJSONColumn {
     var bookList: String?
     var name: String?
     var author: String?
@@ -134,8 +138,9 @@ struct ExploreRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible
 
 // MARK: - 详情规则
 
-struct BookInfoRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
-    var `init`: String?
+struct BookInfoRule: Codable, Equatable, RuleJSONColumn {
+    /// 上游字段名为 init，Swift 里改用 initRule 避免关键字冲突
+    var initRule: String?
     var name: String?
     var author: String?
     var intro: String?
@@ -153,7 +158,7 @@ struct BookInfoRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertibl
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        `init` = try c.decodeIfPresent(String.self, forKey: .init)
+        initRule = try c.decodeIfPresent(String.self, forKey: .initRule)
         name = try c.decodeIfPresent(String.self, forKey: .name)
         author = try c.decodeIfPresent(String.self, forKey: .author)
         intro = try c.decodeIfPresent(String.self, forKey: .intro)
@@ -169,7 +174,7 @@ struct BookInfoRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertibl
     }
 
     enum CodingKeys: String, CodingKey {
-        case `init` = "init"
+        case initRule = "init"
         case name, author, intro, kind, lastChapter, updateTime, coverUrl, tocUrl
         case wordCount, canReName, downloadUrls, relatedBooks
     }
@@ -177,7 +182,7 @@ struct BookInfoRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertibl
 
 // MARK: - 目录规则
 
-struct TocRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
+struct TocRule: Codable, Equatable, RuleJSONColumn {
     var preUpdateJs: String?
     var chapterList: String?
     var chapterName: String?
@@ -208,7 +213,7 @@ struct TocRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
 
 // MARK: - 正文规则
 
-struct ContentRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
+struct ContentRule: Codable, Equatable, RuleJSONColumn {
     var content: String?
     var subContent: String?
     var title: String?
@@ -241,7 +246,7 @@ struct ContentRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible
 
 // MARK: - 段评规则（当前仅透传）
 
-struct ReviewRule: Codable, Equatable, RuleJSONColumn, DatabaseValueConvertible {
+struct ReviewRule: Codable, Equatable, RuleJSONColumn {
     var reviewUrl: String?
     var reviewList: String?
     var reviewName: String?
@@ -466,5 +471,56 @@ private struct SingleRuleBox<T: Decodable>: Decodable {
             return
         }
         value = try T(from: decoder)
+    }
+}
+
+// MARK: - DatabaseValueConvertible
+
+
+extension SearchRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> SearchRule? {
+        RuleJSONCoding.decode(dbValue, as: SearchRule.self)
+    }
+}
+
+extension ExploreRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> ExploreRule? {
+        RuleJSONCoding.decode(dbValue, as: ExploreRule.self)
+    }
+}
+
+extension BookInfoRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> BookInfoRule? {
+        RuleJSONCoding.decode(dbValue, as: BookInfoRule.self)
+    }
+}
+
+extension TocRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> TocRule? {
+        RuleJSONCoding.decode(dbValue, as: TocRule.self)
+    }
+}
+
+extension ContentRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> ContentRule? {
+        RuleJSONCoding.decode(dbValue, as: ContentRule.self)
+    }
+}
+
+extension ReviewRule: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue { RuleJSONCoding.encode(self) }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> ReviewRule? {
+        RuleJSONCoding.decode(dbValue, as: ReviewRule.self)
     }
 }
