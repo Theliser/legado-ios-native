@@ -73,6 +73,27 @@ MIRRORS=(
 
 换到没有该限制的机器上，这一行可以去掉。
 
+## 真实书源验证
+
+单测全部用固定 HTML 跑，不依赖网络。另外有一组**联网**用例用来验证引擎在真实站点上的表现：
+
+```bash
+TEST_RUNNER_RUN_LIVE_TESTS=1 xcodebuild test -project Legado.xcodeproj -scheme Legado \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -only-testing:LegadoTests/LiveSourceTests
+```
+
+默认跳过（不设 `RUN_LIVE_TESTS=1` 就是 skip），避免日常跑测试被网络拖慢。
+
+夹具在 `LegadoTests/LiveSourceFixtures.swift`，来自公开合集 `aoaostar/legado`，
+外加一条**按站点当前结构手工校准**的规则。硬断言只压在校准过的那条上——
+公开书源会随站点改版失效，不能拿它当引擎正确性的判据。
+
+> 实测记录（2026-10）：合集里 22 个书源有 6 个站点可直连（其余 403/超时），
+> 而这 3 个可直连的书源规则**全部已过期**（例如速读谷把列表从 `class.bookbox`
+> 改成了 `div.item.clear`）。按新结构重写规则后，搜索→详情→目录（263 章）→正文
+> （含分页）全链路跑通。结论：引擎没问题，公开源需要定期维护。
+
 ## 目录
 
 ```
