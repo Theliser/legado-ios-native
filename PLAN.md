@@ -96,17 +96,22 @@ legado/
 - 依赖改为「镜像下源码 → 本地编译 → XCFramework → 主工程静态链接」，构建不再依赖网络，也不走 SPM 依赖解析。细节见 README。
 - 验收：`xcodebuild ... -sdk iphonesimulator build` 通过，模拟器可启动并渲染书架页。
 
-### P1 数据层
-- 实体：`BookSource` + `SearchRule/ExploreRule/BookInfoRule/TocRule/ContentRule`，字段与 JSON key 全量对齐（含 `enabledCookieJar`、`homepageModules`、`ruleReview` 占位）。
-- `Book`、`BookChapter`、`SearchBook`、`Cookie`、`BookGroup`、`ReadRecord`。
-- SQLite 表 + 迁移 + DAO；书源 JSON 导入（单条/数组/`bookSourceUrl` 冲突覆盖）、分组维护。
-- 验收：导入官方书源 JSON → 落库 → 读回字段逐项相等。
+### P1 数据层 ✅（字段级已对齐，导入链路待做）
+- 实体：`BookSource` + 六个规则结构体，与上游 Kotlin `data class` **逐字段**比对通过（脚本化 diff，含顺序）。
+  `Book`/`BookChapter`/`SearchBook` 的 35/18/18 列与上游 Room 实体全等。
+- 修正过的偏差：`ReviewRule` 曾整组字段名自造；`BookGroup` 缺 `cover/bookSort/isPrivate`；
+  `ReadRecord` 表名与主键错误（`readRecords` → `readRecord`，主键改 `(deviceId, bookName, bookAuthor)`）。
+- 仍待做：书源 JSON 导入（单条/数组/冲突覆盖）、分组维护的 UI 链路。
+- 验收状态：`book_sources` 等 8 张表在模拟器上建表成功，`.schema` 与 DDL 一致。
 
-### P2 规则引擎（核心）
-- `RuleAnalyzer`（含 `splitRule` 平衡组、`innerRule`）。
-- `AnalyzeRule` + `SourceRule`（模式分发、`@put/@get/{{}}/##`、变量表 `put/get`）。
-- `AnalyzeByJSoup`（SwiftSoup + 索引语法）、`AnalyzeByXPath`（libxml2）、`AnalyzeByJSONPath`、`AnalyzeByRegex`。
-- 验收：单测覆盖规则切分、CSS 索引、XPath、JSONPath、替换与模板回填。
+### P2 规则引擎（核心）🚧 主链路通，边界待补
+- 已实现：`RuleAnalyzer`（平衡组 `splitRule` / `innerRule`）、`AnalyzeRule` + `SourceRule`
+  （模式分发、`@put/@get/{{}}/##`、变量表）、`AnalyzeByJSoup`（含索引语法）、`AnalyzeByXPath`
+  （libxml2）、`AnalyzeByJSONPath`、`AnalyzeByRegex`。
+- 单测 18 个全绿，覆盖：模式前缀识别、`<js>` 块、CSS 索引 `[1:2]/.-1/!0`、`&&`/`||`、
+  JSONPath 通配与过滤、XPath、`##` 替换、`@put/@get`、URL 分页与 `url,{json}` 选项。
+- 已修缺陷：`##` 替换被截断、`<js>` 捕获组越界崩溃、括号索引错位、JSONPath 多结果未合并。
+- 待补：`%%` 交叉合并的用例、`@webjs`、`$1..$99` 回填、`@put` 非规范 JSON 兜底。
 
 ### P3 网络与 Cookie
 - `AnalyzeUrl` 全量（编码、分页、option、`bodyJs`、重试）。
