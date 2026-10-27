@@ -23,8 +23,10 @@
 		5614687A60994CD0F90553FA /* WebBookParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03EE496E20D6C0DE7751926 /* WebBookParse.swift */; };
 		58CE4D414DFDCCD914161656 /* Daos.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD9587871054AA8637E1CE6 /* Daos.swift */; };
 		603C47C534204E9A4CCB97C0 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60BF4235C279E2F75471461 /* ReaderView.swift */; };
+		6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */; };
 		711220D588F8B25F9FE86B39 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2281C785EBAEDB5D8928A /* DebugLog.swift */; };
 		71630290EFC2BA8EB517240A /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019A372A432DC5E8F645879C /* HTTPClient.swift */; };
+		723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */; };
 		81B384DC809D5D225D7A63CC /* BookDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F2F10E36ADBB000CEA156E /* BookDetailView.swift */; };
 		851E9741CB10A7D3A85BA0D4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B721D7926B9C2FF13457BB81 /* RootView.swift */; };
 		90DA9985EE3F61CD58AF5191 /* LegadoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BFD519B81F69EFDEBAF611 /* LegadoApp.swift */; };
@@ -85,11 +87,13 @@
 		58BE416059AB0BE90AE7DF05 /* NetworkUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkUtils.swift; sourceTree = "<group>"; };
 		5E494EB6E5276C0FA16C637F /* Legado.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Legado.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED9E9179867A8378C873444 /* StrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrResponse.swift; sourceTree = "<group>"; };
+		639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLayerTests.swift; sourceTree = "<group>"; };
 		6AE7CC3E495059A50C9B6469 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		6F075D914441D43E0F909055 /* BookshelfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookshelfView.swift; sourceTree = "<group>"; };
 		73F2F10E36ADBB000CEA156E /* BookDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailView.swift; sourceTree = "<group>"; };
 		75A92FCFE1463042905E6A2C /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		85725D0A885BA4EB0DD503D5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParseTests.swift; sourceTree = "<group>"; };
 		8ACE577BA921EFB8284CD719 /* BookSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSource.swift; sourceTree = "<group>"; };
 		8EB1FDA3FF21C703AD1738B9 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		A0069DB6F5112322FFF8F0E3 /* JSONTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTool.swift; sourceTree = "<group>"; };
@@ -286,7 +290,9 @@
 		8A026352A08576F4BA363FAC /* LegadoTests */ = {
 			isa = PBXGroup;
 			children = (
+				639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */,
 				A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */,
+				88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */,
 			);
 			path = LegadoTests;
 			sourceTree = "<group>";
@@ -487,7 +493,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */,
 				34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */,
+				723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

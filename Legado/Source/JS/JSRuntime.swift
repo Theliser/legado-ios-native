@@ -102,6 +102,7 @@ final class JSRuntime: @unchecked Sendable {
         global.setObject(env.title as Any?, forKeyedSubscript: "title" as NSString)
         global.setObject(env.nextChapterUrl as Any?, forKeyedSubscript: "nextChapterUrl" as NSString)
         global.setObject(env.page as Any?, forKeyedSubscript: "page" as NSString)
+        global.setObject(env.index as Any?, forKeyedSubscript: "index" as NSString)
         global.setObject(env.key as Any?, forKeyedSubscript: "key" as NSString)
         global.setObject(env.infoMap as Any?, forKeyedSubscript: "infoMap" as NSString)
         global.setObject(env.fromBookInfo, forKeyedSubscript: "fromBookInfo" as NSString)

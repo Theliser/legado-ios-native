@@ -47,6 +47,10 @@ final class AppSettings {
         didSet { defaults.set(allowInsecureTLS, forKey: Keys.insecureTLS) }
     }
 
+    /// 设备标识。对齐上游 `AppConst.androidId`：阅读记录按设备隔离，
+    /// 备份恢复到新设备时会保留原 deviceId 以便区分来源。
+    private(set) var deviceId: String
+
     private let defaults: UserDefaults
 
     private enum Keys {
@@ -58,6 +62,7 @@ final class AppSettings {
         static let debugLog = "settings.debugLog"
         static let autoIndent = "settings.autoIndent"
         static let insecureTLS = "settings.insecureTLS"
+        static let deviceId = "settings.deviceId"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -74,6 +79,13 @@ final class AppSettings {
         self.enableDebugLog = defaults.object(forKey: Keys.debugLog) as? Bool ?? true
         self.autoIndent = defaults.object(forKey: Keys.autoIndent) as? Bool ?? true
         self.allowInsecureTLS = defaults.object(forKey: Keys.insecureTLS) as? Bool ?? true
+        if let stored = defaults.string(forKey: Keys.deviceId), !stored.isEmpty {
+            self.deviceId = stored
+        } else {
+            let generated = UUID().uuidString
+            defaults.set(generated, forKey: Keys.deviceId)
+            self.deviceId = generated
+        }
         DebugLog.shared.enabled = self.enableDebugLog
     }
 }

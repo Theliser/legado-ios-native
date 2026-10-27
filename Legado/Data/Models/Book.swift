@@ -89,6 +89,21 @@ struct Book: Codable, Identifiable, Hashable {
     var displayIntro: String? { (customIntro?.isEmpty == false) ? customIntro : intro }
     var displayName: String { name.isEmpty ? bookUrl : name }
 
+    // MARK: 类型判断（对齐上游 Book 的 isXxx 扩展，全部走位掩码）
+
+    var isLocal: Bool { BookType.isLocal(type) }
+    var isAudio: Bool { BookType.isAudio(type) }
+    var isVideo: Bool { BookType.isVideo(type) }
+    var isImage: Bool { BookType.isImage(type) }
+    var isText: Bool { BookType.isText(type) }
+    var isNotShelf: Bool { BookType.isNotShelf(type) }
+    var isUpdateError: Bool { BookType.isUpdateError(type) }
+    /// 在线文本：是文本且不是本地文件。上游 `isOnLineTxt`
+    var isOnLineTxt: Bool { isText && !isLocal }
+
+    mutating func addType(_ flag: Int) { type |= flag }
+    mutating func removeType(_ flag: Int) { type &= ~flag }
+
     func getRealAuthor() -> String {
         author.replacingRegex("^\\s*作\\s*者[:：\\s]+|\\s+著", with: "")
     }
@@ -191,6 +206,14 @@ struct SearchBook: Codable, Identifiable, Hashable {
 
     init() {}
 
+    /// 数据库列的键。`infoHtml` / `tocHtml` 是运行期字段（对齐上游 @Ignore），
+    /// 不写进去，否则 insert 会因为「没有该列」整条失败。
+    enum CodingKeys: String, CodingKey {
+        case bookUrl, origin, originName, type, name, author, kind, coverUrl, intro
+        case wordCount, latestChapterTitle, tocUrl, time, variable, originOrder
+        case chapterWordCountText, chapterWordCount, respondTime
+    }
+
     var variableMap: [String: String] {
         get { JSONTool.parseObject(variable)?.compactMapValues { JSONTool.stringify($0) } ?? [:] }
         set { variable = JSONTool.stringify(newValue) }
@@ -290,11 +313,37 @@ struct ReadRecord: Codable, Hashable {
 
 // MARK: - 书籍类型
 
+/// 书籍类型。对齐上游 `BookType`：**位掩码**，一本书可以同时属于多个类型。
+/// 注意和 `BookSourceType`（0~4 的枚举，描述书源类型）区分开。
 enum BookType {
+    static let video = 1 << 2          // 4
+    static let text = 1 << 3           // 8
+    static let updateError = 1 << 4    // 16
+    static let audio = 1 << 5          // 32
+    static let image = 1 << 6          // 64
+    /// 只提供下载服务的网站
+    static let webFile = 1 << 7        // 128
+    static let local = 1 << 8          // 256
+    /// 从压缩包解压来的书籍
+    static let archive = 1 << 9        // 512
+    /// 未正式加入书架的临时阅读书籍
+    static let notShelf = 1 << 10      // 1024
+
+    /// 所有可以从书源转换的书籍类型
+    static let allBookType = text | image | audio | webFile
+    /// 含本地的全部类型
+    static let allBookTypeLocal = allBookType | local
+
     static let localTag = "loc_book"
-    static let text = 0
-    static let audio = 1
-    static let image = 2
-    static let file = 3
-    static let video = 4
+    static let webDavTag = "webDav::"
+
+    static func has(_ type: Int, _ flag: Int) -> Bool { type & flag > 0 }
+
+    static func isLocal(_ type: Int) -> Bool { has(type, local) }
+    static func isText(_ type: Int) -> Bool { has(type, text) }
+    static func isAudio(_ type: Int) -> Bool { has(type, audio) }
+    static func isImage(_ type: Int) -> Bool { has(type, image) }
+    static func isVideo(_ type: Int) -> Bool { has(type, video) }
+    static func isNotShelf(_ type: Int) -> Bool { has(type, notShelf) }
+    static func isUpdateError(_ type: Int) -> Bool { has(type, updateError) }
 }

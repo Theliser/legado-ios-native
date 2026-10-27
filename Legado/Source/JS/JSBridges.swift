@@ -21,6 +21,8 @@ struct JSEnvironment {
     var key: String?
     var nextChapterUrl: String?
     var title: String?
+    /// formatJs 里可用的 1 基章节序号
+    var index: Int?
     var infoMap: [String: String]?
     var fromBookInfo: Bool = false
     var ajax: ((String, Double?) -> String)?

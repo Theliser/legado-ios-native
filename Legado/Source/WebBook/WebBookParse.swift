@@ -239,7 +239,7 @@ enum BookInfo {
             book.coverUrl = NetworkUtils.getAbsoluteURL(redirectUrl, cover)
         }
 
-        if book.type != BookType.file {
+        if !BookType.has(book.type, BookType.webFile) {
             book.tocUrl = analyzeRule.getString(infoRule.tocUrl, isUrl: true)
             if book.tocUrl.isEmpty { book.tocUrl = baseUrl }
             if book.tocUrl == baseUrl { book.tocHtml = body }
@@ -350,21 +350,18 @@ enum BookChapterList {
 
         // formatJs：逐章重命名
         if let formatJs = tocRule.formatJs, !formatJs.isBlank {
-            for (index, chapter) in chapters.enumerated() {
+            // 上游绑定的是 index(1 基) / chapter / title，返回值直接覆盖标题
+            for index in chapters.indices {
                 var env = JSEnvironment()
                 env.source = source
                 env.book = book
                 env.chapter = chapters[index]
-                env.title = chapter.title
-                env.result = Double(index + 1)
-                var dict: [String: Any] = [:]
-                dict["index"] = index + 1
-                let context = JSRuntime.shared
-                let value = context.evaluate(formatJs, key: source.bookSourceUrl, env: env)
-                if let text = value as? String, !text.isEmpty {
+                env.title = chapters[index].title
+                env.index = index + 1
+                let value = JSRuntime.shared.evaluate(formatJs, key: source.bookSourceUrl, env: env)
+                if let text = value as? String {
                     chapters[index].title = text
                 }
-                _ = dict
             }
         }
 
@@ -551,8 +548,17 @@ enum BookContent {
                                             settings: webBook.settings)
                 sub = (try? await analyzeUrl.strResponse().body) ?? ""
             }
-            if !sub.isBlank, book.type == BookType.text {
-                append(sub)
+            if !sub.isBlank {
+                if book.isOnLineTxt {
+                    append(sub)
+                } else if book.isAudio {
+                    // 音频书的 subContent 是歌词
+                    var updated = chapter
+                    var map = updated.variableMap
+                    map["lyric"] = sub
+                    updated.variableMap = map
+                    webBook.bookRepository?.save(chapter: updated)
+                }
             }
         }
 
@@ -622,7 +628,7 @@ enum BookContent {
         analyzeRule.setChapter(chapter)
 
         var content = analyzeRule.getString(contentRule.content, unescape: false)
-        if book.type != BookType.audio && book.type != BookType.video {
+        if !book.isAudio && !book.isVideo {
             content = HtmlFormatter.formatKeepImg(content, redirectUrl: URL(string: redirectUrl))
             if content.contains("&") {
                 content = content.unescapeHTML

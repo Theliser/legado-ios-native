@@ -32,7 +32,13 @@ protocol RuleJSONColumn: Codable {}
 /// "multiple matching properties"。所以每个类型都在下方单独写扩展。
 enum RuleJSONCoding {
     static func encode<T: Encodable>(_ value: T) -> DatabaseValue {
-        (JSONTool.stringify(value) ?? "null").databaseValue
+        // 必须用 JSONEncoder：JSONTool.stringify 走的是 JSONSerialization，
+        // 对自定义 struct 会退化成 Swift 的调试字符串，读回来必然解不出来。
+        guard let data = try? JSONEncoder().encode(value),
+              let text = String(data: data, encoding: .utf8) else {
+            return "null".databaseValue
+        }
+        return text.databaseValue
     }
 
     static func decode<T: Decodable>(_ dbValue: DatabaseValue, as type: T.Type) -> T? {
@@ -377,6 +383,18 @@ struct BookSource: Codable, Identifiable, Hashable {
     var sourceType: BookSourceType { BookSourceType(rawValue: bookSourceType) ?? .text }
     var key: String { bookSourceUrl }
     var tag: String { bookSourceName }
+
+    /// 书源类型 → 书籍类型位掩码。对齐上游 `BookSource.getBookType()`：
+    /// 文件型书源同时带 text 与 webFile 位，这样它既能进文本书架也能走下载流程。
+    var bookType: Int {
+        switch sourceType {
+        case .file: return BookType.text | BookType.webFile
+        case .image: return BookType.image
+        case .audio: return BookType.audio
+        case .video: return BookType.video
+        case .text: return BookType.text
+        }
+    }
 
     var searchRule: SearchRule {
         get { ruleSearch ?? SearchRule() }
