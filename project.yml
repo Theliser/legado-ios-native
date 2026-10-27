@@ -16,7 +16,14 @@ settings:
     # 本机环境禁止嵌套 sandbox-exec，导致宏插件（@Observable / @State 等）
     # 启动 swift-plugin-server 时报 "sandbox_apply: Operation not permitted"。
     # 关掉编译器子进程沙箱即可，对产物无影响。
-    OTHER_SWIFT_FLAGS: $(inherited) -Xfrontend -disable-sandbox
+    #
+    # 另外 GRDB 的 .swiftmodule 依赖 GRDBSQLite 这个 system library 模块，
+    # 预编译成二进制后需要把它的 modulemap 显式暴露给每个 target。
+    OTHER_SWIFT_FLAGS: >-
+      $(inherited)
+      -Xfrontend -disable-sandbox
+      -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap
+      -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite
     ENABLE_USER_SCRIPT_SANDBOXING: false
     SWIFT_STRICT_CONCURRENCY: minimal
     CODE_SIGN_IDENTITY: ""
@@ -38,12 +45,6 @@ targets:
         SWIFT_OBJC_BRIDGING_HEADER: Legado/Core/XML/Legado-Bridging-Header.h
         HEADER_SEARCH_PATHS: $(SDKROOT)/usr/include/libxml2
         OTHER_LDFLAGS: -lxml2
-        # GRDB 的 .swiftmodule 依赖 GRDBSQLite 这个 system library 模块，
-        # 预编译成二进制后需要把它的 modulemap 显式暴露给主工程。
-        OTHER_SWIFT_FLAGS: >-
-          $(inherited)
-          -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap
-          -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite
         DEVELOPMENT_ASSET_PATHS: ""
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor

@@ -444,8 +444,10 @@ final class AnalyzeByJSoup {
                         repeat { i -= 1 } while i > 0 && charAt(i) == 0x20
                     }
 
-                    if charAt(i) == 0x5B { // '['
-                        beforeRule = str(0, i)
+                    // rl 才是当前字符（i 在循环开头已自减），这里必须用 rl 判断，
+                    // 且 beforeRule 取到 rl 之前。写成 charAt(i) 会错位一位。
+                    if rl == 0x5B { // '['
+                        beforeRule = str(0, i + 1)
                         return
                     }
 

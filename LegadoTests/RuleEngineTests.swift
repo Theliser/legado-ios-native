@@ -19,12 +19,11 @@ final class RuleEngineTests: XCTestCase {
         XCTAssertEqual(value, "剑来")
     }
 
-    func testDollarIndexReplacement() {
+    func testReplaceRegexRule() {
+        // ##正则##替换：上游 replaceRegex 的常用形态
         let rule = AnalyzeRule(source: nil)
-        rule.setContent("<div><a>第一章</a></div>")
-        // 先用选择器拿到元素，再用 ## 替换
-        let value = rule.getString(".name@text##a|b")
-        XCTAssertEqual(value, "第一章")
+        rule.setContent("<div class=\"title\">第一章 剑来</div>")
+        XCTAssertEqual(rule.getString(".title@text##第.章##"), " 剑来")
     }
 
     // MARK: - CSS
@@ -49,12 +48,27 @@ final class RuleEngineTests: XCTestCase {
     }
 
     func testCssIndexSyntax() {
-        let html = "<div><span>0</span><span>1</span><span>2</span><span>3</span></div>"
+        let html = """
+        <div class="list"><span>0</span><span>1</span><span>2</span><span>3</span></div>
+        """
         let rule = AnalyzeRule(source: nil)
         rule.setContent(html)
-        XCTAssertEqual(rule.getStringList("div.span[1:2]@text"), ["1", "2"])
-        XCTAssertEqual(rule.getStringList("div.span.-1@text"), ["3"])
-        XCTAssertEqual(rule.getStringList("div.span!0@text"), ["1", "2", "3"])
+        // 层级用 @ 串联；`.` 只用于 tag./class./id./text. 前缀和旧式索引
+        XCTAssertEqual(rule.getStringList("class.list@tag.span@text"), ["0", "1", "2", "3"])
+        XCTAssertEqual(rule.getStringList("class.list@tag.span[1:2]@text"), ["1", "2"])
+        XCTAssertEqual(rule.getStringList("class.list@tag.span.-1@text"), ["3"])
+        XCTAssertEqual(rule.getStringList("class.list@tag.span!0@text"), ["1", "2", "3"])
+    }
+
+    func testCssSelectorPassThrough() {
+        // 没有 tag./class. 前缀时整段交给 SwiftSoup：`div.span` 是「class 为 span 的 div」
+        let html = """
+        <div class="span">甲</div><div>乙</div><div><span>丙</span></div>
+        """
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent(html)
+        XCTAssertEqual(rule.getStringList("div.span@text"), ["甲"])
+        XCTAssertEqual(rule.getStringList("div span@text"), ["丙"])
     }
 
     // MARK: - JSONPath
@@ -79,12 +93,85 @@ final class RuleEngineTests: XCTestCase {
         XCTAssertEqual(rule.getStringList("//div[@class='c']/p/text()"), ["一", "二"])
     }
 
+    // MARK: - 模式识别
+
+    func testModePrefixes() {
+        let rule = AnalyzeRule(source: nil)
+
+        let css = rule.splitSourceRule("@CSS:div span")
+        XCTAssertEqual(css.count, 1)
+        XCTAssertEqual(css[0].mode, .default)
+        XCTAssertEqual(css[0].rule, "@CSS:div span", "前缀由 AnalyzeByJSoup 再剥离")
+
+        let plain = rule.splitSourceRule("@@div.span")
+        XCTAssertEqual(plain[0].mode, .default)
+        XCTAssertEqual(plain[0].rule, "div.span")
+
+        let xpath = rule.splitSourceRule("@XPath://div/p")
+        XCTAssertEqual(xpath[0].mode, .xpath)
+        XCTAssertEqual(xpath[0].rule, "//div/p")
+
+        let json = rule.splitSourceRule("@Json:$.a.b")
+        XCTAssertEqual(json[0].mode, .json)
+        XCTAssertEqual(json[0].rule, "$.a.b")
+
+        // 以 / 开头直接判定为 XPath
+        XCTAssertEqual(rule.splitSourceRule("//div/p")[0].mode, .xpath)
+        // 以 $. / $[ 开头判定为 Json
+        XCTAssertEqual(rule.splitSourceRule("$.a.b")[0].mode, .json)
+        XCTAssertEqual(rule.splitSourceRule("$['a']")[0].mode, .json)
+    }
+
+    func testJsBlockAndAtJs() {
+        let rule = AnalyzeRule(source: nil)
+        let block = rule.splitSourceRule("<js>result.split(',')</js>")
+        XCTAssertEqual(block.count, 1)
+        XCTAssertEqual(block[0].mode, .js)
+        XCTAssertEqual(block[0].rule, "result.split(',')")
+
+        // 前置 CSS + JS 两段
+        let mixed = rule.splitSourceRule("div@text<js>result.trim()</js>")
+        XCTAssertEqual(mixed.count, 2)
+        XCTAssertEqual(mixed[0].mode, .default)
+        XCTAssertEqual(mixed[0].rule, "div@text")
+        XCTAssertEqual(mixed[1].mode, .js)
+        XCTAssertEqual(mixed[1].rule, "result.trim()")
+    }
+
+    func testCssPrefixExtracts() {
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent("<div><p>甲</p><p>乙</p></div>")
+        XCTAssertEqual(rule.getStringList("@CSS:div p@text"), ["甲", "乙"])
+    }
+
+    // MARK: - 组合符
+
+    func testUnionAndShortCircuit() {
+        let html = """
+        <div id="a"><span>甲</span></div><div id="b"><span>乙</span></div>
+        """
+        let rule = AnalyzeRule(source: nil)
+        rule.setContent(html)
+        // && 并集
+        XCTAssertEqual(rule.getStringList("#a@text&&#b@text"), ["甲", "乙"])
+        // || 短路：第一个非空即返回
+        XCTAssertEqual(rule.getStringList("#none@text||#b@text"), ["乙"])
+    }
+
     // MARK: - 正则
 
-    func testRegexRule() {
+    func testRegexAllInOneRule() {
+        // 以 `:` 开头的规则走 allInOne 正则模式，这一点只在 getElement/getElements 里生效；
+        // getString 不做 allInOne 处理（上游 splitSourceRule 的 allInOne 默认 false）。
         let rule = AnalyzeRule(source: nil)
         rule.setContent("<span>作者：张三</span>")
-        XCTAssertEqual(rule.getString(":作者：(\\S+?)(?:<|$)"), "张三")
+        let values = rule.getElements(":作者：(\\S+?)(?:<|$)")
+        XCTAssertEqual(values.count, 1)
+        // 第 0 组是整体匹配，第 1 组是捕获内容
+        let groups = values.first as? [String]
+        XCTAssertEqual(groups?.count, 2)
+        // 第 0 组是整体匹配（非贪婪 + 右边界，会吃掉边界符），第 1 组是捕获内容
+        XCTAssertEqual(groups?.last, "张三")
     }
 
     // MARK: - Cookie 域名
@@ -115,5 +202,39 @@ final class RuleEngineTests: XCTestCase {
                                     httpClient: client, cookieStore: cookieStore, settings: settings)
         XCTAssertTrue(analyzeUrl.url.contains("q="))
         XCTAssertTrue(analyzeUrl.url.contains("page=2"))
+    }
+
+    func testAnalyzeUrlPagePlaceholder() {
+        let settings = AppSettings()
+        let db = try! AppDatabase(inMemory: true)
+        let cookieStore = CookieStore(dao: CookieDao(db: db))
+        let client = HTTPClient(settings: settings, cookieStore: cookieStore)
+
+        func make(_ url: String, page: Int) -> AnalyzeUrl {
+            AnalyzeUrl(url: url, page: page, baseUrl: "https://example.com",
+                       httpClient: client, cookieStore: cookieStore, settings: settings)
+        }
+
+        // <1,2,3> 取第 page 项，越界取最后一项
+        XCTAssertEqual(make("https://example.com/s?p=<1,2,3>", page: 2).url,
+                       "https://example.com/s?p=2")
+        XCTAssertEqual(make("https://example.com/s?p=<1,2,3>", page: 9).url,
+                       "https://example.com/s?p=3")
+    }
+
+    func testAnalyzeUrlOptionAndMethod() {
+        let settings = AppSettings()
+        let db = try! AppDatabase(inMemory: true)
+        let cookieStore = CookieStore(dao: CookieDao(db: db))
+        let client = HTTPClient(settings: settings, cookieStore: cookieStore)
+
+        // url,{json} 以首个逗号+{ 分割；这里只验证 URL 与选项被正确切开
+        let rule = #"https://example.com/api/search,{"method":"POST","charset":"GBK","retry":2}"#
+        let analyzeUrl = AnalyzeUrl(url: rule, key: "剑来", baseUrl: "https://example.com",
+                                    httpClient: client, cookieStore: cookieStore, settings: settings)
+        XCTAssertEqual(analyzeUrl.url, "https://example.com/api/search")
+        XCTAssertEqual(analyzeUrl.method, "POST")
+        XCTAssertEqual(analyzeUrl.retry, 2)
+        XCTAssertEqual(analyzeUrl.charset, "GBK")
     }
 }

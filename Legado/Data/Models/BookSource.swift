@@ -246,37 +246,34 @@ struct ContentRule: Codable, Equatable, RuleJSONColumn {
 
 // MARK: - 段评规则（当前仅透传）
 
+/// 字段与上游 `ReviewRule.kt` 一一对应，顺序保持一致。
 struct ReviewRule: Codable, Equatable, RuleJSONColumn {
+    /// 段评 URL
     var reviewUrl: String?
-    var reviewList: String?
-    var reviewName: String?
-    var reviewContent: String?
-    var reviewTime: String?
-    var reviewQuote: String?
-    var reviewAvatart: String?
-    var reviewLoadMore: String?
-    var reviewPostUrl: String?
-    var reviewPostBody: String?
-    var reviewVisitName: String?
-    var reviewVisitTime: String?
-    var reviewPostQuote: String?
-    var reviewPostTitle: String?
-    var reviewPostContent: String?
-    var reviewPostOther: String?
-    var reviewPostHeaders: String?
-    var reviewPostUrlRegex: String?
-    var reviewPostBodyRegex: String?
+    /// 段评发布者头像
+    var avatarRule: String?
+    /// 段评内容
+    var contentRule: String?
+    /// 段评发布时间
+    var postTimeRule: String?
+    /// 获取段评回复 URL
+    var reviewQuoteUrl: String?
+    /// 点赞 URL
+    var voteUpUrl: String?
+    /// 点踩 URL
+    var voteDownUrl: String?
+    /// 发送回复 URL
+    var postReviewUrl: String?
+    /// 发送回复段评 URL
+    var postQuoteUrl: String?
+    /// 删除段评 URL
+    var deleteUrl: String?
 
-    init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        reviewUrl = try c.decodeIfPresent(String.self, forKey: .reviewUrl)
-        reviewList = try c.decodeIfPresent(String.self, forKey: .reviewList)
-        reviewName = try c.decodeIfPresent(String.self, forKey: .reviewName)
-        reviewContent = try c.decodeIfPresent(String.self, forKey: .reviewContent)
-        reviewTime = try c.decodeIfPresent(String.self, forKey: .reviewTime)
-        reviewQuote = try c.decodeIfPresent(String.self, forKey: .reviewQuote)
-        reviewAvatart = try c.decodeIfPresent(String.self, forKey: .reviewAvatart)
-        reviewLoadMore = try c.decodeIfPresent(String.self, forKey: .reviewLoadMore)
+    init() {}
+
+    enum CodingKeys: String, CodingKey {
+        case reviewUrl, avatarRule, contentRule, postTimeRule, reviewQuoteUrl
+        case voteUpUrl, voteDownUrl, postReviewUrl, postQuoteUrl, deleteUrl
     }
 }
 

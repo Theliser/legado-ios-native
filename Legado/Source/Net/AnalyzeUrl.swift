@@ -33,8 +33,8 @@ final class AnalyzeUrl {
     private var body: String?
     private var encodedForm: String?
     private var encodedQuery: String?
-    private var charset: String?
-    private var retry = 0
+    private(set) var charset: String?
+    private(set) var retry = 0
     private var useWebView = false
     private var webJs: String?
     private var bodyJs: String?

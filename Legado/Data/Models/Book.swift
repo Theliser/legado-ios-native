@@ -235,28 +235,57 @@ struct Cookie: Codable, Identifiable, Hashable {
 // MARK: - 分组
 
 struct BookGroup: Codable, Identifiable, Hashable {
-    var groupId: Int64 = 0
+    var groupId: Int64 = 1
     var groupName: String = ""
+    var cover: String?
     var order: Int = 0
     var enableRefresh: Bool = true
     var show: Bool = true
+    /// 分组内的书籍排序方式，-1 表示沿用默认
+    var bookSort: Int = -1
+    var isPrivate: Bool = false
 
     var id: Int64 { groupId }
     static let databaseTableName = "book_groups"
 
     static let allGroupId: Int64 = -1
     static let localTag = "loc_book"
+
+    /// 与上游 BookGroup.IdXxx 常量对齐
+    enum BuiltinId {
+        static let root: Int64 = -100
+        static let all: Int64 = -1
+        static let local: Int64 = -2
+        static let audio: Int64 = -3
+        static let netNone: Int64 = -4
+        static let localNone: Int64 = -5
+        static let manga: Int64 = -7
+        static let text: Int64 = -8
+        static let error: Int64 = -11
+        static let reading: Int64 = -20
+        static let unread: Int64 = -21
+        static let readFinished: Int64 = -22
+        static let readFinishedUpdate: Int64 = -23
+        static let readFinishedComplete: Int64 = -24
+    }
+
+    func realBookSort(default defaultBookSort: Int) -> Int {
+        bookSort < 0 ? defaultBookSort : bookSort
+    }
 }
 
 // MARK: - 阅读记录
 
-struct ReadRecord: Codable, Identifiable, Hashable {
+/// 对齐上游 `readRecord/ReadRecord.kt`：表名 `readRecord`，主键 (deviceId, bookName, bookAuthor)
+struct ReadRecord: Codable, Hashable {
+    var deviceId: String = ""
     var bookName: String = ""
+    var bookAuthor: String = ""
     var readTime: Int64 = 0
     var lastRead: Int64 = Int64(Date().timeIntervalSince1970 * 1000)
 
-    var id: String { bookName }
-    static let databaseTableName = "readRecords"
+    var id: String { "\(deviceId)|\(bookName)|\(bookAuthor)" }
+    static let databaseTableName = "readRecord"
 }
 
 // MARK: - 书籍类型

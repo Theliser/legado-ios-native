@@ -27,7 +27,14 @@ final class AnalyzeByJSONPath {
                 self?.getString(inner)
             }
             if !replaced.isEmpty { return replaced }
-            guard let value = try? JSONPath.evaluate(rule, on: root).first else { return nil }
+            guard let values = try? JSONPath.evaluate(rule, on: root) else { return nil }
+            guard !values.isEmpty else { return nil }
+            // jayway 的 ctx.read()：不定路径（通配/过滤）返回匹配列表，定路径返回值本身。
+            // 两种情况最终都用 "\n" 拼，这里统一按「多结果先拼、单结果若为数组再拆」处理。
+            if values.count > 1 {
+                return values.map { AnalyzeRule.stringValue($0) }.joined(separator: "\n")
+            }
+            let value = values[0]
             if let array = value as? [Any] {
                 return array.map { AnalyzeRule.stringValue($0) }.joined(separator: "\n")
             }

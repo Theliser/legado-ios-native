@@ -359,7 +359,8 @@ final class AnalyzeRule {
             let rule = sourceRule.rule
             switch sourceRule.mode {
             case .regex:
-                result = AnalyzeByRegex.getElement(Self.stringValue(current), rule.splitNotBlank("&&"))?.joined(separator: "\n")
+                // 上游这里直接把 List<String> 作为结果往下传，不做拼接
+                result = AnalyzeByRegex.getElement(Self.stringValue(current), rule.splitNotBlank("&&"))
             case .webJs:
                 result = JSONTool.parseObject(getWebJsResult(rule, result: current) ?? "")
             case .js:
@@ -570,7 +571,8 @@ final class AnalyzeRule {
                     .trimmingCharacters(in: .whitespaces)
                 if !tmp.isEmpty { ruleList.append(SourceRule(analyze: self, ruleStr: tmp, mode: mode)) }
             }
-            let group2 = ns.substring(with: match.range(at: 2))
+            // 两个捕获组只会命中一个，未命中的 range 是 NSNotFound，必须走带兜底的切片
+            let group2 = ns.substring(with: match.range(at: 2), fallback: "")
             let group1 = ns.substring(with: match.range(at: 1), fallback: "")
             ruleList.append(SourceRule(analyze: self, ruleStr: group2.isEmpty ? group1 : group2, mode: .js))
             start = match.range.location + match.range.length
@@ -774,19 +776,23 @@ final class AnalyzeRule {
             if head.containsRegex("\\$\\d{1,2}") {
                 if mode != .js && mode != .regex { mode = .regex }
             }
-            let ns = head as NSString
+            // `$n` 只在首段里找；但切片必须用整串，把 `##正则##替换` 保留下来，
+            // 否则 makeUpRule 拿到的 rule 里已经没有 `##`，替换规则会丢。
+            let headNS = head as NSString
             let matches = AnalyzeRule.dollarPattern.matches(in: head, options: [],
-                                                           range: NSRange(location: 0, length: ns.length))
+                                                           range: NSRange(location: 0, length: headNS.length))
             for match in matches {
                 if match.range.location > start {
                     ruleType.append(defaultRuleType)
-                    ruleParam.append(ns.substring(with: NSRange(location: start, length: match.range.location - start)))
+                    ruleParam.append(headNS.substring(with: NSRange(location: start,
+                                                                   length: match.range.location - start)))
                 }
-                let value = ns.substring(with: match.range)
+                let value = headNS.substring(with: match.range)
                 ruleType.append(Int(value.dropFirst()) ?? 0)
                 ruleParam.append(value)
                 start = match.range.location + match.range.length
             }
+            let ns = ruleStr as NSString
             if ns.length > start {
                 ruleType.append(defaultRuleType)
                 ruleParam.append(ns.substring(from: start))

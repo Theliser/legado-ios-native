@@ -176,17 +176,23 @@ final class AppDatabase {
     CREATE TABLE IF NOT EXISTS book_groups (
         groupId INTEGER PRIMARY KEY NOT NULL,
         groupName TEXT NOT NULL DEFAULT '',
+        cover TEXT,
         "order" INTEGER NOT NULL DEFAULT 0,
         enableRefresh INTEGER NOT NULL DEFAULT 1,
-        show INTEGER NOT NULL DEFAULT 1
+        show INTEGER NOT NULL DEFAULT 1,
+        bookSort INTEGER NOT NULL DEFAULT -1,
+        isPrivate INTEGER NOT NULL DEFAULT 0
     )
     """
 
     private static let readRecordsDDL = """
-    CREATE TABLE IF NOT EXISTS readRecords (
-        bookName TEXT PRIMARY KEY NOT NULL,
+    CREATE TABLE IF NOT EXISTS readRecord (
+        deviceId TEXT NOT NULL DEFAULT '',
+        bookName TEXT NOT NULL DEFAULT '',
+        bookAuthor TEXT NOT NULL DEFAULT '',
         readTime INTEGER NOT NULL DEFAULT 0,
-        lastRead INTEGER NOT NULL DEFAULT 0
+        lastRead INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (deviceId, bookName, bookAuthor)
     )
     """
 
