@@ -41,13 +41,27 @@ build_slice() {
     || { tail -40 "$stage/build.log"; die "$module ($triple) 编译失败"; }
 
   local prod
-  prod="$(find "$VENDOR/$dir/.build/out/Products" -maxdepth 1 -type d -name 'Release-*' | head -1)"
+  # SwiftPM 新旧版本产物目录不同（旧版 .build/out/Products/Release-*，
+  # 新版 .build/<triple>/release）。--show-bin-path 两种布局都返回正确路径。
+  prod="$(cd "$VENDOR/$dir" && swift build -c release --disable-sandbox \
+      --triple "$triple" --sdk "$sdkpath" --show-bin-path 2>/dev/null | tail -1)"
   [[ -n "$prod" ]] || die "$module ($triple) 未找到产物目录"
   [[ -f "$prod/lib$module.a" ]] || die "$module ($triple) 缺少 lib$module.a"
 
   cp "$prod/lib$module.a" "$stage/"
   rm -rf "$stage/$module.swiftmodule"
-  cp -R "$prod/$module.swiftmodule" "$stage/"
+  if [[ -d "$prod/$module.swiftmodule" ]]; then
+    cp -R "$prod/$module.swiftmodule" "$stage/"
+    # 有些版本把 swiftdoc/abi.json 放在 .swiftmodule 目录外
+    cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
+    cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  else
+    # 某些 SwiftPM 版本把 .swiftmodule 输出成单文件
+    mkdir -p "$stage/$module.swiftmodule"
+    cp "$prod/$module.swiftmodule" "$stage/$module.swiftmodule/" 2>/dev/null || true
+    cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
+    cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  fi
 }
 
 # 生成 <Name>.framework 目录（静态库 + Swift 模块）
