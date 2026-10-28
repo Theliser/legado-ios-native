@@ -189,17 +189,19 @@ legado/
 
 ## 4. 构建与依赖
 
-依赖不走 SwiftPM 远程解析，改为本地预编译：
+依赖用 SwiftPM 从 GitHub 以 git 协议拉取，版本在 `project.yml` 里锁死：
 
 ```bash
-./scripts/fetch-vendor.sh              # 镜像拉源码到 Vendor/
-./scripts/build-vendor-frameworks.sh   # 交叉编译成 XCFramework
-xcodegen generate && xcodebuild ...    # 构建
+./scripts/build.sh            # 直连
+./scripts/build.sh --proxy    # 走 127.0.0.1:10808 代理
 ```
 
-原因与镜像列表见 [README.md](README.md)。两条硬约束要记住：
+脚本内部是 `xcodegen generate` → `xcodebuild -resolvePackageDependencies` → 构建，
+包缓存放在 `build/SourcePackages`。CI（GitHub Actions、macos-26）跑同一脚本。
 
-- 镜像地址在 `fetch-vendor.sh` 的 `MIRRORS` 数组里改；
+两条硬约束：
+
+- 代理只影响 SwiftPM/git 拉依赖：`LEGADO_PROXY_URL` 可改端口；
 - 工程全局带 `-Xfrontend -disable-sandbox`，否则宏插件（`@Observable` / `@State`）无法展开。
 
 ## 5. 风险与对策

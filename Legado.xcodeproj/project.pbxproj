@@ -35,10 +35,9 @@
 		34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */; };
 		3AD113D91E2148FD64D4BCFC /* bench_m.tkshuw.com.json in Resources */ = {isa = PBXBuildFile; fileRef = E1A13E5CF65AA3116447808D /* bench_m.tkshuw.com.json */; };
 		3B37030A09B7E8B9BD2E7BBF /* 7964_book.washai.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 7C98962F445B53EDF056E717 /* 7964_book.washai.net.json */; };
-		3CC4050B4253721686EFC637 /* SwiftSoup.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */; };
 		41CFEDC8F6E2B9A07C558F54 /* LenientDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034DE7518E55080B3A236103 /* LenientDecoding.swift */; };
 		469F71D8280B9D5C449DEBEA /* 7984_m.xhwx8.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 55C240A2A7C25756D539BEEA /* 7984_m.xhwx8.com.json */; };
-		5097275888E7E8BFCEBF51F8 /* GRDB.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */; };
+		4842CACE34A69C810C820C33 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */; };
 		510C9629024963C4FD3FA75A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A92FCFE1463042905E6A2C /* Book.swift */; };
 		54D1F44CF7D9380CFE840A70 /* CookieStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9692FAAF766128DEB5FD79 /* CookieStore.swift */; };
 		5614687A60994CD0F90553FA /* WebBookParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03EE496E20D6C0DE7751926 /* WebBookParse.swift */; };
@@ -47,6 +46,7 @@
 		6BA5D4D46CEE59DFE2D1C49D /* 7943_www.gushizu.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 1ECD3EADC4CACD11D36F07B4 /* 7943_www.gushizu.com.json */; };
 		6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */; };
 		711220D588F8B25F9FE86B39 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2281C785EBAEDB5D8928A /* DebugLog.swift */; };
+		712B3AE4134A4EB1A7476526 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 1A057E76B5AEF421EC25EAF6 /* GRDB */; };
 		71630290EFC2BA8EB517240A /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019A372A432DC5E8F645879C /* HTTPClient.swift */; };
 		723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */; };
 		73F31E14D0D181E9305A17E6 /* bench_m.xhwx8.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 12FDB5493C759A18E92409E8 /* bench_m.xhwx8.com.json */; };
@@ -143,7 +143,6 @@
 		12FDB5493C759A18E92409E8 /* bench_m.xhwx8.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_m.xhwx8.com.json; sourceTree = "<group>"; };
 		1631FE812DF4C8D21232F452 /* RelatedBooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedBooks.swift; sourceTree = "<group>"; };
 		18750F83E8B8039D446FB7F8 /* XPathDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPathDocument.swift; sourceTree = "<group>"; };
-		1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GRDB.xcframework; path = Vendor/Frameworks/GRDB.xcframework; sourceTree = "<group>"; };
 		1ECD3EADC4CACD11D36F07B4 /* 7943_www.gushizu.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7943_www.gushizu.com.json; sourceTree = "<group>"; };
 		202BC435B7BE476D41DEA0D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2312BD49742F4554C4BA6128 /* 8002_www.pilisf.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8002_www.pilisf.com.json; sourceTree = "<group>"; };
@@ -231,7 +230,6 @@
 		DAE380A261A2142CCD0F657A /* 8006_cyj.vv9v.cn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8006_cyj.vv9v.cn.json; sourceTree = "<group>"; };
 		DB4549E165410304FE0F3A3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC052062F1108B6339F70946 /* Legado-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Legado-Bridging-Header.h"; sourceTree = "<group>"; };
-		E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSoup.xcframework; path = Vendor/Frameworks/SwiftSoup.xcframework; sourceTree = "<group>"; };
 		E1A13E5CF65AA3116447808D /* bench_m.tkshuw.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_m.tkshuw.com.json; sourceTree = "<group>"; };
 		E91BA30F04715149DE6EAD9C /* BookSourceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSourceListView.swift; sourceTree = "<group>"; };
 		E91E6CA384E84AFA6CC72E67 /* 7942_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7942_fanqienovel.com.json; sourceTree = "<group>"; };
@@ -249,8 +247,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3CC4050B4253721686EFC637 /* SwiftSoup.xcframework in Frameworks */,
-				5097275888E7E8BFCEBF51F8 /* GRDB.xcframework in Frameworks */,
+				4842CACE34A69C810C820C33 /* SwiftSoup in Frameworks */,
+				712B3AE4134A4EB1A7476526 /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,7 +322,6 @@
 			children = (
 				5D63B928D47EE3FF922ED119 /* Legado */,
 				8A026352A08576F4BA363FAC /* LegadoTests */,
-				FF8B27087988C439259A3538 /* Frameworks */,
 				7A9998A08F31415169D8903D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -608,15 +605,6 @@
 			path = Bookshelf;
 			sourceTree = "<group>";
 		};
-		FF8B27087988C439259A3538 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */,
-				E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -634,6 +622,8 @@
 			);
 			name = Legado;
 			packageProductDependencies = (
+				F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */,
+				1A057E76B5AEF421EC25EAF6 /* GRDB */,
 			);
 			productName = Legado;
 			productReference = 5E494EB6E5276C0FA16C637F /* Legado.app */;
@@ -678,6 +668,10 @@
 			);
 			mainGroup = 2EFA8535A04955DF845418B2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BD1586F9DA2079D70538F656 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				572B4A14EB4F81BFF47EB37F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7A9998A08F31415169D8903D /* Products */;
 			projectDirPath = "";
@@ -890,7 +884,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -993,7 +987,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-sandbox";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1010,10 +1004,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"Vendor/Frameworks\"",
-				);
 				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = Legado/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1036,10 +1026,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"Vendor/Frameworks\"",
-				);
 				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = Legado/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1086,6 +1072,38 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		572B4A14EB4F81BFF47EB37F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.14.3;
+			};
+		};
+		BD1586F9DA2079D70538F656 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A057E76B5AEF421EC25EAF6 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD1586F9DA2079D70538F656 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+		F679ABA63CD2BD11E85A4BA4 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 572B4A14EB4F81BFF47EB37F /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C88D041936DFBF20C4AA23 /* Project object */;
 }

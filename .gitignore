@@ -6,12 +6,11 @@ xcuserdata/
 *.xcscmblueprint
 *.xccheckout
 .swiftpm/
-Package.resolved
 
 # 上游只作对照参考，不纳入版本库
 upstream/
 
-# 第三方依赖源码，用 scripts/fetch-vendor.sh 拉取
+# 旧构建方式（本地预编译 XCFramework）的残留目录，现在依赖走 SwiftPM
 Vendor/
 
 # macOS

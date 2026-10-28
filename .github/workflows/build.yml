@@ -31,43 +31,21 @@ jobs:
           xcodebuild -version
           echo "version=$(xcodebuild -version | head -1 | tr ' ' '-')" >> "$GITHUB_OUTPUT"
 
-      - name: Cache vendor XCFrameworks
+      - name: Cache Swift packages
         uses: actions/cache@v4
         with:
-          # 只缓存编译产物（约 70MB）；源码包每次重新下载很快，
-          # 避免把 500MB+ 的 .build 目录塞进缓存。
-          path: Vendor/Frameworks
-          key: vendor-frameworks-${{ runner.os }}-${{ steps.xcode.outputs.version }}-${{ hashFiles('scripts/fetch-vendor.sh', 'scripts/build-vendor-frameworks.sh') }}
+          path: build/SourcePackages
+          key: spm-${{ runner.os }}-${{ steps.xcode.outputs.version }}-${{ hashFiles('project.yml', 'Legado.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
-            vendor-frameworks-${{ runner.os }}-${{ steps.xcode.outputs.version }}-
-            vendor-frameworks-${{ runner.os }}-
+            spm-${{ runner.os }}-${{ steps.xcode.outputs.version }}-
+            spm-${{ runner.os }}-
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Fetch vendor packages
-        # GitHub 托管 runner 直连 GitHub 最快，不让脚本先试国内镜像
-        env:
-          VENDOR_MIRROR: https://github.com
-        run: ./scripts/fetch-vendor.sh
-
-      - name: Build vendor XCFrameworks
-        run: ./scripts/build-vendor-frameworks.sh
-
-      - name: Generate Xcode project
-        run: xcodegen generate
-
       - name: Build app
-        run: |
-          set -o pipefail
-          xcodebuild \
-            -project Legado.xcodeproj \
-            -scheme Legado \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/DerivedData \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+        # GitHub 托管 runner 直连 GitHub 很快，不需要代理
+        run: ./scripts/build.sh
 
       - name: Package simulator app
         run: |

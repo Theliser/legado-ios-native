@@ -9,26 +9,30 @@ options:
 # 依赖以预编译 XCFramework 形式链接，源码与二进制均由 scripts/ 下的脚本生成：
 #   ./scripts/fetch-vendor.sh              # 从镜像下载源码
 #   ./scripts/build-vendor-frameworks.sh   # 编译成 Vendor/Frameworks/*.xcframework
-# 主工程不参与 SPM 依赖解析（本机 xcodebuild 解析清单会因 sandbox-exec 失败）。
+# 本机若禁止嵌套 sandbox-exec，宏插件（@Observable / @State）启动
+# swift-plugin-server 会报 "sandbox_apply: Operation not permitted"；
+# 关掉编译器子进程沙箱即可，对产物无影响。
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    # 本机环境禁止嵌套 sandbox-exec，导致宏插件（@Observable / @State 等）
-    # 启动 swift-plugin-server 时报 "sandbox_apply: Operation not permitted"。
-    # 关掉编译器子进程沙箱即可，对产物无影响。
-    #
-    # 另外 GRDB 的 .swiftmodule 依赖 GRDBSQLite 这个 system library 模块，
-    # 预编译成二进制后需要把它的 modulemap 显式暴露给每个 target。
     OTHER_SWIFT_FLAGS: >-
       $(inherited)
       -Xfrontend -disable-sandbox
-      -Xcc -fmodule-map-file=$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite/module.modulemap
-      -Xcc -I$(SRCROOT)/Vendor/GRDB.swift/Sources/GRDBSQLite
     ENABLE_USER_SCRIPT_SANDBOXING: false
     SWIFT_STRICT_CONCURRENCY: minimal
     CODE_SIGN_IDENTITY: ""
     CODE_SIGNING_REQUIRED: "NO"
     CODE_SIGNING_ALLOWED: "NO"
+
+# 依赖直接用 SwiftPM 从 GitHub 拉取（Git 协议），版本锁死。
+# 本机网络需要代理时用 ./scripts/build.sh --proxy（默认 127.0.0.1:10808）。
+packages:
+  SwiftSoup:
+    url: https://github.com/scinfu/SwiftSoup.git
+    exactVersion: 2.14.3
+  GRDB:
+    url: https://github.com/groue/GRDB.swift.git
+    exactVersion: 7.0.0
 
 targets:
   Legado:
@@ -49,13 +53,10 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     dependencies:
-      # 静态框架：只链接，不嵌入
-      - framework: Vendor/Frameworks/SwiftSoup.xcframework
-        embed: false
-        codeSign: false
-      - framework: Vendor/Frameworks/GRDB.xcframework
-        embed: false
-        codeSign: false
+      - package: SwiftSoup
+        product: SwiftSoup
+      - package: GRDB
+        product: GRDB
 
   LegadoTests:
     type: bundle.unit-test
