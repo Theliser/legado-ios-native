@@ -36,10 +36,13 @@ final class AnalyzeRule {
     var runtime: JSRuntime = .shared
     var cookieStore: CookieStore?
     var httpClient: HTTPClient?
+    var settings: AppSettings?
     /// webJs 规则需要 WebView，由 WebBook 注入
     var webJsHandler: ((_ js: String, _ result: Any?) -> String?)?
     /// preUpdateJs 中刷新目录链接
     var refreshTocHandler: (() -> Void)?
+    /// java.toast 的出口（UI 层可注入；默认只写调试日志）
+    var toastHandler: ((String) -> Void)?
 
     init(book: Book? = nil, source: BookSource?, preUpdateJs: Bool = false, isFromBookInfo: Bool = false) {
         self.book = book
@@ -451,7 +454,7 @@ final class AnalyzeRule {
 
     // MARK: - JS
 
-    func evalJS(_ jsStr: String, result: Any? = nil) -> Any? {
+    func evalJS(_ jsStr: String, result: Any? = nil, event: String? = nil) -> Any? {
         guard !jsStr.isBlank else { return nil }
         var env = JSEnvironment()
         env.source = source
@@ -463,11 +466,87 @@ final class AnalyzeRule {
         env.nextChapterUrl = nextChapterUrl
         env.title = chapter?.title
         env.fromBookInfo = isFromBookInfo
+        env.event = event
         env.variables = self
+        env.analyzer = self
+        env.settings = settings
         env.ajax = { [weak self] url, timeout in
             self?.ajax(url, timeout: timeout) ?? ""
         }
+        env.request = { [weak self] request in
+            guard let self else { return nil }
+            return JSRequestExecutor.perform(request, source: self.source,
+                                             book: self.book, chapter: self.chapter,
+                                             ruleData: self.ruleData,
+                                             httpClient: self.httpClient,
+                                             cookieStore: self.cookieStore,
+                                             settings: self.settings)
+        }
+        env.requestAll = { [weak self] requests in
+            guard let self else { return [] }
+            return JSRequestExecutor.performAll(requests, source: self.source,
+                                                book: self.book, chapter: self.chapter,
+                                                ruleData: self.ruleData,
+                                                httpClient: self.httpClient,
+                                                cookieStore: self.cookieStore,
+                                                settings: self.settings)
+        }
+        env.dataRequest = { [weak self] request in
+            guard let self else { return nil }
+            return JSRequestExecutor.performData(request, source: self.source,
+                                                 book: self.book, chapter: self.chapter,
+                                                 ruleData: self.ruleData,
+                                                 httpClient: self.httpClient,
+                                                 cookieStore: self.cookieStore,
+                                                 settings: self.settings)
+        }
+        env.webView = { [weak self] html, url, js, sourceRegex, overrideUrlRegex, delayMs in
+            guard let self else { return nil }
+            if let handler = self.webJsHandler, sourceRegex == nil,
+               overrideUrlRegex == nil, delayMs == 0 {
+                return handler(js ?? "", html)
+            }
+            return self.evalWebView(html: html, url: url, js: js,
+                                    sourceRegex: sourceRegex,
+                                    overrideUrlRegex: overrideUrlRegex,
+                                    delayMs: delayMs)
+        }
+        env.toast = { [weak self] message in
+            guard let self else { return }
+            if let handler = self.toastHandler {
+                handler(message)
+            } else {
+                DebugLog.shared.log(self.sourceKey, "⇒\(message)")
+            }
+        }
         return runtime.evaluate(jsStr, key: sourceKey, env: env)
+    }
+
+    /// java.webView / webViewGetSource：走隐藏 WKWebView（必须后台线程）
+    private func evalWebView(html: String?, url: String?, js: String?,
+                             sourceRegex: String?, overrideUrlRegex: String?,
+                             delayMs: Int) -> String? {
+        guard httpClient != nil else { return nil }
+        var options = WebViewFetcherOptions()
+        options.js = js ?? "document.documentElement.outerHTML"
+        options.html = html
+        options.url = url ?? baseUrl
+        options.headers = source?.headerMap(userAgent: settings?.userAgent) ?? [:]
+        options.cookieKeyURL = source?.bookSourceUrl ?? url
+        options.sourceRegex = sourceRegex
+        options.overrideUrlRegex = overrideUrlRegex
+        options.delayMs = delayMs
+        do {
+            let cookieJar = source?.enabledCookieJar ?? true
+            let response = try SyncBridge.run { [cookieStore] in
+                try await WebViewService.shared.fetch(options, cookieStore: cookieStore,
+                                                      cookieJar: cookieJar)
+            }
+            return response.body
+        } catch {
+            DebugLog.shared.log(sourceKey, "webView 执行失败: \(error.localizedDescription)")
+            return nil
+        }
     }
 
     /// 把 Swift 值转成 JS 可接受的值
@@ -756,7 +835,9 @@ final class AnalyzeRule {
             for match in matches {
                 result = result.replacingOccurrences(of: ns.substring(with: match.range), with: "")
                 let json = ns.substring(with: match.range(at: 1))
-                if let obj = JSONTool.parseObject(json) as [String: Any]? {
+                // JSONTool 内部已做「严格失败 → 宽松兜底」（对齐上游 GSONStrict/GSON），
+                // 能处理 `@put:{name:.title@text}` 这种键不带引号的写法
+                if let obj = JSONTool.parseObject(json) {
                     for (k, v) in obj {
                         if let s = v as? String {
                             putMap[k] = s
@@ -863,6 +944,11 @@ final class AppVariableStore {
     func get(_ sourceKey: String, _ key: String) -> String {
         lock.lock(); defer { lock.unlock() }
         return map[sourceKey]?[key] ?? ""
+    }
+
+    func clear() {
+        lock.lock(); defer { lock.unlock() }
+        map.removeAll()
     }
 }
 

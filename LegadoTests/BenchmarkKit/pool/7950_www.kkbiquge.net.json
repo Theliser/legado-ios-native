@@ -1,0 +1,61 @@
+{
+ "bookSourceGroup": "自制,笔趣阁",
+ "bookSourceName": "kk笔趣阁(http://www.kkbiquge.net)",
+ "bookSourceType": 0,
+ "bookSourceUrl": "http://www.kkbiquge.net",
+ "searchUrl": "http://www.kkbiquge.net/modules/article/search.php?searchkey={{key}}",
+ "bookUrlPattern": "http?:\\/\\/www\\.kkbiquge\\.net\\/\\d+\\/\\d+\\/",
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": false,
+ "lastUpdateTime": "1792000495363",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "name": "#info h1@text",
+  "author": "#info p:nth-child(2)@text",
+  "coverUrl": "#fmimg img@src",
+  "intro": "#intro@text",
+  "kind": "#info p:nth-child(1)@text",
+  "lastChapter": "#info p:nth-child(4) a@text",
+  "tocUrl": ""
+ },
+ "ruleContent": {
+  "content": "#content@html",
+  "title": ".bookname h1@text",
+  "replaceRegex": [
+   [
+    "<script.*?</script>",
+    ""
+   ],
+   [
+    "记住本书.*?小说",
+    ""
+   ],
+   [
+    "www\\.kkbiquge\\.net",
+    ""
+   ],
+   [
+    "\\s{2,}",
+    "\n"
+   ]
+  ]
+ },
+ "ruleExplore": [],
+ "ruleSearch": {
+  "bookList": "table tbody tr",
+  "name": "td:nth-child(1) a@text",
+  "author": "td:nth-child(3)@text",
+  "coverUrl": "",
+  "bookUrl": "td:nth-child(1) a@href",
+  "lastChapter": "td:nth-child(2) a@text"
+ },
+ "ruleToc": {
+  "chapterList": "#list dl dd a",
+  "chapterName": "ownText",
+  "chapterUrl": "href",
+  "nextTocUrl": ""
+ },
+ "weight": 0
+}

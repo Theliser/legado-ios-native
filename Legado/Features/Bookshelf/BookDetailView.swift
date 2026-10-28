@@ -12,6 +12,8 @@ final class BookDetailViewModel {
         var message: String?
         var toast: ToastMessage?
         var inShelf = false
+        var isDownloading = false
+        var downloadText: String?
     }
 
     enum Intent {
@@ -19,6 +21,7 @@ final class BookDetailViewModel {
         case refresh
         case addToShelf
         case deleteFromShelf
+        case downloadAll
         case toast(String)
     }
 
@@ -43,6 +46,9 @@ final class BookDetailViewModel {
             container.bookRepository.delete(state.book)
             state.inShelf = false
             state.toast = ToastMessage(text: "已移出书架")
+            runCallback(SourceCallBackEvent.delBookShelf, book: state.book)
+        case .downloadAll:
+            downloadAll()
         case .toast(let text):
             state.toast = ToastMessage(text: text, isError: true)
         }
@@ -112,6 +118,57 @@ final class BookDetailViewModel {
         }
         state.inShelf = true
         state.toast = ToastMessage(text: "已加入书架")
+        runCallback(SourceCallBackEvent.addBookShelf, book: book)
+    }
+
+    private func runCallback(_ event: String, book: Book) {
+        guard let source = container.bookSourceRepository.source(for: book.origin) else { return }
+        let webBook = container.webBook
+        Task.detached(priority: .utility) {
+            _ = SourceCallBack.run(event, source: source, book: book, webBook: webBook)
+        }
+    }
+
+    /// 把整本目录逐章抓下来写进本地缓存（阅读时直接命中，断网也能看）
+    private func downloadAll() {
+        guard let source = container.bookSourceRepository.source(for: state.book.origin) else {
+            state.toast = ToastMessage(text: "书源不存在，无法下载", isError: true)
+            return
+        }
+        guard !state.chapters.isEmpty else {
+            state.toast = ToastMessage(text: "目录为空，请先刷新", isError: true)
+            return
+        }
+        guard !state.isDownloading else { return }
+        state.isDownloading = true
+        state.downloadText = "准备下载 \(state.chapters.count) 章…"
+
+        let book = state.book
+        let chapters = state.chapters
+        let webBook = container.webBook
+        let limit = max(1, min(4, container.settings.threadCount))
+        Task {
+            let downloader = BookDownloader(webBook: webBook, concurrency: limit)
+            let summary = await downloader.download(book: book, source: source,
+                                                    chapters: chapters) { [weak self] progress in
+                Task { @MainActor in
+                    self?.state.downloadText = "缓存 \(progress.completed + progress.failed)/\(progress.total)" +
+                        (progress.failed > 0 ? "（失败 \(progress.failed)）" : "")
+                }
+            }
+            state.isDownloading = false
+            state.downloadText = nil
+            if summary.cancelled {
+                state.toast = ToastMessage(text: "下载已取消", isError: true)
+            } else if summary.failed > 0 {
+                state.toast = ToastMessage(
+                    text: "完成 \(summary.completed) 章，失败 \(summary.failed) 章：\(summary.failures.first?.reason ?? "")",
+                    isError: true
+                )
+            } else {
+                state.toast = ToastMessage(text: "已缓存 \(summary.completed) 章（跳过已有 \(summary.skipped) 章）")
+            }
+        }
     }
 }
 
@@ -190,7 +247,8 @@ struct BookDetailView: View {
     }
 
     private func actions(_ model: BookDetailViewModel) -> some View {
-        HStack(spacing: 12) {
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
             Button {
                 onRead(model.state.book.durChapterIndex)
             } label: {
@@ -222,6 +280,16 @@ struct BookDetailView: View {
             }
 
             Button {
+                model.send(.downloadAll)
+            } label: {
+                Image(systemName: "arrow.down.to.line")
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 8)
+            }
+            .buttonStyle(.glass)
+            .disabled(model.state.isLoading || model.state.isDownloading)
+
+            Button {
                 model.send(.refresh)
             } label: {
                 Image(systemName: "arrow.clockwise")
@@ -229,7 +297,15 @@ struct BookDetailView: View {
                     .padding(.horizontal, 8)
             }
             .buttonStyle(.glass)
-            .disabled(model.state.isLoading)
+            .disabled(model.state.isLoading || model.state.isDownloading)
+            }
+
+            if let text = model.state.downloadText {
+                HStack(spacing: 6) {
+                    ProgressView().controlSize(.small)
+                    Text(text).font(.caption).foregroundStyle(.secondary)
+                }
+            }
         }
     }
 

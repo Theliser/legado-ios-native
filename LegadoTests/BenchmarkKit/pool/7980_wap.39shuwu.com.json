@@ -1,0 +1,61 @@
+{
+ "bookSourceGroup": "AI",
+ "bookSourceName": "趣书吧手机版",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://wap.39shuwu.com/",
+ "bookUrlPattern": "https?://wap\\.39shuwu\\.com/shu\\d+/?",
+ "concurrentRate": "1/1500",
+ "customButton": false,
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "分类::/xuanhuanxiaoshuo/&&修真::/xiuzhenxiaoshuo/&&都市::/dushixiaoshuo/&&穿越::/chuanyuexiaoshuo/&&网游::/wangyouxiaoshuo/&&科幻::/kehuanxiaoshuo/&&周点击榜::/paihangbang/weekvisit/&&月点击榜::/paihangbang/monthvisit/&&总点击榜::/paihangbang/allvisit/&&日推荐榜::/paihangbang/dayvote/&&周推荐榜::/paihangbang/weekvote/&&月推荐榜::/paihangbang/monthvote/&&总推荐榜::/paihangbang/allvote/&&总收藏榜::/paihangbang/goodnum/&&总字数榜::/paihangbang/size/&&最新入库::/paihangbang/postdate/&&全本周点击::/full-1/weekvisit/&&全本总点击::/full-1/allvisit/&&全本最新入库::/full-1/postdate/",
+ "header": "{\"User-Agent\":\"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36\",\"Referer\":\"https://wap.39shuwu.com/\",\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\",\"Accept-Language\":\"zh-CN,zh;q=0.9\",\"X-Requested-With\":\"XMLHttpRequest\"}",
+ "jsLib": "function FQ_checkLoginState(jv) {\n  var msg = '';\n  try {\n    var s = '';\n    try {\n      s = String(jv.ajax('https://wap.39shuwu.com/user/userinfo.html') || '');\n    } catch (e1) {\n      try {\n        s = String(jv.get('https://wap.39shuwu.com/user/userinfo.html', {}) || '');\n      } catch (e2) {\n        s = '';\n      }\n    }\n    if (!s) {\n      msg = '检查失败: 无响应';\n    } else if (s.indexOf('退出登录') >= 0 || s.indexOf('修改密码') >= 0) {\n      msg = '已登录';\n    } else if (s.indexOf('趣书吧会员登录') >= 0 || s.indexOf('请登录') >= 0) {\n      msg = '未登录';\n    } else {\n      msg = '状态未知(未登录或页面结构变更)';\n    }\n  } catch (e) {\n    msg = '检查失败:' + e;\n  }\n  try { jv.put('fqLoginMsg', msg); } catch (e3) {}\n  try { jv.upLoginData({ '登录状态': msg }); } catch (e4) {}\n  try { jv.toast(msg); } catch (e5) {}\n  try { jv.longToast(msg); } catch (e6) {}\n  try { jv.reLoginView(false); } catch (e7) {}\n}\nfunction FQ_openLoginPage(jv) {\n  try {\n    jv.showBrowser('https://wap.39shuwu.com/user/login.html');\n  } catch (e) {\n    try { jv.toast('打开登录页失败:' + e); } catch (e2) {}\n  }\n}",
+ "lastUpdateTime": "1792522314942",
+ "loginUi": "[{\"type\":\"text\",\"name\":\"用户名\"},{\"type\":\"password\",\"name\":\"密码\"},{\"type\":\"button\",\"name\":\"①检查登录状态\",\"action\":\"FQ_checkLoginState(java)\"},{\"type\":\"button\",\"name\":\"②打开登录页\",\"action\":\"FQ_openLoginPage(java)\"},{\"type\":\"text\",\"name\":\"登录状态\"}]",
+ "loginUrl": "function login() {\n  var u = '';\n  var p = '';\n  try { u = String(result['用户名'] || ''); } catch (e1) {}\n  try { p = String(result['密码'] || ''); } catch (e2) {}\n  u = u.replace(/^\\s+|\\s+$/g, '');\n  p = p.replace(/^\\s+|\\s+$/g, '');\n  if (!u) { try { java.longToast('请填写用户名'); } catch (e) {} return; }\n  if (!p) { try { java.longToast('请填写密码'); } catch (e) {} return; }\n  var resp = null;\n  var txt = '';\n  try {\n    resp = java.post('https://wap.39shuwu.com/api/login',\n      'username=' + encodeURIComponent(u) + '&password=' + encodeURIComponent(p),\n      {\n        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',\n        'Referer': 'https://wap.39shuwu.com/user/login.html',\n        'Origin': 'https://wap.39shuwu.com',\n        'X-Requested-With': 'XMLHttpRequest',\n        'Content-Type': 'application/x-www-form-urlencoded'\n      });\n    txt = String(resp.body());\n  } catch (e3) {\n    try { java.longToast('登录请求失败: ' + e3); } catch (e) {}\n    return;\n  }\n  var ok = false;\n  var msg = '';\n  try {\n    var jo = JSON.parse(txt);\n    ok = (String(jo.code) === '0');\n    msg = String(jo.msg || '');\n  } catch (e4) {\n    ok = (txt.indexOf('\\\"code\\\":0') >= 0);\n    msg = ok ? '' : txt.substring(0, 120);\n  }\n  if (ok) {\n    var saved = false;\n    try {\n      if (resp !== null) {\n        var sc = resp.header('Set-Cookie');\n        if (sc) {\n          var sid = '';\n          var arr = String(sc).split(/,\\s*(?=[A-Za-z0-9_]+=)/);\n          for (var i = 0; i < arr.length; i++) {\n            var one = arr[i];\n            var mm = one.match(/(^|;\\s*)SID=([^;]+)/);\n            if (mm) { sid = mm[2]; break; }\n          }\n          if (sid) {\n            cookie.setCookie('https://wap.39shuwu.com/', 'SID=' + sid);\n            saved = true;\n          }\n        }\n      }\n    } catch (e5) {}\n    try { java.put('fqLoginMsg', '登录成功'); } catch (e) {}\n    try { java.upLoginData({ '登录状态': '✅ 登录成功' + (saved ? '' : '(cookie待确认)') }); } catch (e) {}\n    try { java.longToast('✅ 登录成功'); } catch (e) {}\n    try { java.toast('登录成功'); } catch (e) {}\n    try { java.reLoginView(false); } catch (e) {}\n  } else {\n    var em = msg ? msg : '登录失败';\n    try { java.put('fqLoginMsg', em); } catch (e) {}\n    try { java.upLoginData({ '登录状态': '❌ ' + em }); } catch (e) {}\n    try { java.longToast('❌ ' + em); } catch (e) {}\n    try { java.toast(em); } catch (e) {}\n  }\n}",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": "article .info p:eq(1)@text##作者：##",
+  "canReName": "true",
+  "coverUrl": "article .image img@src",
+  "intro": "article .introbar@text##简介：##",
+  "kind": "article .info p:eq(2) a@text",
+  "lastChapter": "article .info p:eq(5) em@text",
+  "name": "article .info h2.title@text",
+  "tocUrl": "@js:baseUrl + 'mulu.html'"
+ },
+ "ruleContent": {
+  "content": "#text p@text",
+  "sourceRegex": "https?://wap\\.39shuwu\\.com/shu\\d+/\\d+\\.html",
+  "title": "header h1.title@text"
+ },
+ "ruleExplore": {
+  "author": "p:eq(1)@text##作者：##",
+  "bookList": "#list article",
+  "bookUrl": "a@href",
+  "coverUrl": ".image img@src",
+  "intro": "p.intro@text##简介：##",
+  "name": "h2.title@text"
+ },
+ "ruleSearch": {
+  "author": "$.author",
+  "bookList": "$.data.search",
+  "bookUrl": "$.book_detail_url",
+  "coverUrl": "$.cover",
+  "intro": "$.intro",
+  "kind": "$.cate_name",
+  "lastChapter": "$.latest_chapter_name",
+  "name": "$.book_name"
+ },
+ "ruleToc": {
+  "chapterList": "ul.chapter li a",
+  "chapterName": "text",
+  "chapterUrl": "href"
+ },
+ "searchUrl": "https://wap.39shuwu.com/user/search.html?q={{java.encodeURI(key)}},{\"bodyJs\":\"var _ua='Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';var _page=String(result||'');var _q=java.encodeURI(String(key));var _re=/var\\\\s+([A-Za-z_$][\\\\w$]*)\\\\s*=\\\\s*\\\"([^\\\"]*)\\\"/g;var _m,_tk={};while((_m=_re.exec(_page))!==null){_tk[_m[1]]=_m[2];}if(!_tk['sign']){if(_page.indexOf('趣书吧会员登录')>=0){throw new Error('未登录，请点击菜单「登录」');}throw new Error('搜索令牌(sign)未获取到，站点结构可能已变更');}var _body='q='+_q;for(var _k in _tk){if(_k!=='sign'){_body=_body+'&'+_k+'='+encodeURIComponent(_tk[_k]);}}_body=_body+'&sign='+_tk['sign'];var _resp=java.post('https://wap.39shuwu.com/api/search',_body,{'User-Agent':_ua,'Referer':'https://wap.39shuwu.com/user/search.html?q='+_q,'Origin':'https://wap.39shuwu.com','X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'});var _txt=String(_resp.body());if(!_txt){throw new Error('搜索接口无响应');}if(_txt.indexOf('搜索太频繁')>=0){throw new Error('⏳站点搜索限频(约3秒/次)，请稍候再试');}if(_txt.indexOf('\\\"code\\\":0')<0&&_txt.indexOf('\\\"code\\\" : 0')<0){throw new Error('搜索失败: '+_txt.substring(0,120));}_txt\"}",
+ "weight": 0
+}

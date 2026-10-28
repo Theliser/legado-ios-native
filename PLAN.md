@@ -105,7 +105,7 @@ legado/
 - 导入导出：单条 / 数组 / 字符串化规则 / 冲突更新 / 非法载荷。
 - 验收：55 个测试全绿，覆盖 DAO 行为与导入导出往返。
 
-### P2 规则引擎（核心）🚧 主链路通，边界待补
+### P2 规则引擎（核心）✅
 - 已实现：`RuleAnalyzer`（平衡组 `splitRule` / `innerRule`）、`AnalyzeRule` + `SourceRule`
   （模式分发、`@put/@get/{{}}/##`、变量表）、`AnalyzeByJSoup`（含索引语法）、`AnalyzeByXPath`
   （libxml2）、`AnalyzeByJSONPath`、`AnalyzeByRegex`。
@@ -114,7 +114,13 @@ legado/
   JSONPath 通配与过滤、XPath、`##` 替换、`@put/@get`、URL 分页与 `url,{json}` 选项、
   目录去重排序、正文替换与全角缩进、空内容抛错。
 - 已修缺陷：`##` 替换被截断、`<js>` 捕获组越界崩溃、括号索引错位、JSONPath 多结果未合并。
-- 待补：`relatedBooks`、`imageStyle`/`imageDecode`/`callBackJs`、`@put` 非规范 JSON 兜底。
+- **关联书籍 `relatedBooks`**：按 `key/title/url` 定义逐个请求发现页，过滤当前书籍，
+  单模块失败不影响其他模块（`RelatedBooks.swift`）。
+- **正文扩展**：`imageStyle` 落入书籍配置（阅读时生效）；`imageDecode` / `coverDecodeJs`
+  走字节级 JS 解密（`fetchImageData` 已接入）；`callBackJs` 支持 `event/result/book/chapter`
+  上下文，并接入加书架/移出书架/开始阅读事件。
+- **`@put` 非规范 JSON**：键、值都不带引号（`{name:.title@text}`）也能解析，对齐 GSON 宽松模式。
+- 验收：134 个单测全绿（含 6 个真实源离线回放基准）。
 
 ### P3 网络与 Cookie ✅（代码与单测完成，待真实站点验证）
 - `AnalyzeUrl` 全量：编码、`<1,2,3>` 分页、option（method/headers/body/type/charset/retry/
@@ -128,21 +134,36 @@ legado/
 - 已修缺陷：URL 整串 `addingPercentEncoding` 会把已编码的 `%E5` 变成 `%25E5`（书源带中文参数的地址必然 404）。
 - 待做：代理、`dnsIp` 强制解析、真实 CF 站点端到端验证（需要 403 类站点，本机网络下多数不可达）。
 
-### P4 业务链路 🚧 主链路可用
+### P4 业务链路 ✅（主链路与 JS 桥完成）
 - `WebBook` + `BookList/BookInfo/BookChapterList/BookContent`，含规则回退、
   文件型书源走下载、目录去重排序、正文分页（单页串行 / 多页并发 4 路）。
 - `ConcurrentRateLimiter`：`n/ms` 与单数字两种写法，按书源 key 全局共享计数，
   超限等待而不是直接失败；参数更新保留已有计数。
 - 错误分类：超时 / 域名 / 连接 / SSL / 其它，用负数 callTime 编码供调试页展示。
-- `mainJs` 字段（官方新增的纯 JS 单文件书源）已入库，执行链路待做。
+- **JS 桥补全**（`java.*` 常用面）：
+  - 网络：`ajax/ajaxAll/ajaxTestAll/get/post/head/connect`，含 headers、body、timeout；
+  - 响应：`body/url/code/statusCode/statusMessage/header/headers/cookies/toString`；
+  - 编码：base64（含 charset）、hex、md5、`encodeURI(charset)`、`timeFormatUTC`、
+    `strToBytes/bytesToStr`（JS 字节数组与 Swift Data 互转）；
+  - 规则与变量：`getString/getStringList/getElement/getElements`（Element 支持
+    `text/ownText/html/outerHtml/attr/select`）、`put/getFromCache`、`cookie.*`、`cache.*`；
+  - `source.*`：`get/put/getVariable/getLoginInfo/getHeaderMap` 等；
+  - 文件：`importScript/cacheFile/downloadFile/readTxtFile/readFile/deleteFile`；
+  - WebView：`webView/webViewGetSource/webViewGetOverrideUrl`（隐藏 WKWebView）；
+  - 仍不支持：`Packages.java.*` 原生类、TTF 字体替换、zip/rar/7z 解压，
+    `startBrowser*` 手动过验证（iOS 端只记日志）。
+- **`mainJs` 纯 JS 单文件书源**（`JsSource.swift`）：`search/explore/getBookInfo/getChapters/getContent`
+  全部打通；每次调用独立 JS 作用域，函数内可用 `java.ajax` 等桥接能力。
+- **章节缓存**：阅读先查 `ChapterCache`，命中直接渲染；下载流程同步落盘、可整本清除。
+- **整本下载**：`BookDownloader` 并发抓取、失败章节隔离、进度回调、默认跳过已有缓存、
+  `force` 强制重抓；详情页已接入「缓存全本」按钮。
 - **真实站点验证已做**：只收最近批次的书源（老源规则基本随站点改版失效）。
   笔趣阁（bqquge，规则 2025-11 版）跑通 搜索 2 条 → 详情「剑来完整版」→ 目录 1278 章 →
   正文 522 字；另一条 2025-11 的趣书吧走 `bodyJs` + `java.post` 取 token，搜索无结果
-  （JS 桥未实现 `java.post`，已记录为待补项）。
+  （当时 JS 桥未实现 `java.post`，现已补齐，可用 `JSBridgeTests` 回放验证）。
   联网用例默认 skip（`TEST_RUNNER_RUN_LIVE_TESTS=1` 才跑），硬断言只要求「至少一个最近源全通」。
 - **阶段追踪**：`SourceTrace`（URL / 状态码 / 耗时 / 原始响应 / 错误）在搜索、详情、目录、正文
   四个阶段完成时回调；"详情页即目录页"这类复用响应的路径也会发 trace（标注「复用详情页响应」）。
-- 待做：JS 桥补全（对照 `java.*` 全量，`java.post` 优先）、章节缓存、下载。
 
 ### P5 UI（液态玻璃 + MVI）🚧 书源侧已成体系
 - 已做：书架（封面网格、分组）、搜索（多源并发聚合）、书源管理（导入/分组/启用）、

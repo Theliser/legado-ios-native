@@ -1,0 +1,56 @@
+{
+ "bookSourceGroup": "AI",
+ "bookSourceName": "天空书屋(m.tkshuw.com)",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://m.tkshuw.com",
+ "bookUrlPattern": "https?://(?:m|www)\\.tkshuw\\.com/nf_\\d+(?:/|\\.html)?$",
+ "concurrentRate": "1/1500",
+ "customButton": false,
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "[{\"title\":\"🔥最近更新\",\"url\":\"https://m.tkshuw.com/hots.html\"},{\"title\":\"🏠首页推荐\",\"url\":\"https://m.tkshuw.com/\"},{\"title\":\"仙侠\",\"url\":\"https://m.tkshuw.com/sort/20_0_0_0/?page={{page}}\"},{\"title\":\"都市\",\"url\":\"https://m.tkshuw.com/sort/21_0_0_0/?page={{page}}\"},{\"title\":\"历史\",\"url\":\"https://m.tkshuw.com/sort/22_0_0_0/?page={{page}}\"},{\"title\":\"言情\",\"url\":\"https://m.tkshuw.com/sort/23_0_0_0/?page={{page}}\"},{\"title\":\"网游\",\"url\":\"https://m.tkshuw.com/sort/24_0_0_0/?page={{page}}\"},{\"title\":\"科幻\",\"url\":\"https://m.tkshuw.com/sort/25_0_0_0/?page={{page}}\"},{\"title\":\"武侠\",\"url\":\"https://m.tkshuw.com/sort/26_0_0_0/?page={{page}}\"},{\"title\":\"侦探\",\"url\":\"https://m.tkshuw.com/sort/62_0_0_0/?page={{page}}\"},{\"title\":\"校园\",\"url\":\"https://m.tkshuw.com/sort/64_0_0_0/?page={{page}}\"},{\"title\":\"综合\",\"url\":\"https://m.tkshuw.com/sort/72_0_0_0/?page={{page}}\"}]",
+ "header": "{\"User-Agent\":\"Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36\",\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\",\"Accept-Language\":\"zh-CN,zh;q=0.9\",\"Referer\":\"https://m.tkshuw.com/\"}",
+ "lastUpdateTime": "1792638651891",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": "meta[property=\"og:novel:author\"]@content||div.synopsisArea_detail p.0@text##^作者：",
+  "coverUrl": "meta[property=\"og:image\"]@content||div.synopsisArea_detail img@data-src",
+  "intro": "meta[name=\"description\"]@content||p.review@text##^《[^》]*》简介:?",
+  "kind": "meta[property=\"og:novel:category\"]@content||div.synopsisArea_detail p.1@text##^类别：",
+  "lastChapter": "meta[property=\"og:novel:latest_chapter_name\"]@content||p.lastchapters a@text",
+  "name": "meta[property=\"og:novel:book_name\"]@content||header h1.title@text",
+  "tocUrl": "p.btn a[href*=\"all.html\"]@href"
+ },
+ "ruleContent": {
+  "content": "#htmlContent@html",
+  "nextContentUrl": "@js:var h=String(result||\"\");var m=h.match(/id=\"pb_next\"[^>]*href=\"([^\"]+)\"/);var u=(m&&/^\\d+_\\d+\\.html$/.test(m[1]))?m[1]:\"\";u?u:null"
+ },
+ "ruleExplore": {
+  "author": "@js:var t=result.text();var i=t.lastIndexOf('/');i<0?null:t.substring(i+1).trim()",
+  "bookList": "div.s_list",
+  "bookUrl": "a@href",
+  "coverUrl": "a@href##/nf_(\\d+)/.*##https://www.tkshuw.com/image/nf_$1.jpg",
+  "kind": "@js:var t=result.text();var m=t.match(/^\\s*\\[([^\\]]*)\\]/);m?m[1]:null",
+  "lastChapter": "a@title##^最新章节：",
+  "name": "a@text"
+ },
+ "ruleSearch": {
+  "author": "@js:var t=result.text();var i=t.lastIndexOf('/');i<0?null:t.substring(i+1).trim()",
+  "bookList": "div.wrap-box div.s_list",
+  "bookUrl": "a@href",
+  "coverUrl": "a@href##/nf_(\\d+)/.*##https://www.tkshuw.com/image/nf_$1.jpg",
+  "kind": "@js:var t=result.text();var m=t.match(/^\\s*\\[([^\\]]*)\\]/);m?m[1]:null",
+  "lastChapter": "a@title##^最新章节：",
+  "name": "a@text"
+ },
+ "ruleToc": {
+  "chapterList": "div.directoryArea p",
+  "chapterName": "a@text",
+  "chapterUrl": "a@href"
+ },
+ "searchUrl": "https://m.tkshuw.com/search.html?nf={{key}}",
+ "weight": 0
+}

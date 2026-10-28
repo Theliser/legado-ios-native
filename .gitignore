@@ -20,3 +20,6 @@ Vendor/
 # 本地配置
 *.local.xcconfig
 Secrets.plist
+
+# 临时脚本 / 笔记
+.context/

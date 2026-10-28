@@ -13,6 +13,18 @@ struct HTTPRequestSpec {
     var followRedirects: Bool = true
 }
 
+/// 请求拦截钩子：基准测试用来录制真实响应、之后离线回放。
+///
+/// 刻意做在 HTTPClient 而不是 URLProtocol 上 —— 这里拿到的是**已经解码好**的
+/// `StrResponse`（字符集探测、XML 声明补全、Cookie 回写都做完了），
+/// 回放时不必重做一遍，也就不会出现「回放和真实请求结果不一致」的假象。
+struct HTTPHook {
+    /// 返回非 nil 就直接当响应，不发网络
+    var replay: (@Sendable (HTTPRequestSpec) -> StrResponse?)?
+    /// 真实请求成功后回调
+    var record: (@Sendable (HTTPRequestSpec, StrResponse) -> Void)?
+}
+
 /// 基于 URLSession 的请求层。
 /// 对齐上游 OkHttp 的行为：默认 UA、Keep-Alive、CookieJar 头语义、重试、字符集探测、重定向标记。
 final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
@@ -20,15 +32,31 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
     private let settings: AppSettings
     private let cookieStore: CookieStore
     private var session: URLSession!
+    /// 基准测试的录制/回放钩子；生产环境保持 nil
+    var hook: HTTPHook?
     /// JS 里的 `java.ajax` 是同步调用，这里用信号量把它挡在后台线程上
     private let syncQueue = DispatchQueue(label: "legado.http.sync", attributes: .concurrent)
 
-    init(settings: AppSettings, cookieStore: CookieStore) {
+    /// - Parameter proxy: 形如 `http://127.0.0.1:10808`。仅基准测试/调试用，
+    ///   生产环境传 nil，走系统默认网络栈。
+    init(settings: AppSettings, cookieStore: CookieStore, proxy: String? = nil) {
         self.settings = settings
         self.cookieStore = cookieStore
         super.init()
 
         let config = URLSessionConfiguration.default
+        if let proxy, let components = URLComponents(string: proxy),
+           let host = components.host {
+            let port = components.port ?? 1080
+            config.connectionProxyDictionary = [
+                "HTTPEnable": 1,
+                "HTTPProxy": host,
+                "HTTPPort": port,
+                "HTTPSEnable": 1,
+                "HTTPSProxy": host,
+                "HTTPSPort": port
+            ]
+        }
         config.timeoutIntervalForRequest = 60
         config.timeoutIntervalForResource = 120
         config.httpShouldSetCookies = false
@@ -62,6 +90,7 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
     }
 
     private func perform(_ spec: HTTPRequestSpec) async throws -> StrResponse {
+        if let canned = hook?.replay?(spec) { return canned }
         guard let url = Self.makeURL(spec.url) else { throw URLError(.badURL) }
 
         var request = URLRequest(url: url)
@@ -127,6 +156,7 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
             result.isRedirect = true
             result.priorUrl = original
         }
+        hook?.record?(spec, result)
         return result
     }
 

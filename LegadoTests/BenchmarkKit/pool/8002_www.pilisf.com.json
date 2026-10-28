@@ -1,0 +1,57 @@
+{
+ "bookSourceGroup": "纳兰验证",
+ "bookSourceName": "霹雳书坊",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://www.pilisf.com",
+ "bookUrlPattern": ".*pilisf\\.com/wapbook/\\d+\\.html.*",
+ "concurrentRate": "1000",
+ "customButton": false,
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "[{\"title\":\"分类\",\"url\":\"/sort/\"},{\"title\":\"排行\",\"url\":\"/top/\"},{\"title\":\"新书\",\"url\":\"/top/postdate_1/\"},{\"title\":\"完本\",\"url\":\"/full/1/\"}]",
+ "header": "{\"User-Agent\": \"Mozilla/5.0 (Linux; Android 16; 23113RKC6C Build/BP2A.250605.031.A3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.36 Mobile Safari/537.36\", \"Accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\", \"Accept-Language\": \"zh-CN,zh;q=0.9,en;q=0.8\", \"Accept-Encoding\": \"identity\", \"Referer\": \"https://www.pilisf.com/\", \"Origin\": \"https://www.pilisf.com\"}",
+ "lastUpdateTime": "1792895353758",
+ "loginUi": "[\n  {\n    \"name\": \"🌐 打开浏览器完成验证\",\n    \"type\": \"button\",\n    \"action\": \"openBrowser()\",\n    \"style\": {\"layout_flexGrow\": 1, \"layout_flexBasisPercent\": 1}\n  },\n  {\n    \"name\": \"🍪 查看Cookie状态\",\n    \"type\": \"button\",\n    \"action\": \"checkCookie()\",\n    \"style\": {\"layout_flexGrow\": 1, \"layout_flexBasisPercent\": 0.5}\n  },\n  {\n    \"name\": \"🗑️ 清除Cookie\",\n    \"type\": \"button\",\n    \"action\": \"clearCookie()\",\n    \"style\": {\"layout_flexGrow\": 1, \"layout_flexBasisPercent\": 0.5}\n  }\n]",
+ "loginUrl": "openBrowser = () => {\n    java.startBrowser('https://www.pilisf.com', '过完验证后，务必等到首页完全显示，再返回阅读');\n}\n\ncheckCookie = () => {\n    try {\n        var c = java.getCookie('https://www.pilisf.com') || '';\n        var hasClearance = c.indexOf('cf_clearance') !== -1;\n        var hasBm = c.indexOf('__cf_bm') !== -1;\n        java.toast('cf_clearance: ' + (hasClearance ? '✅' : '❌') + '  __cf_bm: ' + (hasBm ? '✅' : '❌'));\n    } catch(e) {\n        java.toast('检查失败: ' + e);\n    }\n}\n\nclearCookie = () => {\n    try {\n        java.clearCookie('https://www.pilisf.com');\n        java.toast('🗑️ Cookie 已清除，需重新过 CF 验证');\n    } catch(e) {\n        java.toast('清 Cookie 失败: ' + e);\n    }\n}",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": "div.book-info-status a[href*=author]@text || p.book-status@text || span.author a@text || div.bookinfo p@text",
+  "coverUrl": "div.book-cover img@src || img.book-cover@src || div.bookimg img@src || img@src",
+  "intro": "div.book-intro@text || p.book-intro@text || div.intro@text || div.bookinfo div.desc@text",
+  "kind": "a.book-fenlei@text || span.book-fenlei@text || div.cat@text || div.bookinfo span@text",
+  "lastChapter": "a.book-newest@text || a.lastchapter@text || div.bookinfo a.newest@text",
+  "name": "h1@text || h2.book-title@text || div.bookname h1@text || div.bookinfo h1@text",
+  "tocUrl": "@js:\nvar b = String(baseUrl);\nvar m0 = b.match(/wapbook\\/(\\d+)/);\nvar out = b;\nif (m0) {\n  var id = m0[1];\n  try {\n    var html = String(java.ajax(b));\n    var re = new RegExp('href=[\"\\']([^\"\\']*?/\\\\d+/' + id + '/?)[\"\\']');\n    var m = html.match(re);\n    if (m) {\n      out = m[1];\n      if (out.indexOf('http') !== 0) {\n        if (out.charAt(0) !== '/') out = '/' + out;\n        out = 'https://www.pilisf.com' + out;\n      }\n      java.log('TOC_URL=' + out);\n    }\n  } catch(e) { java.log('TOC_ERR=' + e); }\n}\nout;"
+ },
+ "ruleContent": {
+  "content": "#novelcontent p@text || #novelcontent@text || .novelcontent p@text",
+  "nextContentUrl": "ul.novelbutton a:contains(下一章)@href || a:contains(下一章)@href"
+ },
+ "ruleExplore": {
+  "author": "span.author a@text || span.book-status@text || div.author@text",
+  "bookList": "div.x-book || div.bookbox || div.novelslist li || ul.list li",
+  "bookUrl": "a[href^=wapbook]@href || div.x-book__coverbox a@href || h4 a@href || a@href",
+  "coverUrl": "img.x-book__cover@src || img@src",
+  "intro": "p.x-book__intro@text || div.intro@text",
+  "kind": "span.book-fenlei@text || div.cat@text",
+  "name": "a[href^=wapbook]@text || p.x-book__info--name@text || h4 a@text || a@text"
+ },
+ "ruleSearch": {
+  "author": "span.author a@text",
+  "bookList": "div.searchresult p.sone",
+  "bookUrl": "a[href^=wapbook]@href",
+  "checkKeyWord": "我的",
+  "coverUrl": "img@src",
+  "name": "a[href^=wapbook]@text"
+ },
+ "ruleToc": {
+  "chapterList": "ul.chapters li",
+  "chapterName": "a@text",
+  "chapterUrl": "a@href"
+ },
+ "searchUrl": "@js:\nvar U = 'https://www.pilisf.com';\nvar out = '';\nvar c = String(java.getCookie(U) || '');\nif (c.indexOf('cf_clearance') === -1) {\n  java.log('CF_CLEARANCE_MISSING');\n  out = '';\n} else {\n  var enc = '';\n  try {\n    var bytes = new Packages.java.lang.String(String(key)).getBytes('GBK');\n    for (var i = 0; i < bytes.length; i++) {\n      var b = bytes[i] & 0xff;\n      if ((b >= 48 && b <= 57) || (b >= 65 && b <= 90) || (b >= 97 && b <= 122)) {\n        enc += String.fromCharCode(b);\n      } else {\n        enc += '%' + (b < 16 ? '0' : '') + b.toString(16).toUpperCase();\n      }\n    }\n  } catch(e) {\n    java.log('GBK_ENC_ERR:' + e);\n  }\n  var body = 's=' + enc + '&type=articlename';\n  out = U + '/s.php,' + JSON.stringify({method:'POST', body:body, headers:{'Content-Type':'application/x-www-form-urlencoded','Accept-Encoding':'identity','Referer':U + '/','Origin':U}});\n}\nout;",
+ "weight": 0
+}

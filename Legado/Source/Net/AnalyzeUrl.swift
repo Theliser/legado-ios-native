@@ -17,6 +17,9 @@ final class AnalyzeUrl {
     private let httpClient: HTTPClient
     private let cookieStore: CookieStore?
     private let settings: AppSettings?
+    /// JS 桥显式指定的请求参数（url,{json} 形式）。
+    /// 不走 `,{` 正则切分 —— body 里出现 `,{` 时正则会把 URL 截错。
+    private let explicitOption: String?
 
     // MARK: - 输出
 
@@ -58,8 +61,10 @@ final class AnalyzeUrl {
          ruleData: RuleData? = nil,
          httpClient: HTTPClient,
          cookieStore: CookieStore? = nil,
-         settings: AppSettings? = nil) {
+         settings: AppSettings? = nil,
+         option: String? = nil) {
         self.mUrl = url
+        self.explicitOption = option
         self.key = key
         self.page = page
         self.ruleUrl = url
@@ -162,6 +167,15 @@ final class AnalyzeUrl {
     }
 
     private func analyzeUrl() {
+        if let explicitOption {
+            // 选项由 JS 桥直接给定，ruleUrl 里不含 `,{...}`
+            url = NetworkUtils.getAbsoluteURL(baseUrl, ruleUrl)
+            if let base = NetworkUtils.getBaseUrl(url) { baseUrl = base }
+            applyOption(explicitOption)
+            finishEncoding()
+            return
+        }
+
         let urlMatch = ruleUrl.firstMatch(Self.paramPattern)
         let urlNoOption: String
         if let urlMatch {
@@ -178,6 +192,11 @@ final class AnalyzeUrl {
             applyOption(optionText)
         }
 
+        finishEncoding()
+    }
+
+    /// method / body 确定后的编码收尾
+    private func finishEncoding() {
         urlNoQuery = url
         switch method {
         case "POST":
@@ -245,6 +264,10 @@ final class AnalyzeUrl {
         dnsIp = string("dnsIp")
         if let sid = string("serverID") { serverID = Int64(sid) }
         if let delay = string("webViewDelayTime") { webViewDelayTime = max(0, Int(delay) ?? 0) }
+        if let timeout = string("timeout") ?? string("callTimeout"),
+           let seconds = Double(timeout), seconds > 0 {
+            readTimeout = seconds / (seconds > 1000 ? 1000 : 1)
+        }
 
         if let js = string("js") {
             if let value = evalJS(js, result: url) {
@@ -334,6 +357,40 @@ final class AnalyzeUrl {
         env.ajax = { [weak self] url, timeout in
             self?.ajax(url, timeout: timeout) ?? ""
         }
+        env.request = { [weak self] request in
+            guard let self else { return nil }
+            return JSRequestExecutor.perform(request, source: self.source,
+                                             book: self.book, chapter: self.chapter,
+                                             ruleData: self.ruleData,
+                                             httpClient: self.httpClient,
+                                             cookieStore: self.cookieStore,
+                                             settings: self.settings)
+        }
+        env.requestAll = { [weak self] requests in
+            guard let self else { return [] }
+            return JSRequestExecutor.performAll(requests, source: self.source,
+                                                book: self.book, chapter: self.chapter,
+                                                ruleData: self.ruleData,
+                                                httpClient: self.httpClient,
+                                                cookieStore: self.cookieStore,
+                                                settings: self.settings)
+        }
+        env.dataRequest = { [weak self] request in
+            guard let self else { return nil }
+            return JSRequestExecutor.performData(request, source: self.source,
+                                                 book: self.book, chapter: self.chapter,
+                                                 ruleData: self.ruleData,
+                                                 httpClient: self.httpClient,
+                                                 cookieStore: self.cookieStore,
+                                                 settings: self.settings)
+        }
+        env.settings = settings
+        // URL 里的 JS 也可能调用 java.getString / getElements（例如搜索词解析）
+        let analyzer = AnalyzeRule(book: book, source: source)
+        analyzer.cookieStore = cookieStore
+        analyzer.httpClient = httpClient
+        if let result { analyzer.setContent(result, baseUrl: baseUrl) }
+        env.analyzer = analyzer
         let jsKey = source?.bookSourceUrl ?? "url"
         return JSRuntime.shared.evaluate(jsStr, key: jsKey, env: env)
     }

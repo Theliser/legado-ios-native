@@ -1,0 +1,52 @@
+{
+ "bookSourceGroup": "自动生成",
+ "bookSourceName": "书海阁",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://book.washai.net",
+ "bookUrlPattern": "",
+ "customOrder": 0,
+ "enabled": true,
+ "enabledExplore": false,
+ "exploreUrl": "",
+ "header": "",
+ "lastUpdateTime": "1792344377979",
+ "loginUrl": "",
+ "ruleBookInfo": {
+  "author": "@css:a#bookAuthor@text",
+  "coverUrl": "@css:img#bookCoverImg@src",
+  "intro": "@css:p#bookDesc@text",
+  "kind": "@css:a#bookCatBadge@text",
+  "lastChapter": "@css:a#lastIndexLink@text",
+  "name": "@css:h1#bookName@text",
+  "tocUrl": "@css:a#allIndexLink@href",
+  "wordCount": "@css:em#bookWordCount@text"
+ },
+ "ruleContent": {
+  "content": "@css:.readChapterAppendBody>p@text",
+  "nextContentUrl": "",
+  "sourceRegex": "",
+  "webJs": ""
+ },
+ "ruleExplore": [],
+ "ruleSearch": {
+  "author": "@css:p.classBookAuthor>a@text",
+  "bookList": "@css:#bookList>article",
+  "bookUrl": "@css:h3.classBookTitle>a@href",
+  "coverUrl": "@css:span.classBookCover img@src",
+  "intro": "@css:p.classBookDesc@text",
+  "kind": "@css:a.classCoverCat@text",
+  "lastChapter": "@css:p.classBookChapter>a@text",
+  "name": "@css:h3.classBookTitle>a@text",
+  "wordCount": "@css:p.classBookMeta@text##^[^·]*·\\s*([0-9.]+万字).*##$1###"
+ },
+ "ruleToc": {
+  "chapterList": "@css:#bookIndexList>li[data-index-id]",
+  "chapterName": "@css:a@ownText",
+  "chapterUrl": "@css:a@href",
+  "isVip": "",
+  "nextTocUrl": "//*[@id=\"indexPager\"]//a[contains(text(),\"下一页\")]/@href",
+  "updateTime": ""
+ },
+ "searchUrl": "/book/bookclass.html?k={{key}}&page={{page}}",
+ "weight": 0
+}

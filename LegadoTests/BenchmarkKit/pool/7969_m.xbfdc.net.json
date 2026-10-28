@@ -1,0 +1,55 @@
+{
+ "bookSourceGroup": "纳兰验证",
+ "bookSourceName": "58小说网",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://m.xbfdc.net",
+ "concurrentRate": "1000",
+ "customButton": false,
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "[{\"title\":\"玄幻魔法\",\"url\":\"/like/1/\"},{\"title\":\"武侠修真\",\"url\":\"/like/2/\"},{\"title\":\"都市言情\",\"url\":\"/like/3/\"},{\"title\":\"历史军事\",\"url\":\"/like/4/\"},{\"title\":\"网游竞技\",\"url\":\"/like/5/\"},{\"title\":\"科幻小说\",\"url\":\"/like/6/\"},{\"title\":\"恐怖灵异\",\"url\":\"/like/7/\"},{\"title\":\"女生频道\",\"url\":\"/like/8/\"},{\"title\":\"其他类型\",\"url\":\"/like/9/\"},{\"title\":\"全本小说\",\"url\":\"/quanben/\"},{\"title\":\"周点击榜\",\"url\":\"/paihang/weekvisit/\"},{\"title\":\"月点击榜\",\"url\":\"/paihang/monthvisit/\"},{\"title\":\"总点击榜\",\"url\":\"/paihang/allvisit/\"}]",
+ "header": "{\"User-Agent\":\"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36\",\"Accept\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\",\"Accept-Language\":\"zh-CN,zh;q=0.9\",\"Referer\":\"https://m.xbfdc.net/\"}",
+ "lastUpdateTime": "1792400975625",
+ "loginUrl": "https://m.xbfdc.net/user/login.html",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": "class.info@tag.p.0@text##作者：",
+  "coverUrl": "class.image@img@src",
+  "intro": "class.introbar@text##简介：",
+  "kind": "class.info@tag.p.2@tag.a@text",
+  "lastChapter": "class.newest@a@text",
+  "name": "class.title@text",
+  "tocUrl": "@js:baseUrl;"
+ },
+ "ruleContent": {
+  "content": "id.text@html",
+  "nextContentUrl": "text.下一章@href",
+  "title": "tag.h1@text"
+ },
+ "ruleExplore": {
+  "author": "tag.p.0@text##作者：",
+  "bookList": "article",
+  "bookUrl": "tag.a.0@href",
+  "coverUrl": "class.image@img@src",
+  "intro": "class.intro@text##简介：",
+  "name": "class.title@text"
+ },
+ "ruleSearch": {
+  "author": "class.book-author@text",
+  "bookList": "<js>\n(function(){\n  var h = String(result);\n  var B = 'https://m.xbfdc.net';\n  var k = '';\n  var b = String(baseUrl);\n  var qm = b.match(/[?&]q=([^&]+)/);\n  if (qm) { try { k = String(Packages.java.net.URLDecoder.decode(qm[1], 'UTF-8')); } catch(e) { k = qm[1]; } }\n  if (!k) {\n    var vm = h.match(/name=[\"']q[\"'][^>]*value=[\"']([^\"']*)[\"']/);\n    if (vm) k = vm[1];\n  }\n  if (!k) return '';\n  // 提取所有动态变量\n  var vars = {};\n  var re = /var\\s+(\\w+)\\s*=\\s*[\"']([^\"']*)[\"']\\s*;?/g, m;\n  while ((m = re.exec(h)) !== null) { vars[m[1]] = m[2]; }\n  // Cookie 存在时 bgt 去掉最后一个字符（common.js search_before 逻辑）\n  var ck = '';\n  try { ck = String(cookie.getCookie(B)); } catch(e) { ck = ''; }\n  if (ck !== '' && ck !== 'null' && ck !== 'undefined' && vars['bgt']) {\n    vars['bgt'] = vars['bgt'].slice(0, vars['bgt'].length - 1);\n  }\n  // 编码（Rhino 无 encodeURIComponent，用 Packages）\n  var enc = function(s){ try { return String(Packages.java.net.URLEncoder.encode(s, 'UTF-8')); } catch(e) { return String(s); } };\n  var body = 'q=' + enc(k);\n  for (var name in vars) { body += '&' + name + '=' + enc(vars[name]); }\n  // POST /api/search\n  var res = '';\n  try {\n    res = String(java.ajax(B + '/api/search,' + JSON.stringify({\n      method: 'POST',\n      body: body,\n      header: {\n        'Content-Type': 'application/x-www-form-urlencoded',\n        'Accept-Encoding': 'identity',\n        'Referer': B + '/user/search.html?q=' + enc(k),\n        'X-Requested-With': 'XMLHttpRequest'\n      }\n    }), 30000));\n  } catch(e) { return '<div class=\"book-item\"><a class=\"book-link\" href=\"#\">[AJAX_ERROR]</a><p class=\"book-intro\">' + String(e) + '</p></div>'; }\n  // 解析 JSON\n  var json = null;\n  try { json = JSON.parse(res); } catch(e) {\n    return '<div class=\"book-item\"><a class=\"book-link\" href=\"#\">[JSON_ERROR]</a><p class=\"book-intro\">' + res.substring(0, 300).replace(/</g,'&lt;') + '</p></div>';\n  }\n  if (!json || json.code !== 0) {\n    return '<div class=\"book-item\"><a class=\"book-link\" href=\"#\">[CODE_' + (json && json.code) + ']</a><p class=\"book-intro\">' + ((json && json.msg) || res.substring(0,200)) + '</p></div>';\n  }\n  var list = json.data && json.data.search;\n  if (!list || !list.length) {\n    return '<div class=\"book-item\"><a class=\"book-link\" href=\"#\">[EMPTY]</a><p class=\"book-intro\">返回JSON无search数据</p></div>';\n  }\n  // 渲染\n  var out = '';\n  for (var i = 0; i < list.length; i++) {\n    var it = list[i];\n    out += '<div class=\"book-item\"><a class=\"book-link\" href=\"' + it.book_list_url + '\">' + (it.title || it.book_name) + '</a><img class=\"book-cover\" src=\"' + (it.cover || '') + '\"><span class=\"book-author\">' + (it.author || '') + '</span><p class=\"book-intro\">' + (it.intro || '') + '</p></div>';\n  }\n  return out;\n})()\n</js>div.book-item",
+  "bookUrl": "class.book-link@href",
+  "coverUrl": "class.book-cover@src",
+  "intro": "class.book-intro@text",
+  "name": "class.book-link@text"
+ },
+ "ruleToc": {
+  "chapterList": "class.chapter@tag.li",
+  "chapterName": "tag.a@text",
+  "chapterUrl": "tag.a@href"
+ },
+ "searchUrl": "https://m.xbfdc.net/user/search.html?q={{key}}",
+ "weight": 0
+}

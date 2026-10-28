@@ -45,7 +45,9 @@ enum JSONTool {
         return try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
     }
 
-    /// 修正常见的非规范 JSON：单引号、未加引号的 key、尾逗号、注释
+    /// 修正常见的非规范 JSON：单引号、未加引号的 key / value、尾逗号、注释。
+    /// GSON 的宽松模式连「值不加引号」都接受（`@put:{name:.title@text}` 就靠这个），
+    /// 所以这里也要补上值的处理。
     static func lenientize(_ text: String) -> String {
         var s = text
         s = s.replacingRegex("(?s)/\\*.*?\\*/", with: "")
@@ -56,7 +58,6 @@ enum JSONTool {
         var inString = false
         var quoteChar: Character = "\""
         var escaped = false
-        var pendingKey = false
         var prevNonSpace: Character?
 
         let chars = Array(s)
@@ -66,7 +67,7 @@ enum JSONTool {
             if inString {
                 if escaped {
                     escaped = false
-                    if c != quoteChar { out.append(c) } else { out.append(c) }
+                    out.append(c)
                 } else if c == "\\" {
                     escaped = true
                     out.append(c)
@@ -90,9 +91,52 @@ enum JSONTool {
 
             if c == ":" {
                 out.append(c)
-                pendingKey = false
                 prevNonSpace = c
                 i += 1
+
+                // 跳过空白后检查值。不是结构/字面量/引号时按未加引号的字符串处理。
+                var j = i
+                while j < chars.count, chars[j] == " " || chars[j] == "\t"
+                    || chars[j] == "\n" || chars[j] == "\r" {
+                    out.append(chars[j])
+                    j += 1
+                }
+                guard j < chars.count else { i = j; continue }
+                let first = chars[j]
+                let looksStructured = first == "{" || first == "["
+                let looksQuoted = first == "\"" || first == "'"
+                let prefix = String(chars[j...min(j + 4, chars.count - 1)])
+                let looksLiteral = prefix.hasPrefix("true") || prefix.hasPrefix("false")
+                    || prefix.hasPrefix("null")
+                let looksNumber = first == "-" || first.isNumber
+                if looksStructured || looksQuoted || looksLiteral || looksNumber {
+                    i = j
+                    continue
+                }
+
+                // 读到当前层级的分隔符（`,` 或对象结束的 `}`）为止
+                var depth = 0
+                var value = ""
+                var k = j
+                while k < chars.count {
+                    let vc = chars[k]
+                    if vc == "{" || vc == "[" {
+                        depth += 1
+                    } else if vc == "}" || vc == "]" {
+                        if depth == 0 { break }
+                        depth -= 1
+                    } else if vc == "," && depth == 0 {
+                        break
+                    }
+                    value.append(vc)
+                    k += 1
+                }
+                let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                let escapedValue = trimmed
+                    .replacingOccurrences(of: "\\", with: "\\\\")
+                    .replacingOccurrences(of: "\"", with: "\\\"")
+                out.append("\"\(escapedValue)\"")
+                i = k
                 continue
             }
 
@@ -118,7 +162,6 @@ enum JSONTool {
                 if k < chars.count, chars[k] == ":" {
                     out.append("\"\(key)\"")
                     i = j
-                    pendingKey = true
                     continue
                 }
             }
@@ -127,7 +170,6 @@ enum JSONTool {
             out.append(c)
             i += 1
         }
-        _ = pendingKey
         return out
     }
 

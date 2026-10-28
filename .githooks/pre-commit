@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# pre-commit：书源相关代码一改，先跑一遍离线基准
+#
+# 安装：./scripts/install-hooks.sh
+# 跳过：SKIP_BENCH=1 git commit ...
+set -euo pipefail
+
+if [ "${SKIP_BENCH:-}" = "1" ]; then
+  echo "⚠️  SKIP_BENCH=1 —— 跳过书源基准"
+  exit 0
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+
+# 这些路径一变，书源解析的行为就可能变
+PATTERN='^(Legado/Source/|Legado/Data/Models/(BookSource|Book)\.swift|Legado/Data/DB/|Legado/Data/Repos/|LegadoTests/BenchmarkKit/(fixtures|pool)?|scripts/harvest-benchmark-sources\.py)'
+CHANGED="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if ! echo "$CHANGED" | grep -qE "$PATTERN"; then
+  exit 0
+fi
+
+echo "▶︎ 检测到书源相关改动："
+echo "$CHANGED" | grep -E "$PATTERN" | sed 's/^/    /'
+echo
+
+if ./scripts/bench.sh; then
+  exit 0
+fi
+
+cat <<'EOF'
+
+──────────────────────────────────────────────
+书源基准未通过，提交已阻止。
+
+· 看具体哪个源、哪一步失败：build/bench-replay.log
+· 如果这是**有意的行为变更**（例如解析规则调整），
+  需要重新录制语料再提交：
+      ./scripts/bench.sh --record
+· 确实要绕过（不推荐）：SKIP_BENCH=1 git commit ...
+──────────────────────────────────────────────
+EOF
+exit 1

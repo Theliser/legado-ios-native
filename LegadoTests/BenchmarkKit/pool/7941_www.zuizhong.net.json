@@ -1,0 +1,47 @@
+{
+ "bookSourceGroup": "测试",
+ "bookSourceName": "最终小说网",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://www.zuizhong.net/",
+ "customOrder": 3813,
+ "enabled": true,
+ "enabledCookieJar": false,
+ "enabledExplore": true,
+ "exploreUrl": "",
+ "header": "",
+ "lastUpdateTime": "1791715648092",
+ "loginUi": "",
+ "respondTime": 4323,
+ "ruleBookInfo": {
+  "author": "[property=\"og:novel:author\"]@content",
+  "coverUrl": "[property=\"og:image\"]@content",
+  "intro": "[property=\"og:description\"]@content",
+  "kind": "[property~=category|status|update_time]@content",
+  "lastChapter": "[property~=las?test_chapter_name]@content",
+  "name": "[property=\"og:novel:book_name\"]@content",
+  "tocUrl": "text.目录@href@"
+ },
+ "ruleContent": {
+  "content": ".info_dv1@p[1:-2]@text",
+  "nextContentUrl": "text.下一@href"
+ },
+ "ruleExplore": [],
+ "ruleSearch": {
+  "author": "a.1@text",
+  "bookList": ".txt-list@li",
+  "bookUrl": "a.0@href",
+  "intro": "",
+  "kind": ".s1@text##[\\[\\]]",
+  "lastChapter": "a.2@text",
+  "name": "a.0@text"
+ },
+ "ruleToc": {
+  "chapterList": ".info_dv3.1@ul@a",
+  "chapterName": "text",
+  "chapterUrl": "href",
+  "isVolume": "",
+  "nextTocUrl": "option[selected]+option@value"
+ },
+ "searchUrl": "<js>cookie.removeCookie(source.key);</js>\nhttps://www.zuizhong.net/search.html,{\"method\":\"POST\",\"body\":\"s={{key}}\"}",
+ "weight": 0
+}

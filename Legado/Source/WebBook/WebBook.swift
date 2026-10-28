@@ -58,14 +58,15 @@ final class WebBook {
     let httpClient: HTTPClient
     let cookieStore: CookieStore
     let bookRepository: BookRepository?
-    let chapterCache = ChapterCache()
+    let chapterCache: ChapterCache
 
     init(settings: AppSettings, httpClient: HTTPClient, cookieStore: CookieStore,
-         bookRepository: BookRepository? = nil) {
+         bookRepository: BookRepository? = nil, chapterCache: ChapterCache = ChapterCache()) {
         self.settings = settings
         self.httpClient = httpClient
         self.cookieStore = cookieStore
         self.bookRepository = bookRepository
+        self.chapterCache = chapterCache
     }
 
     private func emit(_ event: SourceTrace) {
@@ -103,6 +104,7 @@ final class WebBook {
         rule.runtime = .shared
         rule.cookieStore = cookieStore
         rule.httpClient = httpClient
+        rule.settings = settings
         rule.webJsHandler = { [weak self] js, result in
             guard let self else { return nil }
             var options = WebViewFetcherOptions()
@@ -147,6 +149,20 @@ final class WebBook {
     func searchBook(_ source: BookSource, key: String, page: Int = 1,
                     filter: ((String, String, String?) -> Bool)? = nil,
                     shouldBreak: ((Int) -> Bool)? = nil) async throws -> [SearchBook] {
+        if source.isJsSource {
+            let started = Date()
+            return try await traced(.search, url: source.bookSourceUrl, code: 0,
+                                    body: nil, started: started,
+                                    describe: { $0.isEmpty ? "无结果" : "命中 \($0.count) 本" }) {
+                var books = try JsSourceEngine(webBook: self, source: source)
+                    .search(key: key, page: page)
+                if let filter {
+                    books = books.filter { filter($0.name, $0.author, $0.kind) }
+                }
+                _ = shouldBreak
+                return books
+            }
+        }
         guard let searchUrl = source.searchUrl, !searchUrl.isBlank else {
             throw WebBookError.message("搜索url不能为空")
         }
@@ -184,22 +200,49 @@ final class WebBook {
     // MARK: - 发现
 
     func exploreBook(_ source: BookSource, url: String, page: Int = 1) async throws -> [SearchBook] {
+        try await exploreBookWithResolvedUrl(source, url: url, page: page).1
+    }
+
+    /// 发现页，同时返回重定向后的地址（关联书籍需要展示「打开模块」的最终链接）。
+    func exploreBookWithResolvedUrl(_ source: BookSource, url: String,
+                                    page: Int = 1) async throws -> (String, [SearchBook]) {
+        if source.isJsSource {
+            let started = Date()
+            let books = try await traced(.search, url: url, code: 0, body: nil,
+                                         started: started,
+                                         describe: { $0.isEmpty ? "无结果" : "命中 \($0.count) 本" }) {
+                try JsSourceEngine(webBook: self, source: source).explore(url: url, page: page)
+            }
+            return (url, books)
+        }
         let ruleData = RuleData()
         let analyzeUrl = analyzeUrl(url, source: source, ruleData: ruleData, page: page)
         var response = try await analyzeUrl.strResponse()
         response = applyLoginCheck(source, analyzeUrl, response)
         logRedirect(source, response)
 
-        return try await BookList.analyzeBookList(
+        let books = try await BookList.analyzeBookList(
             webBook: self, source: source, ruleData: ruleData, analyzeUrl: analyzeUrl,
             baseUrl: response.url, body: response.body, isSearch: false,
             isRedirect: response.isRedirect
         )
+        return (response.url, books)
     }
 
     // MARK: - 详情
 
     func getBookInfo(_ source: BookSource, book: Book, canReName: Bool = true) async throws -> Book {
+        if source.isJsSource {
+            let started = Date()
+            return try await traced(.info, url: book.bookUrl, code: 0, body: nil,
+                                    started: started,
+                                    describe: { (target: Book) in
+                                        target.name.isEmpty ? "书名为空" : "《\(target.name)》"
+                                    }) {
+                try JsSourceEngine(webBook: self, source: source)
+                    .getBookInfo(book: book, canReName: canReName)
+            }
+        }
         if let html = book.infoHtml, !html.isEmpty {
             // 搜索阶段已经拿到详情页 HTML，直接复用（上游 @Ignore 字段的用途）
             let started = Date()
@@ -237,6 +280,14 @@ final class WebBook {
     // MARK: - 目录
 
     func getChapterList(_ source: BookSource, book: Book, runPreUpdateJs shouldRunPreUpdateJs: Bool = false) async throws -> [BookChapter] {
+        if source.isJsSource {
+            let started = Date()
+            return try await traced(.toc, url: book.tocUrl.isEmpty ? book.bookUrl : book.tocUrl,
+                                    code: 0, body: nil, started: started,
+                                    describe: { "\($0.count) 章" }) {
+                try JsSourceEngine(webBook: self, source: source).getChapters(book: book)
+            }
+        }
         if shouldRunPreUpdateJs {
             try await runPreUpdateJs(source: source, book: book)
         }
@@ -286,6 +337,20 @@ final class WebBook {
 
     func getContent(_ source: BookSource, book: Book, chapter: BookChapter,
                     nextChapterUrl: String? = nil, needSave: Bool = true) async throws -> String {
+        if source.isJsSource {
+            let started = Date()
+            let content = try await traced(.content, url: chapter.getAbsoluteURL(), code: 0,
+                                           body: nil, started: started,
+                                           describe: { "《\(chapter.title)》 \($0.count) 字" }) {
+                try JsSourceEngine(webBook: self, source: source)
+                    .getContent(book: book, chapter: chapter,
+                                nextChapterUrl: nextChapterUrl)
+            }
+            if needSave {
+                saveContent(content, book: book, chapter: chapter)
+            }
+            return content
+        }
         guard let contentRule = source.ruleContent?.content, !contentRule.isEmpty else {
             DebugLog.shared.log(source.bookSourceUrl, "⇒正文规则为空,使用章节链接:\(chapter.url)")
             return chapter.url
@@ -344,6 +409,16 @@ final class WebBook {
         chapterCache.save(content, book: book, chapter: chapter)
     }
 
+    /// 下载图片并按书源规则二次解密（`coverDecodeJs` / `imageDecode`）。
+    /// UI 层拿到的是可直接渲染的字节。
+    func fetchImageData(_ url: String, source: BookSource, book: Book? = nil,
+                        isCover: Bool = false) async -> Data? {
+        let analyzeUrl = analyzeUrl(url, source: source, book: book)
+        guard let data = try? await analyzeUrl.byteArray() else { return nil }
+        return ImageDecodeService.decodeIfNeeded(src: url, data: data, isCover: isCover,
+                                                 source: source, book: book, webBook: self)
+    }
+
     private func logRedirect(_ source: BookSource, _ response: StrResponse) {
         guard response.isRedirect else { return }
         DebugLog.shared.log(source.bookSourceUrl, "≡检测到重定向(\(response.priorUrl ?? ""))")
@@ -355,15 +430,21 @@ final class WebBook {
 /// 章节正文缓存（对齐上游按书分目录缓存正文的做法）
 final class ChapterCache {
     private let queue = DispatchQueue(label: "legado.chapter.cache", qos: .utility)
+    private let rootOverride: URL?
+
+    init(root: URL? = nil) {
+        self.rootOverride = root
+    }
 
     private var root: URL {
+        if let rootOverride { return rootOverride }
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Legado/cache", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }
 
-    private func url(book: Book, chapter: BookChapter) -> URL {
+    func url(book: Book, chapter: BookChapter) -> URL {
         let bookDir = root.appendingPathComponent(CryptoUtils.md5(book.bookUrl), isDirectory: true)
         try? FileManager.default.createDirectory(at: bookDir, withIntermediateDirectories: true)
         return bookDir.appendingPathComponent(chapter.fileName() + ".txt")
@@ -376,8 +457,33 @@ final class ChapterCache {
         }
     }
 
+    /// 同步落盘（下载流程需要确认写入完成）
+    func saveSync(_ content: String, book: Book, chapter: BookChapter) {
+        let target = url(book: book, chapter: chapter)
+        queue.sync {
+            try? content.write(to: target, atomically: true, encoding: .utf8)
+        }
+    }
+
+    /// 等队列里排队的写入全部完成
+    func flush() {
+        queue.sync {}
+    }
+
     func load(book: Book, chapter: BookChapter) -> String? {
         try? String(contentsOf: url(book: book, chapter: chapter), encoding: .utf8)
+    }
+
+    func has(book: Book, chapter: BookChapter) -> Bool {
+        let path = url(book: book, chapter: chapter).path
+        guard FileManager.default.fileExists(atPath: path),
+              let size = (try? FileManager.default.attributesOfItem(atPath: path))?[.size] as? Int
+        else { return false }
+        return size > 0
+    }
+
+    func remove(book: Book, chapter: BookChapter) {
+        try? FileManager.default.removeItem(at: url(book: book, chapter: chapter))
     }
 
     func remove(book: Book) {

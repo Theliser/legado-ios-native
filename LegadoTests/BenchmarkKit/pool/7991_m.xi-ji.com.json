@@ -1,0 +1,51 @@
+{
+ "bookSourceGroup": "人机搜索",
+ "bookSourceName": "希冀小说网",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://m.xi-ji.com",
+ "bookUrlPattern": "https://m\\.xi-ji\\.com/info/\\d+/?$",
+ "concurrentRate": "500",
+ "enabled": true,
+ "enabledCookieJar": false,
+ "enabledExplore": true,
+ "exploreUrl": "[{\"title\":\"玄幻\",\"url\":\"/sort/xuanhuan/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"仙侠\",\"url\":\"/sort/xianxia/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"都市\",\"url\":\"/sort/dushi/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"历史\",\"url\":\"/sort/lishi/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"游戏\",\"url\":\"/sort/youxi/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"科幻\",\"url\":\"/sort/kehuan/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"其他\",\"url\":\"/sort/qita/{{page}}/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"排行榜\",\"url\":\"/top/\",\"style\":{\"layout_flexBasisPercent\":0.25}},{\"title\":\"完本\",\"url\":\"/full/\",\"style\":{\"layout_flexBasisPercent\":0.25}}]",
+ "ruleBookInfo": {
+  "author": "meta[property=og:novel:author]@content",
+  "coverUrl": "meta[property=og:image]@content",
+  "intro": "meta[property=og:description]@content",
+  "kind": "meta[property=og:novel:category]@content",
+  "lastChapter": "meta[property=og:novel:latest_chapter_name]@content",
+  "name": "meta[property=og:novel:book_name]@content",
+  "tocUrl": "div.readlink > a.1@href"
+ },
+ "ruleContent": {
+  "content": "#chaptercontent@html\n<js>\nvar t = String(result);\nt = t.replace(/<br\\s*\\/?>/gi, '\\n');\nt = t.replace(/<\\/p>/gi, '\\n');\nt = t.replace(/<(p|div)[^>]*>/gi, '\\n');\nt = t.replace(/<[^>]+>/g, '');\nt = t.replace(/本文链接[:：]?\\s*\\S*/g, '');\nt = t.replace(/本章还未完[^\\n]*/g, '');\nt = t.replace(/本章未完[^\\n]*/g, '');\nt = t.replace(/\\(\\d+\\/\\d+\\)/g, '');\nt = t.replace(/[ \\t\\u00a0]+/g, ' ');\nt = t.replace(/\\n\\s*\\n/g, '\\n');\nt = t.replace(/^\\s+|\\s+$/g, '');\nt.trim();\n</js>",
+  "nextContentUrl": "a#pb_next@href",
+  "replaceRegex": "##本章还未完.*",
+  "title": "div.header > span.title@text"
+ },
+ "ruleExplore": {
+  "bookList": "div.hot > div.item, ul.topli > li",
+  "bookUrl": "a@href",
+  "coverUrl": "img@src",
+  "intro": "dd > p@text",
+  "kind": "span.rate@text##类型$##",
+  "name": "a@text"
+ },
+ "ruleSearch": {
+  "author": "dt > span@text",
+  "bookList": "div.item",
+  "bookUrl": "dt > a@href",
+  "coverUrl": "img@src",
+  "intro": "dd > p@text",
+  "name": "dt > a@text"
+ },
+ "ruleToc": {
+  "chapterList": "div.book_last > dl > dd",
+  "chapterName": "a@text",
+  "chapterUrl": "a@href",
+  "nextTocUrl": "span.right > a@href"
+ },
+ "searchUrl": "https://m.xi-ji.com/search.html?keyword={{key}}",
+ "lastUpdateTime": "1792825162719"
+}

@@ -1,0 +1,51 @@
+{
+ "bookSourceGroup": "AI",
+ "bookSourceName": "📖桔纸书屋",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://m.juzhishuwu.net",
+ "bookUrlPattern": "https?://m\\.juzhishuwu\\.(?:com|net)/xs/\\d+\\.html",
+ "customButton": false,
+ "customOrder": 2,
+ "enabled": true,
+ "enabledCookieJar": false,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "[{\"title\":\"玄幻\",\"url\":\"https://m.juzhishuwu.net/list/1_{{page}}.html\"},{\"title\":\"修真\",\"url\":\"https://m.juzhishuwu.net/list/2_{{page}}.html\"},{\"title\":\"都市\",\"url\":\"https://m.juzhishuwu.net/list/3_{{page}}.html\"},{\"title\":\"穿越\",\"url\":\"https://m.juzhishuwu.net/list/4_{{page}}.html\"},{\"title\":\"网游\",\"url\":\"https://m.juzhishuwu.net/list/5_{{page}}.html\"},{\"title\":\"科幻\",\"url\":\"https://m.juzhishuwu.net/list/6_{{page}}.html\"},{\"title\":\"其他\",\"url\":\"https://m.juzhishuwu.net/list/7_{{page}}.html\"},{\"title\":\"完本\",\"url\":\"https://m.juzhishuwu.net/wanben/1_{{page}}\"},{\"title\":\"榜单\",\"url\":\"https://m.juzhishuwu.net/paihangbang.html?page={{page}}\"}]",
+ "lastUpdateTime": "1792748877528",
+ "respondTime": 2219,
+ "ruleBookInfo": {
+  "author": "div.info div.fix > p:nth-of-type(1)@text##作\\s*者[：:]\\s*",
+  "coverUrl": "div.imgbox img@src",
+  "intro": "div.desc@text||div.m-desc@text##简\\s*介[:：]\\s*",
+  "kind": "div.info div.fix > p:nth-of-type(2)@text##类\\s*别[：:]\\s*",
+  "lastChapter": "div.info div.fix > p:nth-of-type(5) a@text",
+  "name": "div.info h1@text"
+ },
+ "ruleContent": {
+  "content": "@js:(function(){var J=Packages.org.jsoup.Jsoup;var MARK=/提供的《|\\(第\\d+\\/\\d+页\\)|^<\\/div>|^&lt;\\s*\"https:/;function segs(h){var d=J.parse(h);var box=d.select('#content').first();if(box==null)return null;var c=box.clone();c.select('a,script,style').remove();var parts=String(c.html()).split(/<br\\s*\\/?>/i),arr=[];for(var i=0;i<parts.length;i++){var t=parts[i].replace(/<[^>]+>/g,'').replace(/^[ \\t\\r\\n]+/,'').replace(/[ \\t\\r\\n]+$/,'');if(t.replace(/&nbsp;|&amp;|\\s/g,'')==='')continue;if(MARK.test(t)&&arr.length>0)break;arr.push(t);}return {arr:arr,next:(box.select('a.btn-info').size()>0?box.select('a.btn-info').attr('href'):null)};}function isRepeat(page,out){if(out.length<3||page.length<2)return false;var p0=page[0];var lo=Math.max(0,out.length-60);for(var i=lo;i<out.length;i++){if(out[i]!==p0)continue;var ok=0;for(var j=0;j<page.length&&i+j<out.length;j++){if(out[i+j]!==page[j])break;ok++;}if(ok>=Math.min(3,page.length))return true;}return false;}var cur=segs(result),out=[],guard=0;while(cur!=null&&guard<40){guard++;var a=cur.arr;if(a.length>0&&!isRepeat(a,out)){if(out.length>0&&!/^&nbsp;/.test(a[0])){out[out.length-1]=out[out.length-1]+a[0];a=a.slice(1);}for(var i=0;i<a.length;i++)out.push(a[i]);}if(!cur.next)break;cur=segs(java.ajax(cur.next));}var txt=out.join('\\n').replace(/&(?:amp;)?n\\s*bsp;/g,'&nbsp;');txt=txt.replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'\"').replace(/&#39;/g,\"'\").replace(/&amp;/g,'&');var NOISE=/请牢记|免费最快|无防盗|恋上你看书|bookla|收藏本站|请收藏|请大家收藏|全网最快|更新速度|首发起点|支持正版|看清爽的小说就到|您现在阅读的是|天才一秒|记住本站|无弹窗|笔趣阁|最快更新|本章未完|点击下一页/;var DOM=/https?:\\/\\/|https?:\\s*\"|www\\.|\\.com|\\.net|\\.org|bookla|提供的《/;var ls=txt.split('\\n'),res=[];for(var k=0;k<ls.length;k++){var t=ls[k].replace(/^\\s+|\\s+$/g,'');if(!t)continue;t=t.replace(/[,，]\\s*请牢记[:：]?.*$/,'').replace(/^\\s+|\\s+$/g,'');if(!t)continue;if(DOM.test(t)&&t.length<90)continue;if(t.length<=60&&NOISE.test(t))continue;res.push(t);}return res.join('\\n');})()"
+ },
+ "ruleExplore": {
+  "author": "span.s4@text",
+  "bookList": "@js:(function(){var J=Packages.org.jsoup.Jsoup;var m=String(baseUrl).match(/[?&]page=(\\d+)/);if(m&&parseInt(m[1])>1)return[];var doc=J.parse(result);var lis=doc.select('ul.txt-list-row5 li');if(lis.size()===0){lis=doc.select('div.row-rank div.tab-bd ul.txt-list-row3:not([style*=none]) li');}var seen={},out=[];for(var i=0;i<lis.size();i++){var li=lis.get(i);var a=li.select('span.s2 a').first();if(a==null)continue;var h=a.attr('href');if(!h||seen[h])continue;seen[h]=1;out.push(li);}return out;})()",
+  "bookUrl": "span.s2 a@href",
+  "kind": "@js:(function(){var a=result.select('span.s1');if(a.size()===0)return '';var t=String(a.first().text()).replace(/[\\[\\]]/g,'').replace(/^\\s+|\\s+$/g,'');return /^\\d+$/.test(t)?'':t;})()",
+  "lastChapter": "span.s3@text",
+  "name": "span.s2 a@text"
+ },
+ "ruleSearch": {
+  "author": "td:nth-of-type(3)@text",
+  "bookList": "@js:(function(){var m=String(baseUrl).match(/[?&]page=(\\d+)/);if(m&&parseInt(m[1])>1)return[];var J=Packages.org.jsoup.Jsoup;var doc=(typeof result==='string')?J.parse(result):result;return doc.select('tr#nr');})()",
+  "bookUrl": "td:nth-of-type(1) a@href##^https?://m\\.juzhishuwu\\.com##https://m.juzhishuwu.net",
+  "lastChapter": "td:nth-of-type(2) a@text",
+  "name": "td:nth-of-type(1) a@text",
+  "wordCount": "td:nth-of-type(4)@text"
+ },
+ "ruleToc": {
+  "chapterList": "#first + div.section-box ul.section-list li",
+  "chapterName": "a@text",
+  "chapterUrl": "a@href",
+  "nextTocUrl": "@js:(function(){var m=String(result).match(/当前第\\s*(\\d+)\\s*页[，,]\\s*共\\s*(\\d+)\\s*页/);if(!m)return null;var cur=parseInt(m[1]),total=parseInt(m[2]);if(cur>=total)return null;var bm=String(baseUrl).match(/^(https?:\\/\\/[^\\/]+)\\/xs\\/(\\d+)/);if(!bm)return null;return [bm[1]+'/xs/'+bm[2]+'/'+(cur+1)+'/'];})()"
+ },
+ "searchUrl": "https://m.juzhishuwu.net/modules/article/search.php?searchkey={{key}}&searchtype=articlename&page={{page}},{\"charset\":\"gbk\"}",
+ "weight": 0
+}

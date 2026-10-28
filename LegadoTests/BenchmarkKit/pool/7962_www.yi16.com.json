@@ -1,0 +1,44 @@
+{
+ "bookSourceGroup": "",
+ "bookSourceName": "一流小说网(yi16.com)20261018",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://www.yi16.com",
+ "bookUrlPattern": "https?://www\\.yi16\\.com/yi16book/\\d+/?",
+ "checkKeyWord": "重生年代福宝妻",
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": false,
+ "enabledExplore": false,
+ "header": "{\"User-Agent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36\"}",
+ "lastUpdateTime": "1792309014541",
+ "respondTime": 180000,
+ "searchUrl": "https://www.yi16.com/modules/article/search.php?searchkey={{key}},{\"method\":\"GET\",\"charset\":\"gbk\"}",
+ "ruleSearch": {
+  "bookList": "<js>var BASE = 'https://www.yi16.com';\nvar k = String(key);\nvar enc = String(java.encodeURI(k, 'GBK'));\nvar pg = parseInt(String(page), 10);\nif (isNaN(pg) || pg < 1) pg = 1;\nvar su = BASE + '/modules/article/search.php?searchkey=' + enc + (pg > 1 ? '&page=' + pg : '');\nvar html = String(result || '');\nif (html.indexOf('mySearch') < 0 || html.indexOf('class=\"b\"') < 0) {\n    try {\n        html = String(java.ajax(su + ',{\"headers\":{\"Referer\":\"' + BASE + '/\"}}'));\n    } catch (e) {\n        html = '';\n    }\n}\nvar doc = org.jsoup.Jsoup.parse(html, BASE + '/');\nvar rows = doc.select('.mySearch ul:has(a.b)');\nvar out;\nif (rows.size() > 0) {\n    out = rows;\n} else {\n    var name = String(doc.select(\"meta[property='og:novel:book_name']\").attr('content'));\n    if (!name) name = String(doc.select('h1.bookTitle').text());\n    if (!name) {\n        out = doc.select('.no-search-result');\n    } else {\n        var url = String(doc.select(\"meta[property='og:novel:read_url']\").attr('content'));\n        if (!url) url = String(doc.select('link[rel=canonical]').attr('href'));\n        var author = String(doc.select(\"meta[property='og:novel:author']\").attr('content'));\n        var last = String(doc.select(\"meta[property='og:novel:latest_chapter_name']\").attr('content'));\n        var frag = '<div class=\"mySearch\"><ul><li>小说：<a class=\"b\" href=\"' + url + '\">' + name + '</a></li>'\n            + '<li>最新：<a>' + last + '</a></li><li>作者：' + author + '</li>'\n            + '<li></li><li></li><li>状态：</li></ul></div>';\n        out = org.jsoup.Jsoup.parseBodyFragment(frag).select('ul');\n    }\n}\nout;</js>",
+  "name": "@css:li:nth-child(1) a@text",
+  "bookUrl": "@css:li:nth-child(1) a@href",
+  "author": "@css:li:nth-child(3)@text##作者：",
+  "kind": "@css:li:nth-child(6)@text##状态：",
+  "lastChapter": "@css:li:nth-child(2) a@text"
+ },
+ "ruleBookInfo": {
+  "name": "@css:meta[property='og:novel:book_name']@content",
+  "author": "@css:meta[property='og:novel:author']@content",
+  "kind": "@css:meta[property='og:novel:category']@content",
+  "coverUrl": "@css:meta[property='og:image']@content",
+  "intro": "@css:meta[property='og:description']@content",
+  "lastChapter": "@css:meta[property='og:novel:latest_chapter_name']@content",
+  "tocUrl": ""
+ },
+ "ruleToc": {
+  "chapterList": "<js>var html = String(result || '');\nif (html.indexOf('list-chapterAll') < 0) {\n    try {\n        html = String(java.ajax(String(baseUrl)));\n    } catch (e) {\n    }\n}\nvar doc = org.jsoup.Jsoup.parse(html, String(baseUrl));\nfunction unesc(s) {\n    return String(s).replace(/\\\\A\\s?/g, '\\n').replace(/\\\\'/g, \"'\").replace(/\\\\\\\\/g, '\\\\');\n}\nvar names = {};\nvar re = /\\.p_(\\d+)::after\\s*\\{\\s*content:'((?:[^'\\\\]|\\\\.)*)'\\s*\\}/g;\nvar m;\nwhile ((m = re.exec(html)) !== null) {\n    names[String(m[1])] = String(m[2]);\n}\nvar pageNo = 1;\nvar pm = String(baseUrl).match(/yi16book\\/\\d+_(\\d+)\\/?$/);\nif (pm) pageNo = parseInt(pm[1], 10);\nvar as = doc.select('#list-chapterAll dd a');\nfor (var i = as.size() - 1; i >= 0; i--) {\n    var a = as.get(i);\n    var href = String(a.attr('href'));\n    var mm = href.match(/\\/(\\d+)\\.html/);\n    if (!mm) {\n        a.remove();\n        continue;\n    }\n    var cid = String(mm[1]);\n    var nm = names[cid];\n    if (nm === undefined) {\n        nm = '第' + ((pageNo - 1) * 60 + i + 1) + '章';\n    } else {\n        nm = unesc(nm);\n        if (!nm) nm = '第' + ((pageNo - 1) * 60 + i + 1) + '章';\n    }\n    a.text(nm);\n    a.attr('href', a.absUrl('href'));\n}\ndoc.select('#list-chapterAll dd a');</js>",
+  "chapterName": "text",
+  "chapterUrl": "href",
+  "nextTocUrl": "@css:span.right a:contains(下一页)@href"
+ },
+ "ruleContent": {
+  "content": "<js>var BASE = 'https://www.yi16.com';\nfunction unesc(s) {\n    return String(s).replace(/\\\\A\\s?/g, '\\n').replace(/\\\\'/g, \"'\").replace(/\\\\\\\\/g, '\\\\');\n}\nfunction extract(h) {\n    var re = /#htmlContent\\s+\\.p_(\\d+)::after\\s*\\{\\s*content:'((?:[^'\\\\]|\\\\.)*)'\\s*\\}/g;\n    var map = {};\n    var m;\n    while ((m = re.exec(h)) !== null) {\n        map[String(m[1])] = String(m[2]);\n    }\n    var idx = [];\n    for (var k in map) {\n        idx.push(parseInt(k, 10));\n    }\n    idx.sort(function (x, y) { return x - y; });\n    var ps = [];\n    for (var i = 0; i < idx.length; i++) {\n        var s = unesc(map[idx[i]]);\n        if (s.replace(/\\s/g, '').length > 0) ps.push(s);\n    }\n    return ps.join('\\n');\n}\nvar cur = String(baseUrl);\nvar parts = [];\nvar guard = 0;\nwhile (cur && guard < 6) {\n    var h = '';\n    try {\n        h = String(java.ajax(cur + ',{\"headers\":{\"Referer\":\"' + BASE + '/\"}}'));\n    } catch (e) {\n        break;\n    }\n    var t = extract(h);\n    if (t.length > 0) parts.push(t);\n    var m = h.match(/id=\"linkNext\"[^>]*href=\"([^\"]+)\"[^>]*>([\\s\\S]*?)<\\/a>/);\n    if (!m) break;\n    if (String(m[2]).indexOf('下一页') < 0) break;\n    var nxt = String(m[1]);\n    if (nxt.indexOf('http') === 0) {\n        cur = nxt;\n    } else if (nxt.charAt(0) === '/') {\n        cur = BASE + nxt;\n    } else {\n        cur = cur.substring(0, cur.lastIndexOf('/') + 1) + nxt;\n    }\n    guard++;\n}\nvar out = parts.join('\\n').replace(/\\n{3,}/g, '\\n\\n');\nout;</js>",
+  "nextContentUrl": ""
+ },
+ "weight": 0
+}

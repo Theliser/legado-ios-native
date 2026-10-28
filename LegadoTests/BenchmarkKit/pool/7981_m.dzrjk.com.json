@@ -1,0 +1,55 @@
+{
+ "bookSourceGroup": "AI",
+ "bookSourceName": "🍅蕃茄小说",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://m.dzrjk.com",
+ "bookUrlPattern": "https?://(m|www)\\.dzrjk\\.com/html(_wap)?/\\d+/?",
+ "concurrentRate": "1/2000",
+ "customButton": false,
+ "customOrder": 0,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "玄幻小说::https://m.dzrjk.com/xuanhuan_wap/1.html&&修真小说::https://m.dzrjk.com/xiuzhen_wap/1.html&&都市小说::https://m.dzrjk.com/dushi_wap/1.html&&穿越小说::https://m.dzrjk.com/chuanyue_wap/1.html&&科幻小说::https://m.dzrjk.com/kehuan_wap/1.html&&网游小说::https://m.dzrjk.com/wangyou_wap/1.html&&周点击榜::https://m.dzrjk.com/paihang_wap/weekvisit/1.html&&月点击榜::https://m.dzrjk.com/paihang_wap/monthvisit/1.html&&总点击榜::https://m.dzrjk.com/paihang_wap/allvisit/1.html&&日推荐榜::https://m.dzrjk.com/paihang_wap/dayvote/1.html&&周推荐榜::https://m.dzrjk.com/paihang_wap/weekvote/1.html&&月推荐榜::https://m.dzrjk.com/paihang_wap/monthvote/1.html&&总推荐榜::https://m.dzrjk.com/paihang_wap/allvote/1.html&&总收藏榜::https://m.dzrjk.com/paihang_wap/goodnum/1.html&&总字数榜::https://m.dzrjk.com/paihang_wap/size/1.html&&最新入库::https://m.dzrjk.com/paihang_wap/postdate/1.html&&全本·周点击榜::https://m.dzrjk.com/quanben_wap/weekvisit/1.html&&全本·月点击榜::https://m.dzrjk.com/quanben_wap/monthvisit/1.html&&全本·总点击榜::https://m.dzrjk.com/quanben_wap/allvisit/1.html&&全本·日推荐榜::https://m.dzrjk.com/quanben_wap/dayvote/1.html&&全本·周推荐榜::https://m.dzrjk.com/quanben_wap/weekvote/1.html&&全本·月推荐榜::https://m.dzrjk.com/quanben_wap/monthvote/1.html&&全本·总推荐榜::https://m.dzrjk.com/quanben_wap/allvote/1.html&&全本·总收藏榜::https://m.dzrjk.com/quanben_wap/goodnum/1.html&&全本·总字数榜::https://m.dzrjk.com/quanben_wap/size/1.html&&全本·最新入库::https://m.dzrjk.com/quanben_wap/postdate/1.html",
+ "header": "{\"User-Agent\":\"Mozilla/5.0 (Linux; Android 12; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36\"}",
+ "lastUpdateTime": "1792585603960",
+ "respondTime": 12305,
+ "ruleBookInfo": {
+  "author": "p.0@text##^作者：",
+  "coverUrl": ".image img@src",
+  "intro": ".introbar@text##^简介：|本站提示.*$",
+  "kind": "p.1@text##^类别：",
+  "lastChapter": ".newest a@text",
+  "name": "h2.title@text"
+ },
+ "ruleContent": {
+  "content": "#text@html",
+  "replaceRegex": "##id.booktexts.>##"
+ },
+ "ruleExplore": {
+  "author": "p.0@text##^作者：",
+  "bookList": "#list article",
+  "bookUrl": "a.0@href",
+  "coverUrl": ".image img@src",
+  "intro": "p.intro@text##^简介：",
+  "name": "h2.title@text"
+ },
+ "ruleSearch": {
+  "author": "$.author",
+  "bookList": "$.data.search[*]",
+  "bookUrl": "$.book_list_url",
+  "coverUrl": "$.cover",
+  "intro": "$.intro",
+  "kind": "$.cate_name",
+  "lastChapter": "$.latest_chapter_name",
+  "name": "$.book_name"
+ },
+ "ruleToc": {
+  "chapterList": "ul.chapter li a",
+  "chapterName": "text",
+  "chapterUrl": "href"
+ },
+ "searchUrl": "@js:var base = 'https://m.dzrjk.com';\nvar kw = String(key);\nvar page = base + '/user/search.html?q=' + encodeURIComponent(kw);\nvar html = String(java.ajax(page));\nif (html.length < 500) html = String(java.ajax(page));\nvar names = 'vw abw ru jrt van fw cwl gpr uyoo tz euu tsn eju um fp dvm jpk deblkx ht azy sna wqx fpp rup jwj bgt qp yf cw wq'.split(' ');\nvar re = /var\\s+([A-Za-z_]\\w*)\\s*=\\s*\"([^\"]*)\"/g;\nvar map = {};\nvar mm;\nwhile ((mm = re.exec(html)) !== null) { map[mm[1]] = mm[2]; }\nvar pairs = [];\nfor (var i = 0; i < names.length; i++) {\n    var n = names[i];\n    var v = map[n];\n    if (typeof v === 'undefined') continue;\n    if (n === 'bgt' && v.length > 1) v = v.slice(0, v.length - 1);\n    pairs.push(n + '=' + encodeURIComponent(v));\n}\npairs.push('sign=' + encodeURIComponent(map['sign'] || ''));\npairs.push('q=' + encodeURIComponent(kw));\nvar opt = {\n    method: 'POST',\n    body: pairs.join('&'),\n    headers: {\n        'X-Requested-With': 'XMLHttpRequest',\n        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',\n        'Origin': base,\n        'Referer': page\n    }\n};\nbase + '/api/search,' + JSON.stringify(opt)",
+ "weight": 0
+}

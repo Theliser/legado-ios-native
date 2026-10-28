@@ -44,6 +44,82 @@ final class JSRuntime: @unchecked Sendable {
         _ = evaluate(script, key: key, env: env)
     }
 
+    /// 在独立作用域里执行脚本并调用其中一个函数（JS 单文件书源用）。
+    /// 参数既作为全局绑定，也按位置传给函数，兼容 `function search(key, page)` 两种写法。
+    func callFunction(_ script: String, function: String, arguments: [Any],
+                      env: JSEnvironment, bindings: [String: Any] = [:]) -> Any? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !script.isBlank else { return nil }
+        let context = JSContext()!
+        context.name = "js-source"
+        context.exceptionHandler = { _, exception in
+            if let exception {
+                DebugLog.shared.log(env.source?.bookSourceName ?? "js",
+                                    "≡JS 异常: \(exception.toString() ?? "")")
+            }
+        }
+        bind(env, in: context, key: env.source?.bookSourceUrl ?? "js")
+        let global = context.globalObject!
+        for (key, value) in bindings {
+            global.setObject(value, forKeyedSubscript: key as NSString)
+        }
+
+        context.exception = nil
+        _ = context.evaluateScript(script)
+        if let exception = context.exception {
+            DebugLog.shared.log(env.source?.bookSourceName ?? "js",
+                                "≡JS 主脚本出错: \(exception.toString() ?? "")")
+            context.exception = nil
+            return nil
+        }
+
+        guard let target = context.objectForKeyedSubscript(function),
+              !target.isUndefined, !target.isNull else {
+            return nil
+        }
+        context.exception = nil
+        let value = target.call(withArguments: arguments)
+        if let exception = context.exception {
+            DebugLog.shared.log(env.source?.bookSourceName ?? "js",
+                                "≡JS \(function) 出错: \(exception.toString() ?? "")")
+            context.exception = nil
+            return nil
+        }
+        return Self.toSwift(value)
+    }
+
+    func evaluateFresh(_ script: String, env: JSEnvironment,
+                       bindings: [String: Any] = [:]) -> Any? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !script.isBlank else { return nil }
+        let context = JSContext()!
+        context.name = "fresh"
+        context.exceptionHandler = { _, exception in
+            if let exception {
+                DebugLog.shared.log(env.source?.bookSourceName ?? "js",
+                                    "≡JS 异常: \(exception.toString() ?? "")")
+            }
+        }
+        bind(env, in: context, key: env.source?.bookSourceUrl ?? "js")
+        let global = context.globalObject!
+        for (key, value) in bindings {
+            global.setObject(value, forKeyedSubscript: key as NSString)
+        }
+        context.exception = nil
+        let value = context.evaluateScript(script)
+        if let exception = context.exception {
+            DebugLog.shared.log(env.source?.bookSourceName ?? "js",
+                                "≡JS 执行出错: \(exception.toString() ?? "")")
+            context.exception = nil
+            return nil
+        }
+        return Self.toSwift(value)
+    }
+
     func clearContexts() {
         lock.lock()
         contexts.removeAll()
@@ -87,7 +163,10 @@ final class JSRuntime: @unchecked Sendable {
         global.setObject(JSCacheBridge(env: env), forKeyedSubscript: "cache" as NSString)
 
         if let source = env.source {
-            global.setObject(JSSourceBridge(source), forKeyedSubscript: "source" as NSString)
+            let sourceBridge = JSSourceBridge(source)
+            global.setObject(sourceBridge, forKeyedSubscript: "source" as NSString)
+            // 官方 JS 源把同一对象也暴露为 sourceApi
+            global.setObject(sourceBridge, forKeyedSubscript: "sourceApi" as NSString)
         }
         if let book = env.book {
             global.setObject(JSBookBridge(book), forKeyedSubscript: "book" as NSString)
@@ -106,6 +185,7 @@ final class JSRuntime: @unchecked Sendable {
         global.setObject(env.key as Any?, forKeyedSubscript: "key" as NSString)
         global.setObject(env.infoMap as Any?, forKeyedSubscript: "infoMap" as NSString)
         global.setObject(env.fromBookInfo, forKeyedSubscript: "fromBookInfo" as NSString)
+        global.setObject(env.event as Any?, forKeyedSubscript: "event" as NSString)
         _ = key
     }
 

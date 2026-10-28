@@ -1,0 +1,55 @@
+{
+ "bookSourceGroup": "小说",
+ "bookSourceName": "一流小说网",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://www.yi16.com",
+ "bookUrlPattern": "https?://www\\.yi16\\.com/yi16book/\\d+/?",
+ "customButton": false,
+ "customOrder": 1,
+ "enabled": true,
+ "enabledCookieJar": false,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "点击总榜::/top/allvisit/<,{{page}}.html>\n推荐总榜::/top/allvote/<,{{page}}.html>\n点击月榜::/top/monthvisit/<,{{page}}.html>\n推荐月榜::/top/monthvote/<,{{page}}.html>\n周排行榜::/top/weekvisit/<,{{page}}.html>\n周推荐榜::/top/weekvote/<,{{page}}.html>\n总收藏榜::/top/goodnum/<,{{page}}.html>\n本站推荐::/top/toptime/<,{{page}}.html>\n字数排行::/top/size/<,{{page}}.html>\n最近更新::/top/lastupdate/<,{{page}}.html>\n最新入库::/top/postdate/<,{{page}}.html>",
+ "lastUpdateTime": "1792367536085",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": "[property$=author]@content",
+  "coverUrl": "[property$=image]@content",
+  "intro": "[property$=description]@content",
+  "kind": "[property~=category|status|update_time]@content",
+  "lastChapter": "[property$=latest_chapter_name]@content",
+  "name": "[property$=book_name]@content",
+  "wordCount": "span:containsOwn(字数：)@text##字数："
+ },
+ "ruleContent": {
+  "content": "@js:\nconst reg = new RegExp(\"#htmlContent\\\\s*\\\\.p_\\\\d+::after\\\\s*\\\\{[\\\\s\\\\S]*?content\\\\s*:\\\\s*['\\\"](.*?)['\\\"]\", \"gi\");\nconst matches = result.matchAll(reg);\nArray.from(matches, m =>\n    m[1].replace(/\\\\(.)/g, \"$1\")\n).join(\"\\n\");",
+  "nextContentUrl": "#linkNext@href@js:\n/_/.test(result) ? result : null"
+ },
+ "ruleExplore": {
+  "author": "td.2@text",
+  "bookList": "tbody tr!0",
+  "bookUrl": "td.0@a@href",
+  "coverUrl": "td.0@a@href@js:\nlet id = result.match(/\\/(\\d+)\\/$/)[1];\nlet sid = parseInt(id / 1000);\n`/files/article/image/${sid}/${id}/${id}s.jpg`",
+  "kind": "td[-2:]@text",
+  "lastChapter": "td.1@a@text",
+  "name": "td.0@a@text"
+ },
+ "ruleSearch": {
+  "author": "li:containsOwn(作者：)@text##作者：",
+  "bookList": ".mySearch > ul",
+  "bookUrl": "a.b@href",
+  "coverUrl": "a.b@href@js:\nlet id = result.match(/\\/(\\d+)\\/$/)[1];\nlet sid = parseInt(id / 1000);\n`/files/article/image/${sid}/${id}/${id}s.jpg`",
+  "kind": "li[-3:]@text##大小：|更新时间：|状态：",
+  "lastChapter": "li:containsOwn(最新：) a@text",
+  "name": "a.b@text"
+ },
+ "ruleToc": {
+  "chapterList": "@js:\n// 生成默认标题，最后兜底用，希望永远用不上\nfunction buildDefaultTitle(url, index, maxPerPage = 60) {\n    const pageNo = url.match(/_(\\d+)/)?.[1] ?? 1;\n    const num = (pageNo - 1) * maxPerPage + index + 1;\n    return \"第\" + num + \"章\";\n}\n\n// 正则提取css ::after content\nfunction getCssAfterTitle(pClass, sourceHtml) {\n    if(!pClass || pClass?.isEmpty()) return \"\";\n    const htmlStr = String(sourceHtml);\n    const reg = new RegExp(pClass + \"::after\\\\s*\\\\{[^}]*content\\\\s*:\\\\s*['\\\"](.*?)['\\\"]\", \"is\");\n    const match = htmlStr.match(reg);\n    if (match) {\n        let txt = match[1];\n        txt = txt.replace(/\\\\(.)/g, \"$1\");\n        return txt;\n    }\n    return \"\";\n}\n\n// ============= 主逻辑 =============\nconst list = java.getElements(\"#list-chapterAll dl dd a\");\nfor(let i = 0; i < list.size(); i++){\n    let aEl = list.get(i);\n    let title = aEl.text().trim();\n\n    // a无文本，尝试css伪元素\n    if(title.isEmpty()){\n        let pClassName = aEl.attr(\"class\").replaceAll(\".*(p_\\\\d+).*\", \"$1\");\n        title = getCssAfterTitle(pClassName, result);\n    }\n\n    // 仍取不到，生成默认标题\n    if(!String(title)){\n        title = buildDefaultTitle(baseUrl, i);\n    }\n    \n    aEl.text(title)\n}\n\nlist",
+  "chapterName": "text",
+  "chapterUrl": "href",
+  "nextTocUrl": "option:not([selected])@value"
+ },
+ "searchUrl": "/modules/article/search.php?searchkey={{key}}&page={{page}},{\"charset\":\"gbk\"}",
+ "weight": 0
+}

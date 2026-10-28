@@ -8,59 +8,109 @@
 
 /* Begin PBXBuildFile section */
 		026136D07E3B42479B976B2E /* EncodingDetect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B37EC9FCBE696FD950500 /* EncodingDetect.swift */; };
+		027C75A75592FEEAF9A0DC08 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 49BBEE6016215F39539400B8 /* README.md */; };
 		04DD12810A2CDF6793F85C91 /* JSBridges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B61F623555944F8E47501A /* JSBridges.swift */; };
 		05F820BE28CB8B946760D28C /* JSRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0900B8AD69A55B4E2384843B /* JSRuntime.swift */; };
 		0641D042681BD695E0BE9D87 /* RuleAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B7C4A69AF65C338F83421F /* RuleAnalyzer.swift */; };
 		0D5BDA811716FBF2CCCD1FFD /* AnalyzeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD9B142A9D15C53028A2B13 /* AnalyzeRule.swift */; };
+		120168C95439A42255B3D31F /* bench_www.zuizhong.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 995BF16F62071A2CB9DF99E2 /* bench_www.zuizhong.net.json */; };
+		1223EF1373C5269376D7AC5E /* 7988_m.juzhishuwu.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 7B329B38A7D8A87A076D07C3 /* 7988_m.juzhishuwu.net.json */; };
+		122D178AF7270683BDF812B2 /* 7991_m.xi-ji.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 04FEB2A872A1E1FD46DEA749 /* 7991_m.xi-ji.com.json */; };
+		168C69AE13603156251157E5 /* RelatedBooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1631FE812DF4C8D21232F452 /* RelatedBooks.swift */; };
+		16C5552092A9BFADDF51C7DA /* 8002_www.pilisf.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 2312BD49742F4554C4BA6128 /* 8002_www.pilisf.com.json */; };
+		16E2C25F644F44D1D13AC808 /* DownloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA117C92EFF660456366251 /* DownloadTests.swift */; };
 		1ACA1DB2AB61FE856DC03781 /* ConcurrentRateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */; };
+		1B771736666A4BB1173D90C0 /* 7942_fanqienovel.com.json in Resources */ = {isa = PBXBuildFile; fileRef = E91E6CA384E84AFA6CC72E67 /* 7942_fanqienovel.com.json */; };
+		2296C4C43033060362CF467C /* bench_book.washai.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 88C738674CE37D069B93F5F7 /* bench_book.washai.net.json */; };
+		26969B9F3388EB3B09713D95 /* 7977_wap.39shuwu.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 39C3473953EE810170B79464 /* 7977_wap.39shuwu.com.json */; };
 		2700ADD1D19D04EB20B8B61B /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C7E12CB1493C6196A377AF /* NetworkTests.swift */; };
+		288B4DDD25359AB0C8EEBB62 /* 7970_www.mowan.lol.json in Resources */ = {isa = PBXBuildFile; fileRef = DA74B1725B6ECC9D43230428 /* 7970_www.mowan.lol.json */; };
+		2AC62A4A0698369E4219532D /* 8011_ocean.shuqireader.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B79AB31DF41C95EC6CFB5B4 /* 8011_ocean.shuqireader.com.json */; };
+		2C32811C2CCA411B9AD813EA /* ContentExtrasTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2383FA0150EA0CB31AA3C794 /* ContentExtrasTests.swift */; };
+		2C46A548C79C16CC4C91D90A /* JSBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4CA7928ED000528EFAE143 /* JSBridgeTests.swift */; };
 		326F052119847C56714EFD09 /* JSONPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E57DBCDEB5ADE270094C4C /* JSONPath.swift */; };
 		32D77DF812403C1A8CD4ACDD /* JSONTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0069DB6F5112322FFF8F0E3 /* JSONTool.swift */; };
 		32E34EE28CBFA29F4261E4DE /* CryptoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A309D6A81D8440A0EA82C01 /* CryptoUtils.swift */; };
 		34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */; };
+		3AD113D91E2148FD64D4BCFC /* bench_m.tkshuw.com.json in Resources */ = {isa = PBXBuildFile; fileRef = E1A13E5CF65AA3116447808D /* bench_m.tkshuw.com.json */; };
+		3B37030A09B7E8B9BD2E7BBF /* 7964_book.washai.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 7C98962F445B53EDF056E717 /* 7964_book.washai.net.json */; };
 		3CC4050B4253721686EFC637 /* SwiftSoup.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */; };
 		41CFEDC8F6E2B9A07C558F54 /* LenientDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034DE7518E55080B3A236103 /* LenientDecoding.swift */; };
+		469F71D8280B9D5C449DEBEA /* 7984_m.xhwx8.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 55C240A2A7C25756D539BEEA /* 7984_m.xhwx8.com.json */; };
 		5097275888E7E8BFCEBF51F8 /* GRDB.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */; };
 		510C9629024963C4FD3FA75A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A92FCFE1463042905E6A2C /* Book.swift */; };
 		54D1F44CF7D9380CFE840A70 /* CookieStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A9692FAAF766128DEB5FD79 /* CookieStore.swift */; };
 		5614687A60994CD0F90553FA /* WebBookParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D03EE496E20D6C0DE7751926 /* WebBookParse.swift */; };
 		58CE4D414DFDCCD914161656 /* Daos.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD9587871054AA8637E1CE6 /* Daos.swift */; };
 		603C47C534204E9A4CCB97C0 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60BF4235C279E2F75471461 /* ReaderView.swift */; };
+		6BA5D4D46CEE59DFE2D1C49D /* 7943_www.gushizu.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 1ECD3EADC4CACD11D36F07B4 /* 7943_www.gushizu.com.json */; };
 		6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */; };
 		711220D588F8B25F9FE86B39 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2281C785EBAEDB5D8928A /* DebugLog.swift */; };
 		71630290EFC2BA8EB517240A /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019A372A432DC5E8F645879C /* HTTPClient.swift */; };
 		723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */; };
+		73F31E14D0D181E9305A17E6 /* bench_m.xhwx8.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 12FDB5493C759A18E92409E8 /* bench_m.xhwx8.com.json */; };
+		78229723BECA6A625B8B1244 /* BenchmarkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74C0EB58A32B02382F0CAF31 /* BenchmarkModels.swift */; };
 		7A187E370B0F61DBD4CA699F /* SourceDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68FC3E8E1635B26515AE7916 /* SourceDebugView.swift */; };
+		7D1EB49BAEF590627D2C90D5 /* RelatedBooksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471367B318AA9AFBCBF1F619 /* RelatedBooksTests.swift */; };
+		81A89A0B8EA86E3F1B609965 /* BenchmarkRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0241625E844F35AF0AB42C2 /* BenchmarkRunner.swift */; };
 		81B384DC809D5D225D7A63CC /* BookDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F2F10E36ADBB000CEA156E /* BookDetailView.swift */; };
 		851E9741CB10A7D3A85BA0D4 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B721D7926B9C2FF13457BB81 /* RootView.swift */; };
+		8F4FA3BEF73D0379D662FFE8 /* 7969_m.xbfdc.net.json in Resources */ = {isa = PBXBuildFile; fileRef = AD07160A96A455958ED3532F /* 7969_m.xbfdc.net.json */; };
 		90DA9985EE3F61CD58AF5191 /* LegadoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BFD519B81F69EFDEBAF611 /* LegadoApp.swift */; };
 		910B9A3889D47CAA1F02BE9B /* BookSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ACE577BA921EFB8284CD719 /* BookSource.swift */; };
 		9265E06E5AD570C361AD9D3C /* AnalyzeByJSoup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47CB1FFADCB96CFAC1FB6672 /* AnalyzeByJSoup.swift */; };
 		92CFE35C2A86AFF08CC223E2 /* WebViewFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7B9016A52F6641883FDFA0 /* WebViewFetcher.swift */; };
+		98B837511A1C6A429FC04618 /* bench_www.bqquge.org.json in Resources */ = {isa = PBXBuildFile; fileRef = 580A9C45E9E07683CF7C0B2F /* bench_www.bqquge.org.json */; };
 		990413DD32E74CD4BEBF1805 /* NetworkUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BE416059AB0BE90AE7DF05 /* NetworkUtils.swift */; };
 		9A99942919128C8806BA3EE8 /* SourceCheckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C2FFD52597F69926AD77C /* SourceCheckView.swift */; };
+		9BE0A5DED94A52AF31A75FAD /* 7965_www.yi16.com.json in Resources */ = {isa = PBXBuildFile; fileRef = BE75D9E658B8AB0F50AE0785 /* 7965_www.yi16.com.json */; };
+		9F718B19E49A062B9691760C /* ContentExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8AB83E6E3C922E8BD6506D /* ContentExtras.swift */; };
 		A0541B879203DA734E519CE5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85725D0A885BA4EB0DD503D5 /* SettingsView.swift */; };
 		A1B97005571593A762A72ABD /* LiveSourceFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08072C806F009924F9B8443C /* LiveSourceFixtures.swift */; };
 		A2F0548DC8C0F126ADF9AB2C /* AnalyzeByXPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B53A9B960544E1D19D0C7E /* AnalyzeByXPath.swift */; };
 		A2F904D0249DB8517B8E34E6 /* XPathDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18750F83E8B8039D446FB7F8 /* XPathDocument.swift */; };
+		A34DF0EBF9C17A2FA46DA6EC /* 7981_m.dzrjk.com.json in Resources */ = {isa = PBXBuildFile; fileRef = C601C2940438BA77C3F6C195 /* 7981_m.dzrjk.com.json */; };
 		A4AC3D812C3A47C524B55C45 /* HtmlFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AED4FAD6EC2AAA5EF70BCD /* HtmlFormatter.swift */; };
+		A7C477FC5B52608811D4CC2F /* 7953_fanqienovel.com.json in Resources */ = {isa = PBXBuildFile; fileRef = C38FA801AA99902150C00D86 /* 7953_fanqienovel.com.json */; };
 		B1F7DC4ADF5307460B925183 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83441B8D448ABF76A3B3784 /* AppSettings.swift */; };
 		B4CA376600C5559C469EF653 /* BookshelfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F075D914441D43E0F909055 /* BookshelfView.swift */; };
+		B5E2DBA1C5230A1236A0439C /* 7979_zuidazy.co.json in Resources */ = {isa = PBXBuildFile; fileRef = C4F36045CD0DCFC327A76CC3 /* 7979_zuidazy.co.json */; };
+		B92054C66E52BB7A939E3835 /* 7971_huangguo.video.json in Resources */ = {isa = PBXBuildFile; fileRef = D49DC03A8AA762C4AB8BCAF5 /* 7971_huangguo.video.json */; };
+		B9C0BAEE193BCBE607D7AE7F /* BookDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0F9329373B40D58E6E4A85 /* BookDownloader.swift */; };
+		BB472BA2801F6038D6D674D0 /* 7976_www.sudugu.org.json in Resources */ = {isa = PBXBuildFile; fileRef = AFFC46E0AB01B9C8E8202865 /* 7976_www.sudugu.org.json */; };
+		BD138EF7D2E30A8F19D368D8 /* 7983_bcshuku.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 821BEE3FB00C6F7DCBCF7310 /* 7983_bcshuku.com.json */; };
 		BF70ECEC5EF594F5C8620652 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB1FDA3FF21C703AD1738B9 /* SearchView.swift */; };
+		C3D1E65D16E76A308CA2CAE3 /* 7962_www.yi16.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 390DA0132307EFABBADBEE01 /* 7962_www.yi16.com.json */; };
 		C426D482CC1A840EB57272AC /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE7CC3E495059A50C9B6469 /* AppContainer.swift */; };
+		C50E19DF92DBAB033D4B246C /* 7966_www.yi16.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CE8B184EB8AAC2F7EAFCC26 /* 7966_www.yi16.com.json */; };
+		C5F809BF659753CDA05204A5 /* SourceBenchmarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0817E264A320C77C555450BF /* SourceBenchmarkTests.swift */; };
 		C6A1549AB911E8092D00935E /* StrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED9E9179867A8378C873444 /* StrResponse.swift */; };
 		C9B3BEC98BBEC75139CB7819 /* AnalyzeUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299BA44DD84CD1E55D075573 /* AnalyzeUrl.swift */; };
 		CA67CC1B7E1D80F8CFC8E264 /* BookSourceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91BA30F04715149DE6EAD9C /* BookSourceListView.swift */; };
 		CBFFDA99785FCE443AF98FBB /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440B4BBC60B967F72B488E33 /* StringExtensions.swift */; };
+		CE904D84B9CD321C43D02EF5 /* 7992_fanqienovel.com.json in Resources */ = {isa = PBXBuildFile; fileRef = F6145ABE1B9AA7A21341039E /* 7992_fanqienovel.com.json */; };
 		D0F3F921BD245A9200D41D5E /* SourceCheckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9107EA5104FC537AA8A78407 /* SourceCheckTests.swift */; };
 		D2DDD483767E5A55F5ECD8C2 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10FC5FED3AE740B0F5B4215 /* Theme.swift */; };
+		D4CF44F0989782EFFDDF3E6D /* JSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9061200EF47BECA8F448EB /* JSRequest.swift */; };
 		D563271614F5ED03839F8535 /* WebBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021182DC0A6FEB38D1ADFF41 /* WebBook.swift */; };
+		D5A376EB2A9A13697F56EA4A /* JsSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E77AA87E066925E3B4BF46 /* JsSource.swift */; };
+		D8CFA5B5A008B48A602D0514 /* 8006_cyj.vv9v.cn.json in Resources */ = {isa = PBXBuildFile; fileRef = DAE380A261A2142CCD0F657A /* 8006_cyj.vv9v.cn.json */; };
 		DABDA2184D1890D5875084F0 /* LiveSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544284DAF16587CF7A72AB49 /* LiveSourceTests.swift */; };
 		DB299FC8BF2E0E5C2D1919C1 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FE28D593D816CF977A87D9 /* AppDatabase.swift */; };
 		DB7380ABD5F7BA6467392094 /* AnalyzeByRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E168760BB6C2B58F2F4E3 /* AnalyzeByRegex.swift */; };
+		DC12CA7CF1C1E0410B4D3C53 /* 7986_fanqienovel.com____ai-deepseek.json in Resources */ = {isa = PBXBuildFile; fileRef = AD14682D9B9B01B6ED967FBE /* 7986_fanqienovel.com____ai-deepseek.json */; };
+		DFAE45428E3C9AA994CEBBAA /* 7941_www.zuizhong.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 638F6F660FE4B68493F0C4E2 /* 7941_www.zuizhong.net.json */; };
+		E1E6FAFD6400ED0449524764 /* 8009_www.bqquge.org.json in Resources */ = {isa = PBXBuildFile; fileRef = 794D1604FAB240E24D5C3451 /* 8009_www.bqquge.org.json */; };
 		E4CC6336567198A5C8B87AA4 /* Repositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB3D208C4A831702EBB31EC /* Repositories.swift */; };
+		EA3210AD6642183217F0DF86 /* 7952_www.shuhaoxs.com.json in Resources */ = {isa = PBXBuildFile; fileRef = E99DD4385CE857E9B65BAE79 /* 7952_www.shuhaoxs.com.json */; };
+		ED6356E4E9F8C5B1D5D7B2F0 /* 7944_fanqienovel.com.json in Resources */ = {isa = PBXBuildFile; fileRef = F098C64982677F7997001502 /* 7944_fanqienovel.com.json */; };
 		EDF4D7D4C11C3A44A5446E5B /* AnalyzeByJSONPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D853779E6E24A9371E19C507 /* AnalyzeByJSONPath.swift */; };
+		F580C123EEA3822B55C95454 /* 7980_wap.39shuwu.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 6671A2E6603F2770EB2ED922 /* 7980_wap.39shuwu.com.json */; };
+		F68E0E80EB728B17CAC22ED3 /* 7950_www.kkbiquge.net.json in Resources */ = {isa = PBXBuildFile; fileRef = 60427DFA430203F82EFD4358 /* 7950_www.kkbiquge.net.json */; };
 		F761D92C0E1AF3825C8A143A /* SourceChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3FAAF970CC84960AA18754 /* SourceChecker.swift */; };
+		F78AB9D74C4CDE1CAAB16EF2 /* bench_fanqienovel.com.json in Resources */ = {isa = PBXBuildFile; fileRef = C104EB99D50F5974607E8C79 /* bench_fanqienovel.com.json */; };
+		F80A0C4EF6239376BA6CE10E /* 7982_m.tkshuw.com.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E254CA8BA11977E79FF76DD /* 7982_m.tkshuw.com.json */; };
+		F92CCEE0AA61AF7FA3F800C4 /* JsSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33108E5D65E88CC451A69A4A /* JsSourceTests.swift */; };
 		FA477D8F01B40F54E42C80CD /* MVI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD410E3C451244EA92BEE5A0 /* MVI.swift */; };
 		FEC23600B2F154258251F2A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB4549E165410304FE0F3A3E /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -79,62 +129,114 @@
 		019A372A432DC5E8F645879C /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		021182DC0A6FEB38D1ADFF41 /* WebBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBook.swift; sourceTree = "<group>"; };
 		034DE7518E55080B3A236103 /* LenientDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LenientDecoding.swift; sourceTree = "<group>"; };
+		04FEB2A872A1E1FD46DEA749 /* 7991_m.xi-ji.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "7991_m.xi-ji.com.json"; sourceTree = "<group>"; };
 		056B37EC9FCBE696FD950500 /* EncodingDetect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncodingDetect.swift; sourceTree = "<group>"; };
 		069E168760BB6C2B58F2F4E3 /* AnalyzeByRegex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByRegex.swift; sourceTree = "<group>"; };
 		08072C806F009924F9B8443C /* LiveSourceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveSourceFixtures.swift; sourceTree = "<group>"; };
+		0817E264A320C77C555450BF /* SourceBenchmarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceBenchmarkTests.swift; sourceTree = "<group>"; };
 		0900B8AD69A55B4E2384843B /* JSRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSRuntime.swift; sourceTree = "<group>"; };
 		0A309D6A81D8440A0EA82C01 /* CryptoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtils.swift; sourceTree = "<group>"; };
+		0E8AB83E6E3C922E8BD6506D /* ContentExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentExtras.swift; sourceTree = "<group>"; };
 		10B53A9B960544E1D19D0C7E /* AnalyzeByXPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByXPath.swift; sourceTree = "<group>"; };
+		12FDB5493C759A18E92409E8 /* bench_m.xhwx8.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_m.xhwx8.com.json; sourceTree = "<group>"; };
+		1631FE812DF4C8D21232F452 /* RelatedBooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedBooks.swift; sourceTree = "<group>"; };
 		18750F83E8B8039D446FB7F8 /* XPathDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPathDocument.swift; sourceTree = "<group>"; };
 		1C5AB61FC0467CBC0170A061 /* GRDB.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GRDB.xcframework; path = Vendor/Frameworks/GRDB.xcframework; sourceTree = "<group>"; };
+		1ECD3EADC4CACD11D36F07B4 /* 7943_www.gushizu.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7943_www.gushizu.com.json; sourceTree = "<group>"; };
 		202BC435B7BE476D41DEA0D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2312BD49742F4554C4BA6128 /* 8002_www.pilisf.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8002_www.pilisf.com.json; sourceTree = "<group>"; };
+		2383FA0150EA0CB31AA3C794 /* ContentExtrasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentExtrasTests.swift; sourceTree = "<group>"; };
 		264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentRateLimiter.swift; sourceTree = "<group>"; };
 		299BA44DD84CD1E55D075573 /* AnalyzeUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeUrl.swift; sourceTree = "<group>"; };
+		2CE8B184EB8AAC2F7EAFCC26 /* 7966_www.yi16.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7966_www.yi16.com.json; sourceTree = "<group>"; };
 		2E7B9016A52F6641883FDFA0 /* WebViewFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewFetcher.swift; sourceTree = "<group>"; };
 		30BFD519B81F69EFDEBAF611 /* LegadoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegadoApp.swift; sourceTree = "<group>"; };
+		33108E5D65E88CC451A69A4A /* JsSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsSourceTests.swift; sourceTree = "<group>"; };
+		390DA0132307EFABBADBEE01 /* 7962_www.yi16.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7962_www.yi16.com.json; sourceTree = "<group>"; };
+		39C3473953EE810170B79464 /* 7977_wap.39shuwu.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7977_wap.39shuwu.com.json; sourceTree = "<group>"; };
 		3A9692FAAF766128DEB5FD79 /* CookieStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookieStore.swift; sourceTree = "<group>"; };
+		3C0F9329373B40D58E6E4A85 /* BookDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDownloader.swift; sourceTree = "<group>"; };
 		440B4BBC60B967F72B488E33 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		471367B318AA9AFBCBF1F619 /* RelatedBooksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedBooksTests.swift; sourceTree = "<group>"; };
 		47CB1FFADCB96CFAC1FB6672 /* AnalyzeByJSoup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByJSoup.swift; sourceTree = "<group>"; };
+		49BBEE6016215F39539400B8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4BA2281C785EBAEDB5D8928A /* DebugLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLog.swift; sourceTree = "<group>"; };
+		4EA117C92EFF660456366251 /* DownloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTests.swift; sourceTree = "<group>"; };
 		544284DAF16587CF7A72AB49 /* LiveSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveSourceTests.swift; sourceTree = "<group>"; };
+		55C240A2A7C25756D539BEEA /* 7984_m.xhwx8.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7984_m.xhwx8.com.json; sourceTree = "<group>"; };
+		580A9C45E9E07683CF7C0B2F /* bench_www.bqquge.org.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_www.bqquge.org.json; sourceTree = "<group>"; };
 		58BE416059AB0BE90AE7DF05 /* NetworkUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkUtils.swift; sourceTree = "<group>"; };
+		5B79AB31DF41C95EC6CFB5B4 /* 8011_ocean.shuqireader.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8011_ocean.shuqireader.com.json; sourceTree = "<group>"; };
 		5E494EB6E5276C0FA16C637F /* Legado.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Legado.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED9E9179867A8378C873444 /* StrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrResponse.swift; sourceTree = "<group>"; };
+		60427DFA430203F82EFD4358 /* 7950_www.kkbiquge.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7950_www.kkbiquge.net.json; sourceTree = "<group>"; };
 		607C2FFD52597F69926AD77C /* SourceCheckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceCheckView.swift; sourceTree = "<group>"; };
+		638F6F660FE4B68493F0C4E2 /* 7941_www.zuizhong.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7941_www.zuizhong.net.json; sourceTree = "<group>"; };
 		639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLayerTests.swift; sourceTree = "<group>"; };
+		6671A2E6603F2770EB2ED922 /* 7980_wap.39shuwu.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7980_wap.39shuwu.com.json; sourceTree = "<group>"; };
 		68FC3E8E1635B26515AE7916 /* SourceDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDebugView.swift; sourceTree = "<group>"; };
 		6AE7CC3E495059A50C9B6469 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		6F075D914441D43E0F909055 /* BookshelfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookshelfView.swift; sourceTree = "<group>"; };
 		6F3FAAF970CC84960AA18754 /* SourceChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceChecker.swift; sourceTree = "<group>"; };
+		6F9061200EF47BECA8F448EB /* JSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSRequest.swift; sourceTree = "<group>"; };
 		73F2F10E36ADBB000CEA156E /* BookDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailView.swift; sourceTree = "<group>"; };
+		74C0EB58A32B02382F0CAF31 /* BenchmarkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenchmarkModels.swift; sourceTree = "<group>"; };
 		75A92FCFE1463042905E6A2C /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		794D1604FAB240E24D5C3451 /* 8009_www.bqquge.org.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8009_www.bqquge.org.json; sourceTree = "<group>"; };
+		7B329B38A7D8A87A076D07C3 /* 7988_m.juzhishuwu.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7988_m.juzhishuwu.net.json; sourceTree = "<group>"; };
+		7C98962F445B53EDF056E717 /* 7964_book.washai.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7964_book.washai.net.json; sourceTree = "<group>"; };
+		7E254CA8BA11977E79FF76DD /* 7982_m.tkshuw.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7982_m.tkshuw.com.json; sourceTree = "<group>"; };
+		821BEE3FB00C6F7DCBCF7310 /* 7983_bcshuku.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7983_bcshuku.com.json; sourceTree = "<group>"; };
 		85725D0A885BA4EB0DD503D5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		88C738674CE37D069B93F5F7 /* bench_book.washai.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_book.washai.net.json; sourceTree = "<group>"; };
 		88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceParseTests.swift; sourceTree = "<group>"; };
 		8ACE577BA921EFB8284CD719 /* BookSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSource.swift; sourceTree = "<group>"; };
 		8EB1FDA3FF21C703AD1738B9 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		9107EA5104FC537AA8A78407 /* SourceCheckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceCheckTests.swift; sourceTree = "<group>"; };
+		995BF16F62071A2CB9DF99E2 /* bench_www.zuizhong.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_www.zuizhong.net.json; sourceTree = "<group>"; };
 		A0069DB6F5112322FFF8F0E3 /* JSONTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTool.swift; sourceTree = "<group>"; };
 		A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleEngineTests.swift; sourceTree = "<group>"; };
 		A10FC5FED3AE740B0F5B4215 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A12859518CD8B4A2BE27E724 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		A3AED4FAD6EC2AAA5EF70BCD /* HtmlFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HtmlFormatter.swift; sourceTree = "<group>"; };
 		A8C7E12CB1493C6196A377AF /* NetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
+		AD07160A96A455958ED3532F /* 7969_m.xbfdc.net.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7969_m.xbfdc.net.json; sourceTree = "<group>"; };
+		AD14682D9B9B01B6ED967FBE /* 7986_fanqienovel.com____ai-deepseek.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "7986_fanqienovel.com____ai-deepseek.json"; sourceTree = "<group>"; };
 		AFD9B142A9D15C53028A2B13 /* AnalyzeRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeRule.swift; sourceTree = "<group>"; };
+		AFFC46E0AB01B9C8E8202865 /* 7976_www.sudugu.org.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7976_www.sudugu.org.json; sourceTree = "<group>"; };
+		B0241625E844F35AF0AB42C2 /* BenchmarkRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenchmarkRunner.swift; sourceTree = "<group>"; };
 		B721D7926B9C2FF13457BB81 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		BD410E3C451244EA92BEE5A0 /* MVI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MVI.swift; sourceTree = "<group>"; };
+		BE75D9E658B8AB0F50AE0785 /* 7965_www.yi16.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7965_www.yi16.com.json; sourceTree = "<group>"; };
+		C104EB99D50F5974607E8C79 /* bench_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_fanqienovel.com.json; sourceTree = "<group>"; };
+		C38FA801AA99902150C00D86 /* 7953_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7953_fanqienovel.com.json; sourceTree = "<group>"; };
+		C4F36045CD0DCFC327A76CC3 /* 7979_zuidazy.co.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7979_zuidazy.co.json; sourceTree = "<group>"; };
+		C601C2940438BA77C3F6C195 /* 7981_m.dzrjk.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7981_m.dzrjk.com.json; sourceTree = "<group>"; };
 		C60BF4235C279E2F75471461 /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderView.swift; sourceTree = "<group>"; };
 		C8B61F623555944F8E47501A /* JSBridges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSBridges.swift; sourceTree = "<group>"; };
 		C8E57DBCDEB5ADE270094C4C /* JSONPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONPath.swift; sourceTree = "<group>"; };
 		CCB3D208C4A831702EBB31EC /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
+		CDA01CD07FB88AB46A0BCACB /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		D03EE496E20D6C0DE7751926 /* WebBookParse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBookParse.swift; sourceTree = "<group>"; };
 		D0B7C4A69AF65C338F83421F /* RuleAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleAnalyzer.swift; sourceTree = "<group>"; };
 		D0FE28D593D816CF977A87D9 /* AppDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
+		D49DC03A8AA762C4AB8BCAF5 /* 7971_huangguo.video.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7971_huangguo.video.json; sourceTree = "<group>"; };
 		D83441B8D448ABF76A3B3784 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		D853779E6E24A9371E19C507 /* AnalyzeByJSONPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzeByJSONPath.swift; sourceTree = "<group>"; };
+		DA74B1725B6ECC9D43230428 /* 7970_www.mowan.lol.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7970_www.mowan.lol.json; sourceTree = "<group>"; };
+		DAE380A261A2142CCD0F657A /* 8006_cyj.vv9v.cn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 8006_cyj.vv9v.cn.json; sourceTree = "<group>"; };
 		DB4549E165410304FE0F3A3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC052062F1108B6339F70946 /* Legado-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Legado-Bridging-Header.h"; sourceTree = "<group>"; };
 		E1885C021E567D9427D1BE59 /* SwiftSoup.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSoup.xcframework; path = Vendor/Frameworks/SwiftSoup.xcframework; sourceTree = "<group>"; };
+		E1A13E5CF65AA3116447808D /* bench_m.tkshuw.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bench_m.tkshuw.com.json; sourceTree = "<group>"; };
 		E91BA30F04715149DE6EAD9C /* BookSourceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSourceListView.swift; sourceTree = "<group>"; };
+		E91E6CA384E84AFA6CC72E67 /* 7942_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7942_fanqienovel.com.json; sourceTree = "<group>"; };
+		E99DD4385CE857E9B65BAE79 /* 7952_www.shuhaoxs.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7952_www.shuhaoxs.com.json; sourceTree = "<group>"; };
+		EA4CA7928ED000528EFAE143 /* JSBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSBridgeTests.swift; sourceTree = "<group>"; };
 		ECD9587871054AA8637E1CE6 /* Daos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Daos.swift; sourceTree = "<group>"; };
+		F098C64982677F7997001502 /* 7944_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7944_fanqienovel.com.json; sourceTree = "<group>"; };
+		F1E77AA87E066925E3B4BF46 /* JsSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsSource.swift; sourceTree = "<group>"; };
+		F6145ABE1B9AA7A21341039E /* 7992_fanqienovel.com.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 7992_fanqienovel.com.json; sourceTree = "<group>"; };
 		FE0C1C8D2F318FBFA601C6B7 /* LegadoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LegadoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -158,6 +260,7 @@
 				264A2532F4E126367D6AB2EF /* ConcurrentRateLimiter.swift */,
 				3A9692FAAF766128DEB5FD79 /* CookieStore.swift */,
 				019A372A432DC5E8F645879C /* HTTPClient.swift */,
+				6F9061200EF47BECA8F448EB /* JSRequest.swift */,
 				5ED9E9179867A8378C873444 /* StrResponse.swift */,
 				2E7B9016A52F6641883FDFA0 /* WebViewFetcher.swift */,
 			);
@@ -310,11 +413,18 @@
 		8A026352A08576F4BA363FAC /* LegadoTests */ = {
 			isa = PBXGroup;
 			children = (
+				D50B1B8270DBEA6492E45885 /* BenchmarkKit */,
+				2383FA0150EA0CB31AA3C794 /* ContentExtrasTests.swift */,
 				639BC9ADFA08D968D9CA0AE2 /* DataLayerTests.swift */,
+				4EA117C92EFF660456366251 /* DownloadTests.swift */,
+				EA4CA7928ED000528EFAE143 /* JSBridgeTests.swift */,
+				33108E5D65E88CC451A69A4A /* JsSourceTests.swift */,
 				08072C806F009924F9B8443C /* LiveSourceFixtures.swift */,
 				544284DAF16587CF7A72AB49 /* LiveSourceTests.swift */,
 				A8C7E12CB1493C6196A377AF /* NetworkTests.swift */,
+				471367B318AA9AFBCBF1F619 /* RelatedBooksTests.swift */,
 				A0A9BF92309334C790BDC19D /* RuleEngineTests.swift */,
+				0817E264A320C77C555450BF /* SourceBenchmarkTests.swift */,
 				9107EA5104FC537AA8A78407 /* SourceCheckTests.swift */,
 				88F8F3F269EFE6F43A30B962 /* SourceParseTests.swift */,
 			);
@@ -346,6 +456,20 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		A6823EE9184A6E41D96614B1 /* fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				CDA01CD07FB88AB46A0BCACB /* .gitkeep */,
+				88C738674CE37D069B93F5F7 /* bench_book.washai.net.json */,
+				C104EB99D50F5974607E8C79 /* bench_fanqienovel.com.json */,
+				E1A13E5CF65AA3116447808D /* bench_m.tkshuw.com.json */,
+				12FDB5493C759A18E92409E8 /* bench_m.xhwx8.com.json */,
+				580A9C45E9E07683CF7C0B2F /* bench_www.bqquge.org.json */,
+				995BF16F62071A2CB9DF99E2 /* bench_www.zuizhong.net.json */,
+			);
+			path = fixtures;
+			sourceTree = "<group>";
+		};
 		C5EDD4BFDEC5481019E52B11 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -356,6 +480,18 @@
 				DF57C7E24602194C92EBAA08 /* Source */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		D50B1B8270DBEA6492E45885 /* BenchmarkKit */ = {
+			isa = PBXGroup;
+			children = (
+				A6823EE9184A6E41D96614B1 /* fixtures */,
+				F1F4C7FB454F7B3022D345B0 /* pool */,
+				74C0EB58A32B02382F0CAF31 /* BenchmarkModels.swift */,
+				B0241625E844F35AF0AB42C2 /* BenchmarkRunner.swift */,
+				49BBEE6016215F39539400B8 /* README.md */,
+			);
+			path = BenchmarkKit;
 			sourceTree = "<group>";
 		};
 		D798D7DDB235AE87865D2ECD /* Models */ = {
@@ -380,6 +516,10 @@
 		E8731A183A608D95C99F58AA /* WebBook */ = {
 			isa = PBXGroup;
 			children = (
+				3C0F9329373B40D58E6E4A85 /* BookDownloader.swift */,
+				0E8AB83E6E3C922E8BD6506D /* ContentExtras.swift */,
+				F1E77AA87E066925E3B4BF46 /* JsSource.swift */,
+				1631FE812DF4C8D21232F452 /* RelatedBooks.swift */,
 				6F3FAAF970CC84960AA18754 /* SourceChecker.swift */,
 				021182DC0A6FEB38D1ADFF41 /* WebBook.swift */,
 				D03EE496E20D6C0DE7751926 /* WebBookParse.swift */,
@@ -402,6 +542,44 @@
 				18750F83E8B8039D446FB7F8 /* XPathDocument.swift */,
 			);
 			path = XML;
+			sourceTree = "<group>";
+		};
+		F1F4C7FB454F7B3022D345B0 /* pool */ = {
+			isa = PBXGroup;
+			children = (
+				A12859518CD8B4A2BE27E724 /* .gitkeep */,
+				638F6F660FE4B68493F0C4E2 /* 7941_www.zuizhong.net.json */,
+				E91E6CA384E84AFA6CC72E67 /* 7942_fanqienovel.com.json */,
+				1ECD3EADC4CACD11D36F07B4 /* 7943_www.gushizu.com.json */,
+				F098C64982677F7997001502 /* 7944_fanqienovel.com.json */,
+				60427DFA430203F82EFD4358 /* 7950_www.kkbiquge.net.json */,
+				E99DD4385CE857E9B65BAE79 /* 7952_www.shuhaoxs.com.json */,
+				C38FA801AA99902150C00D86 /* 7953_fanqienovel.com.json */,
+				390DA0132307EFABBADBEE01 /* 7962_www.yi16.com.json */,
+				7C98962F445B53EDF056E717 /* 7964_book.washai.net.json */,
+				BE75D9E658B8AB0F50AE0785 /* 7965_www.yi16.com.json */,
+				2CE8B184EB8AAC2F7EAFCC26 /* 7966_www.yi16.com.json */,
+				AD07160A96A455958ED3532F /* 7969_m.xbfdc.net.json */,
+				DA74B1725B6ECC9D43230428 /* 7970_www.mowan.lol.json */,
+				D49DC03A8AA762C4AB8BCAF5 /* 7971_huangguo.video.json */,
+				AFFC46E0AB01B9C8E8202865 /* 7976_www.sudugu.org.json */,
+				39C3473953EE810170B79464 /* 7977_wap.39shuwu.com.json */,
+				C4F36045CD0DCFC327A76CC3 /* 7979_zuidazy.co.json */,
+				6671A2E6603F2770EB2ED922 /* 7980_wap.39shuwu.com.json */,
+				C601C2940438BA77C3F6C195 /* 7981_m.dzrjk.com.json */,
+				7E254CA8BA11977E79FF76DD /* 7982_m.tkshuw.com.json */,
+				821BEE3FB00C6F7DCBCF7310 /* 7983_bcshuku.com.json */,
+				55C240A2A7C25756D539BEEA /* 7984_m.xhwx8.com.json */,
+				AD14682D9B9B01B6ED967FBE /* 7986_fanqienovel.com____ai-deepseek.json */,
+				7B329B38A7D8A87A076D07C3 /* 7988_m.juzhishuwu.net.json */,
+				04FEB2A872A1E1FD46DEA749 /* 7991_m.xi-ji.com.json */,
+				F6145ABE1B9AA7A21341039E /* 7992_fanqienovel.com.json */,
+				2312BD49742F4554C4BA6128 /* 8002_www.pilisf.com.json */,
+				DAE380A261A2142CCD0F657A /* 8006_cyj.vv9v.cn.json */,
+				794D1604FAB240E24D5C3451 /* 8009_www.bqquge.org.json */,
+				5B79AB31DF41C95EC6CFB5B4 /* 8011_ocean.shuqireader.com.json */,
+			);
+			path = pool;
 			sourceTree = "<group>";
 		};
 		F6652446051FEC479B6F81D6 /* Core */ = {
@@ -460,6 +638,7 @@
 			buildConfigurationList = 451503E854E225B81AFF0929 /* Build configuration list for PBXNativeTarget "LegadoTests" */;
 			buildPhases = (
 				5A75EE015A537D14B822DE9A /* Sources */,
+				2ADE77793C20B552E7F80D26 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -505,6 +684,50 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2ADE77793C20B552E7F80D26 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFAE45428E3C9AA994CEBBAA /* 7941_www.zuizhong.net.json in Resources */,
+				1B771736666A4BB1173D90C0 /* 7942_fanqienovel.com.json in Resources */,
+				6BA5D4D46CEE59DFE2D1C49D /* 7943_www.gushizu.com.json in Resources */,
+				ED6356E4E9F8C5B1D5D7B2F0 /* 7944_fanqienovel.com.json in Resources */,
+				F68E0E80EB728B17CAC22ED3 /* 7950_www.kkbiquge.net.json in Resources */,
+				EA3210AD6642183217F0DF86 /* 7952_www.shuhaoxs.com.json in Resources */,
+				A7C477FC5B52608811D4CC2F /* 7953_fanqienovel.com.json in Resources */,
+				C3D1E65D16E76A308CA2CAE3 /* 7962_www.yi16.com.json in Resources */,
+				3B37030A09B7E8B9BD2E7BBF /* 7964_book.washai.net.json in Resources */,
+				9BE0A5DED94A52AF31A75FAD /* 7965_www.yi16.com.json in Resources */,
+				C50E19DF92DBAB033D4B246C /* 7966_www.yi16.com.json in Resources */,
+				8F4FA3BEF73D0379D662FFE8 /* 7969_m.xbfdc.net.json in Resources */,
+				288B4DDD25359AB0C8EEBB62 /* 7970_www.mowan.lol.json in Resources */,
+				B92054C66E52BB7A939E3835 /* 7971_huangguo.video.json in Resources */,
+				BB472BA2801F6038D6D674D0 /* 7976_www.sudugu.org.json in Resources */,
+				26969B9F3388EB3B09713D95 /* 7977_wap.39shuwu.com.json in Resources */,
+				B5E2DBA1C5230A1236A0439C /* 7979_zuidazy.co.json in Resources */,
+				F580C123EEA3822B55C95454 /* 7980_wap.39shuwu.com.json in Resources */,
+				A34DF0EBF9C17A2FA46DA6EC /* 7981_m.dzrjk.com.json in Resources */,
+				F80A0C4EF6239376BA6CE10E /* 7982_m.tkshuw.com.json in Resources */,
+				BD138EF7D2E30A8F19D368D8 /* 7983_bcshuku.com.json in Resources */,
+				469F71D8280B9D5C449DEBEA /* 7984_m.xhwx8.com.json in Resources */,
+				DC12CA7CF1C1E0410B4D3C53 /* 7986_fanqienovel.com____ai-deepseek.json in Resources */,
+				1223EF1373C5269376D7AC5E /* 7988_m.juzhishuwu.net.json in Resources */,
+				122D178AF7270683BDF812B2 /* 7991_m.xi-ji.com.json in Resources */,
+				CE904D84B9CD321C43D02EF5 /* 7992_fanqienovel.com.json in Resources */,
+				16C5552092A9BFADDF51C7DA /* 8002_www.pilisf.com.json in Resources */,
+				D8CFA5B5A008B48A602D0514 /* 8006_cyj.vv9v.cn.json in Resources */,
+				E1E6FAFD6400ED0449524764 /* 8009_www.bqquge.org.json in Resources */,
+				2AC62A4A0698369E4219532D /* 8011_ocean.shuqireader.com.json in Resources */,
+				027C75A75592FEEAF9A0DC08 /* README.md in Resources */,
+				2296C4C43033060362CF467C /* bench_book.washai.net.json in Resources */,
+				F78AB9D74C4CDE1CAAB16EF2 /* bench_fanqienovel.com.json in Resources */,
+				3AD113D91E2148FD64D4BCFC /* bench_m.tkshuw.com.json in Resources */,
+				73F31E14D0D181E9305A17E6 /* bench_m.xhwx8.com.json in Resources */,
+				98B837511A1C6A429FC04618 /* bench_www.bqquge.org.json in Resources */,
+				120168C95439A42255B3D31F /* bench_www.zuizhong.net.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FB93DF81CD275AAACC1099D7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -520,11 +743,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78229723BECA6A625B8B1244 /* BenchmarkModels.swift in Sources */,
+				81A89A0B8EA86E3F1B609965 /* BenchmarkRunner.swift in Sources */,
+				2C32811C2CCA411B9AD813EA /* ContentExtrasTests.swift in Sources */,
 				6DB55E69DC0890328D5B54E8 /* DataLayerTests.swift in Sources */,
+				16E2C25F644F44D1D13AC808 /* DownloadTests.swift in Sources */,
+				2C46A548C79C16CC4C91D90A /* JSBridgeTests.swift in Sources */,
+				F92CCEE0AA61AF7FA3F800C4 /* JsSourceTests.swift in Sources */,
 				A1B97005571593A762A72ABD /* LiveSourceFixtures.swift in Sources */,
 				DABDA2184D1890D5875084F0 /* LiveSourceTests.swift in Sources */,
 				2700ADD1D19D04EB20B8B61B /* NetworkTests.swift in Sources */,
+				7D1EB49BAEF590627D2C90D5 /* RelatedBooksTests.swift in Sources */,
 				34923805166AC511E92EB236 /* RuleEngineTests.swift in Sources */,
+				C5F809BF659753CDA05204A5 /* SourceBenchmarkTests.swift in Sources */,
 				D0F3F921BD245A9200D41D5E /* SourceCheckTests.swift in Sources */,
 				723B479879EA15AC34A7CE78 /* SourceParseTests.swift in Sources */,
 			);
@@ -545,10 +776,12 @@
 				B1F7DC4ADF5307460B925183 /* AppSettings.swift in Sources */,
 				510C9629024963C4FD3FA75A /* Book.swift in Sources */,
 				81B384DC809D5D225D7A63CC /* BookDetailView.swift in Sources */,
+				B9C0BAEE193BCBE607D7AE7F /* BookDownloader.swift in Sources */,
 				910B9A3889D47CAA1F02BE9B /* BookSource.swift in Sources */,
 				CA67CC1B7E1D80F8CFC8E264 /* BookSourceListView.swift in Sources */,
 				B4CA376600C5559C469EF653 /* BookshelfView.swift in Sources */,
 				1ACA1DB2AB61FE856DC03781 /* ConcurrentRateLimiter.swift in Sources */,
+				9F718B19E49A062B9691760C /* ContentExtras.swift in Sources */,
 				54D1F44CF7D9380CFE840A70 /* CookieStore.swift in Sources */,
 				32E34EE28CBFA29F4261E4DE /* CryptoUtils.swift in Sources */,
 				58CE4D414DFDCCD914161656 /* Daos.swift in Sources */,
@@ -559,12 +792,15 @@
 				04DD12810A2CDF6793F85C91 /* JSBridges.swift in Sources */,
 				326F052119847C56714EFD09 /* JSONPath.swift in Sources */,
 				32D77DF812403C1A8CD4ACDD /* JSONTool.swift in Sources */,
+				D4CF44F0989782EFFDDF3E6D /* JSRequest.swift in Sources */,
 				05F820BE28CB8B946760D28C /* JSRuntime.swift in Sources */,
+				D5A376EB2A9A13697F56EA4A /* JsSource.swift in Sources */,
 				90DA9985EE3F61CD58AF5191 /* LegadoApp.swift in Sources */,
 				41CFEDC8F6E2B9A07C558F54 /* LenientDecoding.swift in Sources */,
 				FA477D8F01B40F54E42C80CD /* MVI.swift in Sources */,
 				990413DD32E74CD4BEBF1805 /* NetworkUtils.swift in Sources */,
 				603C47C534204E9A4CCB97C0 /* ReaderView.swift in Sources */,
+				168C69AE13603156251157E5 /* RelatedBooks.swift in Sources */,
 				E4CC6336567198A5C8B87AA4 /* Repositories.swift in Sources */,
 				851E9741CB10A7D3A85BA0D4 /* RootView.swift in Sources */,
 				0641D042681BD695E0BE9D87 /* RuleAnalyzer.swift in Sources */,

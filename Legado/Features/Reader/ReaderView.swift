@@ -29,6 +29,7 @@ final class ReaderViewModel {
     private let container: AppContainer
     private var loadingTask: Task<Void, Never>?
     private var loadedIndex: Int = -1
+    private var didStartRead = false
 
     init(book: Book, startIndex: Int, container: AppContainer) {
         var state = State(book: book)
@@ -61,6 +62,9 @@ final class ReaderViewModel {
     }
 
     private func prepare() {
+        if let source = container.bookSourceRepository.source(for: state.book.origin) {
+            state.book.applyContentRule(source.ruleContent)
+        }
         state.chapters = container.bookRepository.chapters(of: state.book)
         if state.chapters.isEmpty {
             fetchChapters()
@@ -110,6 +114,9 @@ final class ReaderViewModel {
             state.error = nil
             loadedIndex = index
             saveProgress(chapter)
+            if let source = container.bookSourceRepository.source(for: state.book.origin) {
+                notifyStartRead(source: source, chapter: chapter)
+            }
             return
         }
 
@@ -135,6 +142,7 @@ final class ReaderViewModel {
                 state.isLoading = false
                 state.fromCache = false
                 saveProgress(chapter)
+                notifyStartRead(source: source, chapter: chapter)
                 prefetch(around: index)
             } catch {
                 guard !Task.isCancelled else { return }
@@ -147,6 +155,18 @@ final class ReaderViewModel {
     private func saveProgress(_ chapter: BookChapter) {
         container.bookRepository.updateProgress(book: state.book, index: chapter.index,
                                                 title: chapter.title)
+    }
+
+    /// 书源 callBackJs 的 startRead 事件只在本次阅读开始时触发一次
+    private func notifyStartRead(source: BookSource, chapter: BookChapter) {
+        guard !didStartRead else { return }
+        didStartRead = true
+        let book = state.book
+        let webBook = container.webBook
+        Task.detached(priority: .utility) {
+            _ = SourceCallBack.run(SourceCallBackEvent.startRead, source: source,
+                                   book: book, chapter: chapter, webBook: webBook)
+        }
     }
 
     private func prefetch(around index: Int) {

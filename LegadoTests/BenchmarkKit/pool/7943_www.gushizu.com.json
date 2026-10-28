@@ -1,0 +1,45 @@
+{
+ "bookSourceName": "故事族",
+ "bookSourceType": 0,
+ "bookSourceUrl": "https://www.gushizu.com",
+ "customButton": false,
+ "customOrder": 4,
+ "enabled": true,
+ "enabledCookieJar": true,
+ "enabledExplore": true,
+ "eventListener": false,
+ "exploreUrl": "@js:\nvar base = \"https://www.gushizu.com\";\nvar out = [];\nfunction push(t, u, w) {\n  out.push({\n    title: t,\n    url: u,\n    style: { layout_flexGrow: 1, layout_flexBasisPercent: w || 0.25 }\n  });\n}\npush(\"🏆 排行榜\", \"\", 1);\npush(\"点击榜\", base + \"/rank/allvisit\", 0.25);\npush(\"收藏榜\", base + \"/rank/mark\", 0.25);\npush(\"推荐榜\", base + \"/rank/vote\", 0.25);\npush(\"周榜\", base + \"/rank/weekvisit\", 0.25);\npush(\"月榜\", base + \"/rank/monthvisit\", 0.25);\npush(\"📚 分类\", \"\", 1);\nvar cats = [\n  [\"科幻\", 41], [\"名著\", 40], [\"推理\", 39], [\"短篇\", 32],\n  [\"中篇\", 34], [\"少儿版\", 33], [\"历史版\", 8], [\"国外版\", 27],\n  [\"睡前故事\", 11], [\"科幻世界\", 30], [\"当代\", 14], [\"啄木鸟\", 13],\n  [\"意林\", 12], [\"小说月报\", 10], [\"上海故事\", 9], [\"读者\", 6],\n  [\"今古传奇\", 5], [\"故事会\", 3], [\"历史故事\", 42]\n];\nfor (var i = 0; i < cats.length; i++) {\n  push(cats[i][0], base + \"/novel/category/list/categoryId/\" + cats[i][1] + \"/<,page/{{page}}>\", 0.25);\n}\nJSON.stringify(out);",
+ "header": "{\"User-Agent\": \"Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36\"}",
+ "lastUpdateTime": "1791816018456",
+ "respondTime": 180000,
+ "ruleBookInfo": {
+  "author": ".book-intro .flex-item p:contains(作者)@text##作者：",
+  "coverUrl": ".book-intro img@src",
+  "intro": "@js:\nvar doc = org.jsoup.Jsoup.parse(result);\nvar name = doc.select('.book-title').text();\nvar author = doc.select('.book-intro .flex-item p:contains(作者)').text().replace('作者：','').trim();\nvar kind = doc.select('.book-intro .flex-item p:contains(分类)').text().replace('分类：','').trim();\nvar intro = doc.select('.book-intro-con p').text().trim();\nvar lines = [];\nif(name)   lines.push('<div>　　<b>📖 书名：</b>' + name + '</div>');\nif(author) lines.push('<div>　　<b>👤 作者：</b>' + author + '</div>');\nif(kind)   lines.push('<div>　　<b>📂 分类：</b>' + kind + '</div>');\nif(intro)  lines.push('<div>　　<b>📝 简介：</b></div><div>　　' + intro + '</div>');\nlines.join('');",
+  "kind": ".book-intro .flex-item p:contains(分类)@text##分类：",
+  "name": ".book-title@text"
+ },
+ "ruleContent": {
+  "content": "#ptReadText@html\n@js:result.replace(/<br\\s*\\/?>/gi, '\\n\\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\\n{3,}/g, '\\n\\n').trim();",
+  "nextContentUrl": "a:contains(下一篇)@href"
+ },
+ "ruleExplore": {
+  "bookList": "<js>var doc = org.jsoup.Jsoup.parse(result);var els = doc.select('a.flex-wrp.border-b');if (els.size() === 0) { els = doc.select('a[href*=\"/novel/novel/index/novelId/\"]'); } els;</js>",
+  "bookUrl": "href",
+  "coverUrl": "img@data-src||img@src",
+  "name": ".size15@text||h4@text||text"
+ },
+ "ruleSearch": {
+  "bookList": "a.flex-wrp, .novel-list a",
+  "bookUrl": "href",
+  "coverUrl": "img@data-src||img@src",
+  "name": ".size14@text||.size15@text||h4@text||text"
+ },
+ "ruleToc": {
+  "chapterList": ".catalog-container a, .mobile-cat-inner a",
+  "chapterName": ".chapter-name@text||text",
+  "chapterUrl": "href"
+ },
+ "searchUrl": "/novel/search/result?searchkey={{key}}",
+ "weight": 0
+}
