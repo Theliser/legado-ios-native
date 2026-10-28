@@ -1,0 +1,85 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (iOS Simulator)
+    # 工程部署目标 iOS 26.0，需要 Xcode 26；macos-26 镜像默认就是 Xcode 26.x。
+    runs-on: macos-26
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        id: xcode
+        run: |
+          xcodebuild -version
+          echo "version=$(xcodebuild -version | head -1 | tr ' ' '-')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache vendor XCFrameworks
+        uses: actions/cache@v4
+        with:
+          # 只缓存编译产物（约 70MB）；源码包每次重新下载很快，
+          # 避免把 500MB+ 的 .build 目录塞进缓存。
+          path: Vendor/Frameworks
+          key: vendor-frameworks-${{ runner.os }}-${{ steps.xcode.outputs.version }}-${{ hashFiles('scripts/fetch-vendor.sh', 'scripts/build-vendor-frameworks.sh') }}
+          restore-keys: |
+            vendor-frameworks-${{ runner.os }}-${{ steps.xcode.outputs.version }}-
+            vendor-frameworks-${{ runner.os }}-
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Fetch vendor packages
+        # GitHub 托管 runner 直连 GitHub 最快，不让脚本先试国内镜像
+        env:
+          VENDOR_MIRROR: https://github.com
+        run: ./scripts/fetch-vendor.sh
+
+      - name: Build vendor XCFrameworks
+        run: ./scripts/build-vendor-frameworks.sh
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build app
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project Legado.xcodeproj \
+            -scheme Legado \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package simulator app
+        run: |
+          APP="build/DerivedData/Build/Products/Debug-iphonesimulator/Legado.app"
+          test -d "$APP"
+          mkdir -p build/artifacts
+          ditto -c -k --sequesterRsrc --keepParent "$APP" build/artifacts/Legado-simulator.zip
+
+      - name: Upload simulator build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Legado-simulator
+          path: build/artifacts/Legado-simulator.zip
+          if-no-files-found: error
+          retention-days: 7

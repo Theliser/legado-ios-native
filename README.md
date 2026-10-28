@@ -59,7 +59,8 @@ MIRRORS=(
 ```
 
 某个镜像挂了、或者想换更快的，直接改这个数组即可；也可以在命令前临时指定
-（脚本读取的是数组，改文件是最直接的方式）。
+（脚本读取的是数组，改文件是最直接的方式）。CI 里用 `VENDOR_MIRROR` 覆盖整个列表，
+例如 `VENDOR_MIRROR=https://github.com ./scripts/fetch-vendor.sh`。
 
 升级依赖版本：改 `DEPS` 里的 tag 和 `build-vendor-frameworks.sh` 里的 `PKGS`，
 然后 `./scripts/fetch-vendor.sh --force && ./scripts/build-vendor-frameworks.sh --force`。
@@ -74,7 +75,6 @@ MIRRORS=(
 换到没有该限制的机器上，这一行可以去掉。
 
 ## 真实书源验证
-
 单测全部用固定 HTML 跑，不依赖网络。另外有一组**联网**用例用来验证引擎在真实站点上的表现：
 
 ```bash

@@ -22,6 +22,11 @@ MIRRORS=(
   "https://github.com"
 )
 
+# CI（GitHub Actions）直连 GitHub 最快，可用 VENDOR_MIRROR 覆盖镜像列表
+if [[ -n "${VENDOR_MIRROR:-}" ]]; then
+  MIRRORS=("${VENDOR_MIRROR%/}")
+fi
+
 # 名称|仓库|tag|顶层目录名
 DEPS=(
   "SwiftSoup|scinfu/SwiftSoup|2.14.3|SwiftSoup-2.14.3"
