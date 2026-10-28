@@ -40,28 +40,42 @@ build_slice() {
       -Xswiftc -enable-library-evolution ) > "$stage/build.log" 2>&1 \
     || { tail -40 "$stage/build.log"; die "$module ($triple) 编译失败"; }
 
-  local prod
-  # SwiftPM 新旧版本产物目录不同（旧版 .build/out/Products/Release-*，
-  # 新版 .build/<triple>/release）。--show-bin-path 两种布局都返回正确路径。
-  prod="$(cd "$VENDOR/$dir" && swift build -c release --disable-sandbox \
+  local binpath
+  binpath="$(cd "$VENDOR/$dir" && swift build -c release --disable-sandbox \
       --triple "$triple" --sdk "$sdkpath" --show-bin-path 2>/dev/null | tail -1)"
-  [[ -n "$prod" ]] || die "$module ($triple) 未找到产物目录"
-  [[ -f "$prod/lib$module.a" ]] || die "$module ($triple) 缺少 lib$module.a"
+  log "  bin: $binpath"
 
-  cp "$prod/lib$module.a" "$stage/"
+  # 不同 SwiftPM 版本的产物目录不一致，直接找「本次刚构建出来」的静态库：
+  # 当前 slice 的产物 mtime 最新，之前的 slice 不会抢占。
+  local lib prod
+  lib="$(find "$VENDOR/$dir/.build" -type f -name "lib$module.a" -print0 2>/dev/null \
+      | xargs -0 ls -t 2>/dev/null | head -1)"
+  [[ -n "$lib" ]] || {
+    find "$VENDOR/$dir/.build" -maxdepth 4 \( -name "lib$module*" -o -name "$module.swiftmodule" \) | head -20 || true
+    die "$module ($triple) 未找到 lib$module.a"
+  }
+  prod="$(dirname "$lib")"
+
+  cp "$lib" "$stage/"
   rm -rf "$stage/$module.swiftmodule"
-  if [[ -d "$prod/$module.swiftmodule" ]]; then
-    cp -R "$prod/$module.swiftmodule" "$stage/"
-    # 有些版本把 swiftdoc/abi.json 放在 .swiftmodule 目录外
-    cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
-    cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  local modsrc="$prod/$module.swiftmodule"
+  if [[ ! -e "$modsrc" ]]; then
+    modsrc="$(find "$VENDOR/$dir/.build" \( -type d -o -type f \) \
+        -name "$module.swiftmodule" -print0 2>/dev/null \
+        | xargs -0 ls -td 2>/dev/null | head -1)"
+  fi
+  if [[ -d "$modsrc" ]]; then
+    cp -R "$modsrc" "$stage/$module.swiftmodule"
   else
     # 某些 SwiftPM 版本把 .swiftmodule 输出成单文件
     mkdir -p "$stage/$module.swiftmodule"
-    cp "$prod/$module.swiftmodule" "$stage/$module.swiftmodule/" 2>/dev/null || true
-    cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
-    cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+    cp "$modsrc" "$stage/$module.swiftmodule/" 2>/dev/null || true
   fi
+  # swiftdoc / abi.json 可能和 .swiftmodule 同级，也可能在目录内
+  cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  cp "$(dirname "$modsrc")/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  cp "$(dirname "$modsrc")/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
 }
 
 # 生成 <Name>.framework 目录（静态库 + Swift 模块）
