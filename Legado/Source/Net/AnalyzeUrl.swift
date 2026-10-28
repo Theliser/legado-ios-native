@@ -34,7 +34,7 @@ final class AnalyzeUrl {
     // MARK: - 内部
 
     private var body: String?
-    private var encodedForm: String?
+    private(set) var encodedForm: String?
     private(set) var encodedQuery: String?
     private(set) var charset: String?
     private(set) var retry = 0
@@ -200,7 +200,10 @@ final class AnalyzeUrl {
         urlNoQuery = url
         switch method {
         case "POST":
-            if let body, !body.isJSONText, !body.isXMLText, (headerMap["Content-Type"] ?? "").isEmpty {
+            let contentType = headerMap.first { $0.key.lowercased() == "content-type" }?
+                .value.lowercased() ?? ""
+            let isForm = contentType.contains("application/x-www-form-urlencoded")
+            if let body, !body.isJSONText, !body.isXMLText, (contentType.isEmpty || isForm) {
                 encodedForm = encodeParams(body, charset: charset, isQuery: false)
             }
         case "GET":
@@ -244,6 +247,19 @@ final class AnalyzeUrl {
         if let b = option["body"] {
             if let s = b as? String {
                 body = s
+            } else if let dict = b as? [String: Any] {
+                // 书源常见写法：body 写成对象，同时在 headers 里声明表单类型。
+                // 这时必须按 form 发送（`a=1&b=2`），发 JSON 站点会当成空查询。
+                let contentType = headerMap.first { $0.key.lowercased() == "content-type" }?
+                    .value.lowercased() ?? ""
+                if contentType.contains("application/x-www-form-urlencoded") {
+                    body = dict.map { key, value in
+                        let text = AnalyzeRule.stringValue(value)
+                        return "\(key)=\(text)"
+                    }.joined(separator: "&")
+                } else {
+                    body = JSONTool.stringify(b)
+                }
             } else if JSONSerialization.isValidJSONObject(b) {
                 body = JSONTool.stringify(b)
             }

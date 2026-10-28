@@ -162,6 +162,13 @@ legado/
   正文 522 字；另一条 2025-11 的趣书吧走 `bodyJs` + `java.post` 取 token，搜索无结果
   （当时 JS 桥未实现 `java.post`，现已补齐，可用 `JSBridgeTests` 回放验证）。
   联网用例默认 skip（`TEST_RUNNER_RUN_LIVE_TESTS=1` 才跑），硬断言只要求「至少一个最近源全通」。
+- **阅读源仓库（yckceo）最近批次体检**：抓 1 小时内～5 天前的新源做全链路。
+  最近 12 个里 2 个完整通过（错层网、笔趣阁），其余多为站点改版/搜索接口失效。
+  顺带修了真实源暴露的 4 个兼容问题：
+  1. jsLib 里 Rhino 允许的 `let` 参数重声明会让 JSC 整个脚本语法失败 → 失败后按宽松模式重试；
+  2. `loginCheckJs` 的 `result` 必须是响应对象（`result.body()`），之前传的是 Swift 结构体；
+  3. `body` 写成对象且声明 `application/x-www-form-urlencoded` 时要发 form，不能发 JSON；
+  4. 含中文的 URL 先百分号编码再交给 URLSession，并关闭 HTTP/3（模拟器 QUIC 上会卡到超时）。
 - **阶段追踪**：`SourceTrace`（URL / 状态码 / 耗时 / 原始响应 / 错误）在搜索、详情、目录、正文
   四个阶段完成时回调；"详情页即目录页"这类复用响应的路径也会发 trace（标注「复用详情页响应」）。
 

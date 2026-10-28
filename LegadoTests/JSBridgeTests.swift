@@ -171,6 +171,33 @@ final class JSBridgeTests: XCTestCase {
         XCTAssertEqual(value, "你好")
     }
 
+    func testLoginCheckJsSeesResponseObject() {
+        let source = makeSource()
+        let analyze = AnalyzeUrl(url: "https://demo.test", source: source,
+                                 httpClient: client, cookieStore: cookieStore, settings: settings)
+        let response = JSResponse(result: JSHttpResult(url: "https://demo.test/x",
+                                                       code: 200, body: "正文",
+                                                       headers: ["X-A": "1"]))
+        let body = analyze.evalJS("result.body()", result: response) as? String
+        XCTAssertEqual(body, "正文")
+        let header = analyze.evalJS("result.header('X-A')", result: response) as? String
+        XCTAssertEqual(header, "1")
+    }
+
+    func testLenientJSLibHandlesRedeclaredParameter() {
+        let context = JSContext()!
+        let lib = """
+        let offset = 1;
+        function f(x) { let x = x || 2; return x + offset; }
+        """
+        context.evaluateScript(lib)
+        XCTAssertNotNil(context.exception, "JSC 应拒绝 let 重声明参数")
+        context.exception = nil
+        context.evaluateScript(JSRuntime.lenientJSLib(lib))
+        XCTAssertNil(context.exception)
+        XCTAssertEqual(context.evaluateScript("f(3)").toInt32(), 4)
+    }
+
     // MARK: - @put 宽松解析
 
     func testPutWithUnquotedKeys() {

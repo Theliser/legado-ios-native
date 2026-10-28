@@ -6,9 +6,19 @@ struct LegadoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(container)
-                .tint(Theme.accent)
+            Group {
+                #if DEBUG
+                if DebugLaunch.readSourcesPath != nil {
+                    DebugReaderHost(container: container)
+                } else {
+                    RootView()
+                }
+                #else
+                RootView()
+                #endif
+            }
+            .environment(container)
+            .tint(Theme.accent)
         }
     }
 }

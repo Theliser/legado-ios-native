@@ -2,7 +2,13 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(AppContainer.self) private var container
-    @State private var selection: AppTab = .shelf
+    @State private var selection: AppTab = {
+        #if DEBUG
+        return DebugLaunch.initialTab ?? .shelf
+        #else
+        return .shelf
+        #endif
+    }()
 
     var body: some View {
         TabView(selection: $selection) {

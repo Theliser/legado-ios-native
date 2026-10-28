@@ -150,6 +150,7 @@ struct SearchView: View {
     @State private var model: SearchViewModel?
     @State private var keyword = ""
     @State private var detail: SearchBook?
+    @State private var didAutoSearch = false
 
     var body: some View {
         NavigationStack {
@@ -177,6 +178,14 @@ struct SearchView: View {
         }
         .task {
             if model == nil { model = SearchViewModel(container: container) }
+            #if DEBUG
+            if !didAutoSearch, let keyword = DebugLaunch.searchKeyword {
+                didAutoSearch = true
+                self.keyword = keyword
+                model?.send(.updateKeyword(keyword))
+                model?.send(.search)
+            }
+            #endif
         }
     }
 

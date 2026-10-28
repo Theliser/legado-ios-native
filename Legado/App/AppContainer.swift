@@ -31,6 +31,10 @@ final class AppContainer {
     }
 
     static func live() -> AppContainer {
-        AppContainer(database: AppDatabase.makeShared())
+        let container = AppContainer(database: AppDatabase.makeShared())
+        #if DEBUG
+        DebugLaunch.importSources(into: container)
+        #endif
+        return container
     }
 }

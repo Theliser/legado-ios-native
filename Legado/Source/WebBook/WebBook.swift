@@ -136,10 +136,20 @@ final class WebBook {
     private func applyLoginCheck(_ source: BookSource, _ analyzeUrl: AnalyzeUrl,
                                  _ response: StrResponse) -> StrResponse {
         guard let checkJs = source.loginCheckJs, !checkJs.isBlank else { return response }
-        guard let value = analyzeUrl.evalJS(checkJs, result: response) else { return response }
+        // loginCheckJs 里的 result 是响应对象（`result.body()` / `result.code()`），
+        // 不能直接传 Swift 的 StrResponse 结构体。
+        let jsResult = JSResponse(result: JSHttpResult(url: response.url,
+                                                       code: response.code,
+                                                       body: response.body ?? "",
+                                                       headers: response.headers,
+                                                       message: response.message))
+        guard let value = analyzeUrl.evalJS(checkJs, result: jsResult) else { return response }
         if let str = value as? StrResponse { return str }
         if let jsr = value as? JSResponse {
-            return StrResponse(url: jsr.responseURL, body: jsr.responseBody)
+            var result = StrResponse(url: jsr.responseURL, body: jsr.responseBody,
+                                     code: jsr.responseCode, message: jsr.responseMessage)
+            result.headers = jsr.responseHeaders
+            return result
         }
         return response
     }

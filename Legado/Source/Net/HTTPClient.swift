@@ -96,6 +96,8 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = spec.method
         request.timeoutInterval = spec.timeout
+        // 模拟器上 HTTP/3（QUIC）偶发卡死，书源站点基本都是 HTTP/2/1.1
+        request.assumesHTTP3Capable = false
 
         var headers = spec.headers
         if headers["User-Agent"] == nil {
@@ -200,7 +202,11 @@ final class HTTPClient: NSObject, URLSessionDelegate, @unchecked Sendable {
     /// `%25XX`（书源里带中文参数的地址基本都是已编码的，这样必然 404）。
     /// 这里先把 `%` 挡住再转义，最后还原。
     static func makeURL(_ raw: String) -> URL? {
-        if let direct = URL(string: raw), direct.scheme != nil,
+        // 只有纯 ASCII 才能直接交给 URL(string:)。
+        // 中文等非 ASCII 字符必须自己百分号编码：Foundation 会保留原文，
+        // 而 URLSession 发送时对未编码的路径处理不一致（模拟器上实测会卡到超时）。
+        let isASCII = raw.unicodeScalars.allSatisfy { $0.isASCII }
+        if isASCII, let direct = URL(string: raw), direct.scheme != nil,
            direct.absoluteString.rangeOfCharacter(from: .whitespacesAndNewlines) == nil {
             return direct
         }

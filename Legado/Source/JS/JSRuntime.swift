@@ -142,7 +142,24 @@ final class JSRuntime: @unchecked Sendable {
         }
         // 预置 jsLib（书源自定义函数库）
         if let lib = env.source?.jsLib, !lib.isBlank {
+            // exceptionHandler 比 context.exception 可靠：JSC 在 handler 里已经
+            // 取走异常时，context.exception 可能读到 nil。
+            var libError: String?
+            let previousHandler = context.exceptionHandler
+            context.exceptionHandler = { context, exception in
+                libError = exception?.toString() ?? "unknown"
+                previousHandler?(context, exception)
+            }
             context.evaluateScript(lib)
+            context.exceptionHandler = previousHandler
+            if let libError {
+                // Rhino 允许 `function f(x) { let x = ... }` 这种参数重声明，
+                // JSC 会直接 SyntaxError。整个 jsLib 失效会连带后续规则全部报
+                // “找不到变量”，所以失败时按 Rhino 的宽松语义降级重试一次。
+                DebugLog.shared.log(key, "≡jsLib 语法与 JSC 不兼容，按宽松模式重试: \(libError)")
+                context.exception = nil
+                context.evaluateScript(Self.lenientJSLib(lib))
+            }
             context.exception = nil
         }
         if contexts.count >= limit, let first = order.first {
@@ -187,6 +204,14 @@ final class JSRuntime: @unchecked Sendable {
         global.setObject(env.fromBookInfo, forKeyedSubscript: "fromBookInfo" as NSString)
         global.setObject(env.event as Any?, forKeyedSubscript: "event" as NSString)
         _ = key
+    }
+
+    /// 把 Rhino 里能跑、JSC 会报错的写法降级成 var。
+    /// 只在 jsLib 首次求值失败时使用，正常书源不受影响。
+    static func lenientJSLib(_ script: String) -> String {
+        script
+            .replacingRegex("\\blet\\s+", with: "var ")
+            .replacingRegex("\\bconst\\s+", with: "var ")
     }
 
     // MARK: - 类型转换

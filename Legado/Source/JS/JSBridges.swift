@@ -934,6 +934,10 @@ struct JSEnvironment {
     func getLoginInfo() -> String?
     func putLoginInfo(_ info: String) -> Bool
     func getLoginInfoMap() -> [String: String]
+    func getLoginHeader() -> String?
+    func getLoginHeaderMap() -> [String: String]
+    func putLoginHeader(_ header: String?) -> String?
+    func removeLoginHeader()
     func getHeaderMap() -> [String: String]
     var bookSourceUrl: String { get set }
     var bookSourceName: String { get set }
@@ -973,6 +977,21 @@ struct JSEnvironment {
     func getLoginInfoMap() -> [String: String] {
         guard let text = getLoginInfo(), let map = JSONTool.parseObject(text) else { return [:] }
         return map.reduce(into: [:]) { $0[$1.key] = AnalyzeRule.stringValue($1.value) }
+    }
+    func getLoginHeader() -> String? {
+        let value = SourceVariableStore.get(source.bookSourceUrl, "__loginHeader__")
+        return value.isEmpty ? nil : value
+    }
+    func getLoginHeaderMap() -> [String: String] {
+        guard let text = getLoginHeader(), let map = JSONTool.parseObject(text) else { return [:] }
+        return map.reduce(into: [:]) { $0[$1.key] = AnalyzeRule.stringValue($1.value) }
+    }
+    func putLoginHeader(_ header: String?) -> String? {
+        SourceVariableStore.put(source.bookSourceUrl, "__loginHeader__", header ?? "")
+        return header
+    }
+    func removeLoginHeader() {
+        SourceVariableStore.put(source.bookSourceUrl, "__loginHeader__", "")
     }
     func getHeaderMap() -> [String: String] { source.headerMap(userAgent: nil) }
 

@@ -195,6 +195,21 @@ final class NetworkTests: XCTestCase {
         XCTAssertEqual(analyze.url, "https://a.com/api")
     }
 
+    func testAnalyzeUrlObjectBodyWithFormHeaderBecomesForm() {
+        // 书源把 body 写成对象 + Content-Type: application/x-www-form-urlencoded
+        // 时必须发 `s=剑来`，发 JSON 会让站点当成空查询。
+        let option = #"https://a.com/search,{"method":"POST","body":{"s":"剑来"},"headers":{"Content-Type":"application/x-www-form-urlencoded"}}"#
+        let analyze = makeAnalyzeUrl(option)
+        XCTAssertEqual(analyze.method, "POST")
+        XCTAssertEqual(analyze.encodedForm, "s=%E5%89%91%E6%9D%A5")
+    }
+
+    func testAnalyzeUrlObjectBodyWithoutFormHeaderStaysJSON() {
+        let option = #"https://a.com/api,{"method":"POST","body":{"s":"剑来"}}"#
+        let analyze = makeAnalyzeUrl(option)
+        XCTAssertNil(analyze.encodedForm)
+    }
+
     func testAnalyzeUrlJsOptionCanRewriteUrl() {
         let option = #"https://a.com/old,{"js":"result.replace('old','new')"}"#
         let analyze = makeAnalyzeUrl(option)
