@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: build-${{ github.ref }}
@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # 生成 Release 更新内容需要完整历史和 tag
+          fetch-depth: 0
 
       - name: Show Xcode version
         id: xcode
@@ -61,3 +64,47 @@ jobs:
           path: build/artifacts/Legado-simulator.zip
           if-no-files-found: error
           retention-days: 7
+
+      - name: Prepare release notes
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          mkdir -p build/artifacts
+          PREV="$(git describe --tags --abbrev=0 --match 'v1.0.0-build.*' 2>/dev/null || true)"
+          {
+            echo "## 自动构建"
+            echo
+            echo "| 项 | 值 |"
+            echo "| --- | --- |"
+            echo "| 提交 | \`${GITHUB_SHA::7}\` |"
+            echo "| 分支 | \`${GITHUB_REF_NAME}\` |"
+            echo "| 时间 | $(date -u '+%Y-%m-%d %H:%M UTC') |"
+            echo
+            echo "## 更新内容"
+            echo
+            if [ -n "$PREV" ]; then
+              NOTES="$(git log --pretty=format:'- %s（`%h`）' "$PREV..HEAD")"
+            else
+              NOTES="$(git log --pretty=format:'- %s（`%h`）' -20)"
+            fi
+            if [ -z "$NOTES" ]; then
+              NOTES="- 本次没有新的代码提交"
+            fi
+            echo "$NOTES"
+            echo
+            echo "## 产物"
+            echo
+            echo "- \`Legado-simulator.zip\`：iOS 模拟器 Debug 构建，解压后可以直接拖进 Simulator 运行"
+          } > build/artifacts/release-notes.md
+          cat build/artifacts/release-notes.md
+
+      - name: Create GitHub Release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-build.${{ github.run_number }}.${{ github.run_attempt }}
+          name: "Legado iOS 自动构建 #${{ github.run_number }}"
+          body_path: build/artifacts/release-notes.md
+          files: build/artifacts/Legado-simulator.zip
+          prerelease: true
+          fail_on_unmatched_files: true
