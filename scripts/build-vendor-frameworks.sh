@@ -47,18 +47,35 @@ build_slice() {
 
   # 不同 SwiftPM 版本的产物目录不一致，直接找「本次刚构建出来」的静态库：
   # 当前 slice 的产物 mtime 最新，之前的 slice 不会抢占。
-  local lib prod
+  local lib
   lib="$(find "$VENDOR/$dir/.build" -type f -name "lib$module.a" -print0 2>/dev/null \
       | xargs -0 ls -t 2>/dev/null | head -1)"
-  [[ -n "$lib" ]] || {
-    find "$VENDOR/$dir/.build" -maxdepth 4 \( -name "lib$module*" -o -name "$module.swiftmodule" \) | head -20 || true
-    die "$module ($triple) 未找到 lib$module.a"
-  }
-  prod="$(dirname "$lib")"
+  [[ -n "$lib" ]] || lib="$(find "$binpath" -type f -name "lib$module.a" 2>/dev/null | head -1)"
 
-  cp "$lib" "$stage/"
+  local prod
+  if [[ -n "$lib" ]]; then
+    prod="$(dirname "$lib")"
+    cp "$lib" "$stage/"
+  else
+    # 新版 SwiftPM（Xcode 26.6+）只留 .o，不再自动产出 .a，这里手工归档。
+    # 产物目录里的所有 .o 都属于当前 module / package 的 library target。
+    prod="$binpath"
+    local objs=()
+    while IFS= read -r -d '' obj; do
+      objs+=("$obj")
+    done < <(find "$prod" -type f -name '*.o' -print0 2>/dev/null)
+    [[ ${#objs[@]} -gt 0 ]] || {
+      find "$VENDOR/$dir/.build" -maxdepth 5 -type f | head -40 || true
+      die "$module ($triple) 未找到 .a 或 .o"
+    }
+    libtool -static -o "$stage/lib$module.a" "${objs[@]}"
+  fi
+
   rm -rf "$stage/$module.swiftmodule"
-  local modsrc="$prod/$module.swiftmodule"
+  local modsrc="$prod/Modules/$module.swiftmodule"
+  if [[ ! -e "$modsrc" ]]; then
+    modsrc="$prod/$module.swiftmodule"
+  fi
   if [[ ! -e "$modsrc" ]]; then
     modsrc="$(find "$VENDOR/$dir/.build" \( -type d -o -type f \) \
         -name "$module.swiftmodule" -print0 2>/dev/null \
@@ -74,6 +91,8 @@ build_slice() {
   # swiftdoc / abi.json 可能和 .swiftmodule 同级，也可能在目录内
   cp "$prod/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
   cp "$prod/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  cp "$prod/Modules/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
+  cp "$prod/Modules/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
   cp "$(dirname "$modsrc")/$module.swiftdoc" "$stage/$module.swiftmodule/" 2>/dev/null || true
   cp "$(dirname "$modsrc")/$module.abi.json" "$stage/$module.swiftmodule/" 2>/dev/null || true
 }
