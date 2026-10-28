@@ -4,8 +4,9 @@
 # 依赖通过 SwiftPM 从 GitHub 拉取（见 project.yml 的 packages），
 # 不再本地预编译 XCFramework。
 #
-#   ./scripts/build.sh                 # 直连
+#   ./scripts/build.sh                 # 模拟器包（直连）
 #   ./scripts/build.sh --proxy         # 走本机 127.0.0.1:10808 代理
+#   ./scripts/build.sh --ipa           # 额外产出未签名设备 IPA
 #   LEGADO_PROXY=1 ./scripts/build.sh  # 同上
 #
 # 代理会同时传给 git / SwiftPM 子进程（GIT_CONFIG_* + HTTP(S)_PROXY）。
@@ -14,13 +15,15 @@ cd "$(dirname "$0")/.."
 
 PROXY_URL="${LEGADO_PROXY_URL:-http://127.0.0.1:10808}"
 USE_PROXY="${LEGADO_PROXY:-0}"
+BUILD_IPA=0
 
 for arg in "$@"; do
   case "$arg" in
     --proxy) USE_PROXY=1 ;;
     --no-proxy) USE_PROXY=0 ;;
+    --ipa) BUILD_IPA=1 ;;
     -h|--help)
-      sed -n '2,12p' "$0"
+      sed -n '2,13p' "$0"
       exit 0
       ;;
     *)
@@ -63,3 +66,28 @@ xcodebuild \
   -clonedSourcePackagesDirPath build/SourcePackages \
   CODE_SIGNING_ALLOWED=NO \
   build
+
+if [[ "$BUILD_IPA" == "1" ]]; then
+  echo "▶︎ 构建（iOS Device，Release，未签名）"
+  xcodebuild \
+    -project Legado.xcodeproj \
+    -scheme Legado \
+    -configuration Release \
+    -sdk iphoneos \
+    -destination 'generic/platform=iOS' \
+    -derivedDataPath build/DerivedDataDevice \
+    -clonedSourcePackagesDirPath build/SourcePackages \
+    CODE_SIGNING_ALLOWED=NO \
+    build
+
+  APP="build/DerivedDataDevice/Build/Products/Release-iphoneos/Legado.app"
+  [[ -d "$APP" ]] || { echo "设备构建产物不存在：$APP" >&2; exit 1; }
+
+  echo "▶︎ 打包 IPA（Payload/Legado.app）"
+  rm -rf build/ipa
+  mkdir -p build/ipa/Payload build/artifacts
+  cp -R "$APP" build/ipa/Payload/
+  ( cd build/ipa && ditto -c -k --norsrc --keepParent Payload \
+      ../artifacts/Legado-unsigned.ipa )
+  echo "✓ build/artifacts/Legado-unsigned.ipa"
+fi

@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build (iOS Simulator)
+    name: Build (iOS Simulator + Device IPA)
     # 工程部署目标 iOS 26.0，需要 Xcode 26；macos-26 镜像默认就是 Xcode 26.x。
     runs-on: macos-26
     timeout-minutes: 40
@@ -48,7 +48,7 @@ jobs:
 
       - name: Build app
         # GitHub 托管 runner 直连 GitHub 很快，不需要代理
-        run: ./scripts/build.sh
+        run: ./scripts/build.sh --ipa
 
       - name: Package simulator app
         run: |
@@ -57,11 +57,13 @@ jobs:
           mkdir -p build/artifacts
           ditto -c -k --sequesterRsrc --keepParent "$APP" build/artifacts/Legado-simulator.zip
 
-      - name: Upload simulator build
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Legado-simulator
-          path: build/artifacts/Legado-simulator.zip
+          name: Legado
+          path: |
+            build/artifacts/Legado-simulator.zip
+            build/artifacts/Legado-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
 
@@ -95,6 +97,7 @@ jobs:
             echo "## 产物"
             echo
             echo "- \`Legado-simulator.zip\`：iOS 模拟器 Debug 构建，解压后可以直接拖进 Simulator 运行"
+            echo "- \`Legado-unsigned.ipa\`：iOS 设备 Release 构建（**未签名**），需用 Sideloadly / AltStore / 自己的证书重签后安装"
           } > build/artifacts/release-notes.md
           cat build/artifacts/release-notes.md
 
@@ -105,6 +108,8 @@ jobs:
           tag_name: v1.0.0-build.${{ github.run_number }}.${{ github.run_attempt }}
           name: "Legado iOS 自动构建 #${{ github.run_number }}"
           body_path: build/artifacts/release-notes.md
-          files: build/artifacts/Legado-simulator.zip
+          files: |
+            build/artifacts/Legado-simulator.zip
+            build/artifacts/Legado-unsigned.ipa
           prerelease: true
           fail_on_unmatched_files: true

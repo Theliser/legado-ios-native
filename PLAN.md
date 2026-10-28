@@ -192,8 +192,9 @@ legado/
 依赖用 SwiftPM 从 GitHub 以 git 协议拉取，版本在 `project.yml` 里锁死：
 
 ```bash
-./scripts/build.sh            # 直连
+./scripts/build.sh            # 模拟器构建（直连）
 ./scripts/build.sh --proxy    # 走 127.0.0.1:10808 代理
+./scripts/build.sh --ipa      # 额外产出未签名设备 IPA
 ```
 
 脚本内部是 `xcodegen generate` → `xcodebuild -resolvePackageDependencies` → 构建，
